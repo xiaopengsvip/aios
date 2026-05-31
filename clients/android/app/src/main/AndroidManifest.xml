@@ -10,7 +10,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="AIOS"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Material3.DayNight.NoActionBar"
+        android:theme="@style/Theme.AiOS"
         android:usesCleartextTraffic="true">
 
         <activity
