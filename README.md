@@ -139,4 +139,4 @@ Web 端 API 统一入口: `https://aios.vios.top/api/*`
 
 ## License
 
-Private - All Apple © 2026
+Private - AIOS (aios.vios.top) © 2026
