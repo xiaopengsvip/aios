@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { api } from "../services/api";
-import { AuthService } from "../services/auth";
 
 interface LayoutProps {
   children: React.ReactNode;
