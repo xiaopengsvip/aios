@@ -4,15 +4,18 @@ import { Login } from "./features/Login";
 import { Chat } from "./features/Chat";
 import { Agent } from "./features/Agent";
 import { Settings } from "./features/Settings";
+import { UpdateDialog } from "./components/UpdateDialog";
 import { AuthService } from "./services/auth";
-import { api } from "./services/api";
+import { api, UpdateInfo } from "./services/api";
 
+const APP_VERSION = "0.0.1";
 type Page = "login" | "chat" | "agent" | "workflow" | "settings";
 
 export default function App() {
   const [page, setPage] = useState<Page>("login");
   const [isAuthed, setIsAuthed] = useState(false);
   const [ready, setReady] = useState(false);
+  const [updateInfo, setUpdateInfo] = useState<UpdateInfo | null>(null);
 
   useEffect(() => {
     // Restore token from localStorage, then verify with backend
@@ -32,6 +35,11 @@ export default function App() {
     } else {
       setReady(true);
     }
+
+    // Check for updates on startup
+    api.checkUpdate(APP_VERSION).then((info) => {
+      if (info) setUpdateInfo(info);
+    });
   }, []);
 
   const handleLogin = () => {
@@ -64,7 +72,12 @@ export default function App() {
   }
 
   if (!isAuthed) {
-    return <Login onLogin={handleLogin} />;
+    return (
+      <>
+        <Login onLogin={handleLogin} />
+        {updateInfo && <UpdateDialog info={updateInfo} onClose={() => setUpdateInfo(null)} />}
+      </>
+    );
   }
 
   const renderPage = () => {
@@ -77,8 +90,11 @@ export default function App() {
   };
 
   return (
-    <Layout currentPage={page} onNavigate={setPage}>
-      {renderPage()}
-    </Layout>
+    <>
+      <Layout currentPage={page} onNavigate={setPage}>
+        {renderPage()}
+      </Layout>
+      {updateInfo && <UpdateDialog info={updateInfo} onClose={() => setUpdateInfo(null)} />}
+    </>
   );
 }

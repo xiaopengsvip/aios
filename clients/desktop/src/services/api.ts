@@ -146,6 +146,37 @@ class ApiService {
 
   // ── Site Config ──
   getSiteConfig() { return this.request<any>("/api/site-config"); }
+
+  // ── App Update ──
+  async checkUpdate(currentVersion: string): Promise<UpdateInfo | null> {
+    try {
+      const info = await this.request<UpdateInfo>("/api/app/version?platform=desktop");
+      if (this.isNewerVersion(info.versionName, currentVersion)) return info;
+      return null;
+    } catch { return null; }
+  }
+
+  private isNewerVersion(remote: string, local: string): boolean {
+    const parse = (v: string) => v.replace(/[^0-9.]/g, "").split(".").map(Number);
+    const r = parse(remote), l = parse(local);
+    for (let i = 0; i < Math.max(r.length, l.length); i++) {
+      const a = r[i] || 0, b = l[i] || 0;
+      if (a > b) return true;
+      if (a < b) return false;
+    }
+    return false;
+  }
+}
+
+export interface UpdateInfo {
+  versionCode: number;
+  versionName: string;
+  minSupportedCode: number;
+  downloadUrl: string;
+  releaseNotes: string;
+  releasedAt: string;
+  apkSize?: number;
+  filename?: string;
 }
 
 export const api = new ApiService();
