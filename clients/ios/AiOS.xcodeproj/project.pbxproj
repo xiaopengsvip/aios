@@ -17,6 +17,7 @@
 		FD7DDE56A68549C2BB07BBB2 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A1B95DC0D14778AAD7695B /* LoginView.swift */; };
 		919F3ABDF8F344FF8BF9EA05 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70AC57AAB5AE4B40A6780BF3 /* ChatView.swift */; };
 		63114F9D179A42478DFC983A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93BAFAB058034068BDFD91B5 /* SettingsView.swift */; };
+		A1B2C3D400000001F6E5D4C3 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D400000002F6E5D4C3 /* Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +32,7 @@
 		70AC57AAB5AE4B40A6780BF3 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
 		93BAFAB058034068BDFD91B5 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		ED717F85C47648BFB2314714 /* AiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1B2C3D400000002F6E5D4C3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,7 @@
 		3212372A63494B50B988D8ED /* AiOS */ = {
 			isa = PBXGroup;
 			children = (
+				A1B2C3D400000002F6E5D4C3 /* Info.plist */,
 				B258CD74062B4020BF7BD856 /* App */,
 				440C1B460ED14A368D24D280 /* Core */,
 				E4FFA555BB7544F0A6C74329 /* Features */,
@@ -162,10 +165,11 @@
 /* Begin PBXNativeTarget section */
 		50B25C9856F246C8AA9DC090 /* AiOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 84BD1B08C394493891EB3D4A /* Build configuration list for PBXNativeTarget "AiOS" */;
+			buildConfigurationList = TGTCLIST0000000000000001 /* Build configuration list for PBXNativeTarget "AiOS" */;
 			buildPhases = (
 				2A9281ABF46442F4B0744FF3 /* Sources */,
 				B74D02BF84C54AE18D433E06 /* Frameworks */,
+				RESBPHASE0000000000000001 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -204,6 +208,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		RESBPHASE0000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1B2C3D400000001F6E5D4C3 /* Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		2A9281ABF46442F4B0744FF3 /* Sources */ = {
@@ -287,6 +302,60 @@
 			};
 			name = Release;
 		};
+		TGTDEBUG0000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = AiOS/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = top.vios.aios;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		TGTRELEASE0000000000000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = AiOS/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = top.vios.aios;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -295,6 +364,15 @@
 			buildConfigurations = (
 				5DD52BEE75E04E2C929A0AB5 /* Debug */,
 				0E55F24E28444BD9836FA6C7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		TGTCLIST0000000000000001 /* Build configuration list for PBXNativeTarget "AiOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				TGTDEBUG0000000000000001 /* Debug */,
+				TGTRELEASE0000000000000001 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
