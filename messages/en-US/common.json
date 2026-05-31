@@ -65,6 +65,7 @@
     "me": "Me",
     "admin": "Admin Panel",
     "users": "Users",
+    "roles": "Roles",
     "models": "Models",
     "providers": "Providers",
     "keys": "API Keys",

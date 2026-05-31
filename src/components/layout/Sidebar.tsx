@@ -16,6 +16,11 @@ interface UserInfo {
   displayName: string | null;
   avatar: string | null;
   role: string;
+  status?: string;
+  locale?: string;
+  balance?: string;
+  creditLimit?: string;
+  tenantId?: string | null;
 }
 
 const UserContext = createContext<UserInfo | null>(null);
@@ -54,6 +59,7 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
   const user = useUser();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
   const tCommon = useTranslations('common');
 
   const handleLogout = async () => {
@@ -61,6 +67,21 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
       await fetch('/api/auth/logout', { method: 'POST' });
     } catch {}
     window.location.href = '/login';
+  };
+
+  const handleCopyId = () => {
+    if (user?.id) {
+      navigator.clipboard.writeText(user.id);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    }
+  };
+
+  const roleLabel: Record<string, string> = {
+    SUPER_ADMIN: '超级管理员',
+    ADMIN: '管理员',
+    USER: '普通用户',
+    GUEST: '访客',
   };
 
   return (
@@ -93,26 +114,83 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 4, scale: 0.95 }}
               transition={{ duration: 0.15 }}
-              className="absolute bottom-full left-0 right-0 mb-1 z-50 bg-popover border border-border rounded-xl shadow-lg overflow-hidden"
+              className="absolute bottom-full left-0 right-0 mb-1 z-50 bg-popover border border-border rounded-xl shadow-xl overflow-hidden"
             >
               {user && (
-                <div className="px-3 py-2 border-b border-border">
-                  <div className="text-sm font-medium truncate">{user.displayName || user.username}</div>
-                  <div className="text-xs text-muted-foreground truncate">{user.email}</div>
+                <div className="p-4 border-b border-border">
+                  {/* Avatar + name */}
+                  <div className="flex items-center gap-3 mb-3">
+                    {user.avatar ? (
+                      <img src={user.avatar} alt="" className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/30" />
+                    ) : (
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-lg font-bold text-white ring-2 ring-primary/30">
+                        {(user.displayName || user.username || 'U').charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-semibold truncate">{user.displayName || user.username}</div>
+                      <div className="text-xs text-muted-foreground truncate">{user.email}</div>
+                    </div>
+                  </div>
+
+                  {/* Detail rows */}
+                  <div className="space-y-1.5 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">ID</span>
+                      <button
+                        onClick={handleCopyId}
+                        className="font-mono text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                        title="点击复制完整 ID"
+                      >
+                        {copied ? '✓ 已复制' : `${user.id.slice(0, 8)}...${user.id.slice(-4)}`}
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">用户名</span>
+                      <span className="font-medium">{user.username}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">角色</span>
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                        user.role === 'SUPER_ADMIN' ? 'bg-amber-500/15 text-amber-400' :
+                        user.role === 'ADMIN' ? 'bg-red-500/15 text-red-400' :
+                        'bg-primary/15 text-primary'
+                      }`}>
+                        {roleLabel[user.role] || user.role}
+                      </span>
+                    </div>
+                    {user.status && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">状态</span>
+                        <span className="flex items-center gap-1">
+                          <span className={`w-1.5 h-1.5 rounded-full ${
+                            user.status === 'ACTIVE' ? 'bg-green-500' : 'bg-zinc-500'
+                          }`} />
+                          {user.status === 'ACTIVE' ? '正常' : user.status}
+                        </span>
+                      </div>
+                    )}
+                    {user.balance !== undefined && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">余额</span>
+                        <span className="font-medium">{Number(user.balance || 0).toLocaleString()} 积分</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
               <div className="py-1">
                 <Link
                   href="/settings"
                   onClick={() => setOpen(false)}
-                  className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-accent transition-colors"
+                  className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-accent transition-colors"
                 >
                   <span>⚙️</span>
                   <span>{tCommon('settings')}</span>
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 hover:bg-red-500/10 transition-colors"
+                  className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-500/10 transition-colors"
                 >
                   <span>🚪</span>
                   <span>退出登录</span>
@@ -126,14 +204,28 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
   );
 }
 
+/* ─── Role-based access ─── */
+type Role = 'SUPER_ADMIN' | 'ADMIN' | 'USER' | 'GUEST';
+
+/** Admin items each role can see (index into adminKeys). */
+const adminAccess: Record<Role, number[]> = {
+  SUPER_ADMIN: [0, 1, 2, 3, 4, 5, 6, 7, 8], // all including roles
+  ADMIN:       [0, 2, 5, 6, 8],              // users, models, billing, monitor, pages
+  USER:        [],
+  GUEST:       [],
+};
+
+/** Nav indices GUEST can access. */
+const guestAllowedNav = new Set([0, 1, 10]); // chat, image, marketplace
+
 /* ─── Nav Data ─── */
 const navKeys = ['chat', 'image', 'video', 'audio', 'agent', 'workflow', 'code', 'files', 'knowledge', 'prompts', 'marketplace', 'credits', 'apiPlatform', 'usage', 'settings'] as const;
 const navIcons = ['💬', '🎨', '🎬', '🎤', '🤖', '⚡', '💻', '📁', '📚', '📝', '🏪', '💰', '🔌', '📊', '⚙️'];
 const navHrefs = ['/chat', '/image', '/video', '/audio', '/agent', '/workflow', '/code', '/files', '/knowledge', '/prompts', '/marketplace', '/credits', '/api-platform', '/usage', '/settings'];
 
-const adminKeys = ['users', 'models', 'providers', 'keys', 'billing', 'monitor', 'tenants', 'pages'] as const;
-const adminIcons = ['👥', '🧠', '🔌', '🔑', '💰', '📊', '🏢', '📄'];
-const adminHrefs = ['/admin/users', '/admin/models', '/admin/providers', '/admin/keys', '/admin/billing', '/admin/monitor', '/admin/tenants', '/admin/pages'];
+const adminKeys = ['users', 'roles', 'models', 'providers', 'keys', 'billing', 'monitor', 'tenants', 'pages'] as const;
+const adminIcons = ['👥', '🎭', '🧠', '🔌', '🔑', '💰', '📊', '🏢', '📄'];
+const adminHrefs = ['/admin/users', '/admin/roles', '/admin/models', '/admin/providers', '/admin/keys', '/admin/billing', '/admin/monitor', '/admin/tenants', '/admin/pages'];
 
 /* ─── Sidebar Content (shared between desktop & drawer) ─── */
 function SidebarContent({
@@ -234,6 +326,9 @@ function SidebarContent({
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-1">
         {navKeys.map((key, i) => {
+          // GUEST only sees allowed nav items
+          if (user?.role === 'GUEST' && !guestAllowedNav.has(i)) return null;
+          
           const isActive = pathname === navHrefs[i];
           return (
             <Link
@@ -258,45 +353,50 @@ function SidebarContent({
           );
         })}
 
-        {/* Admin */}
-        <div className="pt-4 mt-4 border-t border-border">
-          <button
-            onClick={onToggleAdmin}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-zinc-500 hover:text-zinc-300 w-full transition-all"
-          >
-            <span className="text-base shrink-0">🛡️</span>
-            {!collapsed && (
-              <>
-                <span className="flex-1 text-left whitespace-nowrap">{t('admin')}</span>
-                <svg className={`w-3.5 h-3.5 transition-transform ${showAdmin ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-              </>
-            )}
-          </button>
-          <AnimatePresence>
-            {showAdmin && !collapsed && (
-              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                {adminKeys.map((key, i) => {
-                  const isActive = pathname === adminHrefs[i];
-                  return (
-                    <Link
-                      key={adminHrefs[i]}
-                      href={adminHrefs[i]}
-                      onClick={handleLinkClick}
-                      className={`flex items-center gap-3 px-3 py-2 ml-3 rounded-lg text-sm transition-all ${
-                        isActive ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
-                      }`}
-                    >
-                      <span className="text-sm shrink-0">{adminIcons[i]}</span>
-                      <span className="whitespace-nowrap">{t(key)}</span>
-                    </Link>
-                  );
-                })}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+        {/* Admin - only for roles with admin access */}
+        {adminAccess[user?.role as Role || 'USER']?.length > 0 && (
+          <div className="pt-4 mt-4 border-t border-border">
+            <button
+              onClick={onToggleAdmin}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-zinc-500 hover:text-zinc-300 w-full transition-all"
+            >
+              <span className="text-base shrink-0">🛡️</span>
+              {!collapsed && (
+                <>
+                  <span className="flex-1 text-left whitespace-nowrap">{t('admin')}</span>
+                  <svg className={`w-3.5 h-3.5 transition-transform ${showAdmin ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </>
+              )}
+            </button>
+            <AnimatePresence>
+              {showAdmin && !collapsed && (
+                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                  {adminKeys.map((key, i) => {
+                    // Check if this admin item is allowed for the user's role
+                    if (!adminAccess[user?.role as Role || 'USER']?.includes(i)) return null;
+                    
+                    const isActive = pathname === adminHrefs[i];
+                    return (
+                      <Link
+                        key={adminHrefs[i]}
+                        href={adminHrefs[i]}
+                        onClick={handleLinkClick}
+                        className={`flex items-center gap-3 px-3 py-2 ml-3 rounded-lg text-sm transition-all ${
+                          isActive ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+                        }`}
+                      >
+                        <span className="text-sm shrink-0">{adminIcons[i]}</span>
+                        <span className="whitespace-nowrap">{t(key)}</span>
+                      </Link>
+                    );
+                  })}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
       </nav>
 
       {/* Bottom: settings + user */}

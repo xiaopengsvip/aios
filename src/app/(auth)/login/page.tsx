@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocale } from 'next-intl';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import LanguageToggle from '@/components/ui/LanguageToggle';
@@ -14,12 +14,36 @@ export default function LoginPage() {
   const tCommon = useTranslations('common');
   const locale = useLocale();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [userNotFound, setUserNotFound] = useState(false);
+
+  // 处理 OAuth 错误
+  useEffect(() => {
+    const oauthError = searchParams.get('error');
+    if (oauthError) {
+      const errorMessages: Record<string, string> = {
+        oauth_denied: '授权被拒绝',
+        oauth_invalid: '无效的授权请求',
+        oauth_state_mismatch: '授权状态不匹配，请重试',
+        oauth_invalid_state: '无效的授权状态',
+        oauth_failed: 'OAuth 登录失败',
+        oauth_init_failed: 'OAuth 初始化失败',
+        not_logged_in: '请先登录后再绑定账号',
+      };
+      setError(errorMessages[oauthError] || `OAuth 错误: ${oauthError}`);
+    }
+    
+    const oauthBind = searchParams.get('oauth_bind');
+    if (oauthBind === 'success') {
+      // 绑定成功，显示成功消息（可以用 toast 等）
+      console.log('OAuth 绑定成功');
+    }
+  }, [searchParams]);
 
   // 已登录用户自动跳转到 /chat
   useEffect(() => {

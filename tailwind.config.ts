@@ -53,6 +53,10 @@ const config: Config = {
           DEFAULT: 'var(--card)',
           foreground: 'var(--card-foreground)',
         },
+        popover: {
+          DEFAULT: 'var(--popover)',
+          foreground: 'var(--popover-foreground)',
+        },
         surface: {
           DEFAULT: 'var(--surface)',
           foreground: 'var(--surface-foreground)',

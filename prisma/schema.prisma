@@ -130,6 +130,8 @@ model User {
   phone             String?    @unique
   passwordHash      String?
   role              UserRole   @default(USER)
+  customRoleId      String?
+  customRole        RoleDefinition? @relation(fields: [customRoleId], references: [id])
   status            UserStatus @default(ACTIVE)
 
   displayName       String?
@@ -173,6 +175,30 @@ model User {
   @@index([tenantId])
   @@index([email])
   @@index([status])
+}
+
+
+// ============================================================
+// 角色管理 (动态角色 + 权限)
+// ============================================================
+
+model RoleDefinition {
+  id          String   @id @default(cuid())
+  name        String   @unique           // 角色标识 (如 "editor", "viewer")
+  label       String                     // 显示名称 (如 "编辑者", "查看者")
+  description String?                    // 角色描述
+  permissions Json     @default("[]")    // 权限列表 JSON 数组
+  color       String?                    // 徽章颜色 class
+  isSystem    Boolean  @default(false)   // 是否系统内置角色
+  sortOrder   Int      @default(0)       // 排序
+  isActive    Boolean  @default(true)    // 是否启用
+
+  users       User[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
 }
 
 

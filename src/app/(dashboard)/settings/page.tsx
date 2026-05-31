@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
 
 
 interface UserProfile {
@@ -31,9 +32,20 @@ interface UsageRecord {
 
 export default function SettingsPage() {
   const t = useTranslations('settings');
+  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState('profile');
   const [oauthAccounts, setOauthAccounts] = useState<any[]>([]);
   const [oauthLoading, setOauthLoading] = useState(false);
+  const [oauthMessage, setOauthMessage] = useState('');
+
+  // 处理 OAuth 绑定结果
+  useEffect(() => {
+    const oauthBind = searchParams.get('oauth_bind');
+    if (oauthBind === 'success') {
+      setOauthMessage('第三方账号绑定成功！');
+      setTimeout(() => setOauthMessage(''), 5000);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     fetch('/api/auth/oauth/accounts')
@@ -390,6 +402,12 @@ export default function SettingsPage() {
               >
                 <h2 className="text-lg font-semibold mb-4">关联账号</h2>
                 <p className="text-sm text-muted-foreground mb-6">绑定第三方账号后可快速登录</p>
+
+                {oauthMessage && (
+                  <div className="mb-4 p-3 bg-green-500/10 border border-green-500/20 rounded-lg text-green-500 text-sm">
+                    {oauthMessage}
+                  </div>
+                )}
 
                 {[
                   { id: 'github', name: 'GitHub', color: 'bg-gray-800', icon: (

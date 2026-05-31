@@ -92,7 +92,7 @@ export async function GET(req: NextRequest) {
       await bindOAuthAccount(currentUser.id, provider, userInfo, accessToken);
 
       const r = cleanCookies();
-      r.headers.set('Location', '/settings/account?oauth_bind=success');
+      r.headers.set('Location', '/settings?oauth_bind=success');
       return r;
     }
 
