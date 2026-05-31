@@ -284,22 +284,44 @@ function GeneratePanel() {
     if (!text.trim() || isGenerating) return;
     setIsGenerating(true);
 
-    setTimeout(() => {
+    try {
+      const res = await fetch('/api/audio/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: text.trim(),
+          voice: selectedVoice.id,
+          speed,
+          format,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || '生成失败');
+      }
+
+      const audioBlob = await res.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+
       const newAudio: GeneratedAudio = {
         id: Date.now().toString(),
-        url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+        url: audioUrl,
         text: text.trim(),
         voice: selectedVoice.name,
         provider: selectedProvider.name,
         speed,
         pitch,
         format,
-        duration: '0:15',
+        duration: '0:00',
         createdAt: new Date(),
       };
       setGeneratedAudios((prev) => [newAudio, ...prev]);
+    } catch (e: any) {
+      alert(e.message || '语音生成失败');
+    } finally {
       setIsGenerating(false);
-    }, 2000);
+    }
   };
 
   const togglePlay = (audio: GeneratedAudio) => {

@@ -109,6 +109,7 @@ function WorkflowEditor() {
   const [isRunning, setIsRunning] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
   const [showNodePanel, setShowNodePanel] = useState(false);
+  const [savedWorkflowId, setSavedWorkflowId] = useState<string | null>(null);
 
   const onConnect = useCallback((params: Connection) => {
     setEdges((eds) => addEdge({ ...params, animated: true }, eds));
@@ -153,28 +154,7 @@ function WorkflowEditor() {
     setLogs([]);
   }, [setNodes, setEdges]);
 
-  const runWorkflow = useCallback(async () => {
-    if (nodes.length === 0) return;
-    setIsRunning(true);
-    setLogs(['▶ Starting workflow...']);
-
-    // Simulate execution with node status animation
-    for (let i = 0; i < nodes.length; i++) {
-      const node = nodes[i];
-      setNodes((nds) => nds.map((n) => n.id === node.id ? { ...n, data: { ...n.data, status: 'running' } } : n));
-      setLogs((prev) => [...prev, `⏳ Running: ${node.data.label}`]);
-
-      await new Promise((r) => setTimeout(r, 800 + Math.random() * 500));
-
-      setNodes((nds) => nds.map((n) => n.id === node.id ? { ...n, data: { ...n.data, status: 'done' } } : n));
-      setLogs((prev) => [...prev, `✅ Done: ${node.data.label}`]);
-    }
-
-    setLogs((prev) => [...prev, '🎉 Workflow completed!']);
-    setIsRunning(false);
-  }, [nodes, setNodes]);
-
-  const saveWorkflow = useCallback(async () => {
+  const saveWorkflow = useCallback(async (): Promise<string | null> => {
     const workflow = {
       name: workflowName,
       description: '',
@@ -187,12 +167,89 @@ function WorkflowEditor() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(workflow),
       });
-      if (res.ok) setLogs((prev) => [...prev, '💾 Workflow saved!']);
-      else setLogs((prev) => [...prev, '❌ Save failed']);
+      if (res.ok) {
+        const data = await res.json();
+        const id = data.workflow?.id;
+        setSavedWorkflowId(id);
+        setLogs((prev) => [...prev, '💾 Workflow saved!']);
+        return id;
+      }
+      setLogs((prev) => [...prev, '❌ Save failed']);
+      return null;
     } catch (e: any) {
       setLogs((prev) => [...prev, `❌ Save error: ${e.message}`]);
+      return null;
     }
   }, [workflowName, nodes, edges]);
+
+  const runWorkflow = useCallback(async () => {
+    if (nodes.length === 0) return;
+    setIsRunning(true);
+    setLogs(['▶ Starting workflow...']);
+
+    // Auto-save to get workflow ID
+    let wfId = savedWorkflowId;
+    if (!wfId) {
+      setLogs((prev) => [...prev, '💾 Auto-saving before execution...']);
+      wfId = await saveWorkflow();
+      if (!wfId) {
+        setLogs((prev) => [...prev, '❌ Cannot run: save failed']);
+        setIsRunning(false);
+        return;
+      }
+    }
+
+    // Reset all node statuses
+    setNodes((nds) => nds.map((n) => ({ ...n, data: { ...n.data, status: 'idle' } })));
+
+    try {
+      setLogs((prev) => [...prev, `🔗 Executing workflow ${wfId}...`]);
+      const res = await fetch(`/api/workflows/${wfId}/execute`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ input: {} }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || `Execute failed (${res.status})`);
+      }
+
+      const data = await res.json();
+      const steps: Array<{ nodeId: string; nodeType: string; status: string; output: any; duration: number }> = data.steps || [];
+
+      // Animate each step sequentially
+      for (const step of steps) {
+        // Mark node as running
+        setNodes((nds) => nds.map((n) =>
+          n.id === step.nodeId ? { ...n, data: { ...n.data, status: 'running' } } : n
+        ));
+        setLogs((prev) => [...prev, `⏳ Running: ${step.nodeType} (${step.nodeId})`]);
+
+        // Brief delay for visual animation
+        await new Promise((r) => setTimeout(r, 400));
+
+        // Mark node as done or error
+        const nodeStatus = step.status === 'error' ? 'error' : 'done';
+        setNodes((nds) => nds.map((n) =>
+          n.id === step.nodeId ? { ...n, data: { ...n.data, status: nodeStatus } } : n
+        ));
+
+        const icon = step.status === 'error' ? '❌' : '✅';
+        const outputPreview = step.output
+          ? (typeof step.output === 'object' ? JSON.stringify(step.output).slice(0, 80) : String(step.output).slice(0, 80))
+          : '';
+        setLogs((prev) => [...prev, `${icon} ${step.nodeType}: ${outputPreview} (${step.duration}ms)`]);
+      }
+
+      const finalStatus = data.status === 'COMPLETED' ? '🎉 Workflow completed!' : `⚠️ Workflow ${data.status}`;
+      setLogs((prev) => [...prev, finalStatus]);
+    } catch (e: any) {
+      setLogs((prev) => [...prev, `❌ Execution error: ${e.message}`]);
+    } finally {
+      setIsRunning(false);
+    }
+  }, [nodes, setNodes, savedWorkflowId, saveWorkflow]);
 
   const resetStatuses = useCallback(() => {
     setNodes((nds) => nds.map((n) => ({ ...n, data: { ...n.data, status: 'idle' } })));

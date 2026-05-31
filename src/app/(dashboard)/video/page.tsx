@@ -253,7 +253,7 @@ function GeneratePanel() {
   const generateVideo = async () => {
     if (!prompt.trim() || isGenerating) return;
     setIsGenerating(true);
-    setGenerationProgress(0);
+    setGenerationProgress(10);
 
     const videoId = Date.now().toString();
     const newVideo: GeneratedVideo = {
@@ -272,34 +272,38 @@ function GeneratePanel() {
 
     setGeneratedVideos((prev) => [newVideo, ...prev]);
 
-    const interval = setInterval(() => {
-      setGenerationProgress((prev) => {
-        const next = prev + Math.random() * 15;
-        if (next >= 100) {
-          clearInterval(interval);
-          setIsGenerating(false);
-          setGeneratedVideos((prevVideos) =>
-            prevVideos.map((v) =>
-              v.id === videoId
-                ? {
-                    ...v,
-                    status: 'done' as const,
-                    progress: 100,
-                    url: 'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4',
-                  }
-                : v
-            )
-          );
-          return 100;
-        }
-        setGeneratedVideos((prevVideos) =>
-          prevVideos.map((v) =>
-            v.id === videoId ? { ...v, progress: next } : v
-          )
-        );
-        return next;
+    try {
+      setGenerationProgress(30);
+      const res = await fetch('/api/video/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: prompt.trim(),
+          duration: selectedDuration,
+          resolution: selectedResolution,
+          aspectRatio: selectedAspectRatio,
+        }),
       });
-    }, 500);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || '生成失败');
+
+      setGenerationProgress(100);
+      setGeneratedVideos((prevVideos) =>
+        prevVideos.map((v) =>
+          v.id === videoId
+            ? { ...v, status: 'done' as const, progress: 100, url: data.video?.url || '' }
+            : v
+        )
+      );
+    } catch (e: any) {
+      setGeneratedVideos((prevVideos) =>
+        prevVideos.map((v) =>
+          v.id === videoId ? { ...v, status: 'error' as const } : v
+        )
+      );
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
