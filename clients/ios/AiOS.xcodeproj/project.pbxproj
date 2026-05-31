@@ -17,7 +17,6 @@
 		FD7DDE56A68549C2BB07BBB2 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A1B95DC0D14778AAD7695B /* LoginView.swift */; };
 		919F3ABDF8F344FF8BF9EA05 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70AC57AAB5AE4B40A6780BF3 /* ChatView.swift */; };
 		63114F9D179A42478DFC983A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93BAFAB058034068BDFD91B5 /* SettingsView.swift */; };
-		A1B2C3D400000001F6E5D4C3 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D400000002F6E5D4C3 /* Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -169,7 +168,6 @@
 			buildPhases = (
 				2A9281ABF46442F4B0744FF3 /* Sources */,
 				B74D02BF84C54AE18D433E06 /* Frameworks */,
-				RESBPHASE0000000000000001 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -208,17 +206,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXResourcesBuildPhase section */
-		RESBPHASE0000000000000001 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A1B2C3D400000001F6E5D4C3 /* Info.plist in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		2A9281ABF46442F4B0744FF3 /* Sources */ = {
