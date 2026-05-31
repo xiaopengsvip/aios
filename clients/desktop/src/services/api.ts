@@ -8,20 +8,37 @@ interface RequestConfig {
 
 class ApiService {
   private baseUrl: string;
+  private token: string | null = null;
 
   constructor(baseUrl: string = BASE_URL) {
     this.baseUrl = baseUrl;
+    // Restore token from localStorage
+    if (typeof window !== "undefined") {
+      this.token = localStorage.getItem("aios_token");
+    }
   }
 
   setBaseUrl(url: string) { this.baseUrl = url; }
 
+  setToken(token: string | null) {
+    this.token = token;
+    if (typeof window !== "undefined") {
+      if (token) localStorage.setItem("aios_token", token);
+      else localStorage.removeItem("aios_token");
+    }
+  }
+
+  getToken() { return this.token; }
+
   private async request<T>(path: string, config: RequestConfig = {}): Promise<T> {
     const { method = "GET", body, headers = {} } = config;
+    const authHeaders: Record<string, string> = {};
+    if (this.token) authHeaders["Authorization"] = `Bearer ${this.token}`;
+
     const resp = await fetch(`${this.baseUrl}${path}`, {
       method,
-      headers: { "Content-Type": "application/json", ...headers },
+      headers: { "Content-Type": "application/json", ...authHeaders, ...headers },
       body: body ? JSON.stringify(body) : undefined,
-      credentials: "include", // Cookie-based auth
     });
     if (!resp.ok) {
       const err = await resp.json().catch(() => ({ error: resp.statusText }));
@@ -31,14 +48,21 @@ class ApiService {
   }
 
   // ── Auth ──
-  login(email: string, password: string) {
-    return this.request("/api/auth/login", { method: "POST", body: { email, password } });
+  async login(email: string, password: string) {
+    const data = await this.request<any>("/api/auth/login", { method: "POST", body: { email, password } });
+    if (data.token) this.setToken(data.token);
+    return data;
   }
-  register(username: string, email: string, password: string) {
-    return this.request("/api/auth/register", { method: "POST", body: { username, email, password } });
+  async register(username: string, email: string, password: string) {
+    const data = await this.request<any>("/api/auth/register", { method: "POST", body: { username, email, password } });
+    if (data.token) this.setToken(data.token);
+    return data;
   }
   getMe() { return this.request<any>("/api/auth/me"); }
-  logout() { return this.request("/api/auth/logout", { method: "POST" }); }
+  logout() {
+    this.setToken(null);
+    return this.request("/api/auth/logout", { method: "POST" });
+  }
   updateProfile(data: any) { return this.request("/api/auth/profile", { method: "PATCH", body: data }); }
 
   // ── Models ──
@@ -59,11 +83,13 @@ class ApiService {
     onDone: (convId?: string) => void,
     onError: (error: string) => void
   ) {
+    const authHeaders: Record<string, string> = {};
+    if (this.token) authHeaders["Authorization"] = `Bearer ${this.token}`;
+
     const resp = await fetch(`${this.baseUrl}/api/chat/stream`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
+      headers: { "Content-Type": "application/json", Accept: "text/event-stream", ...authHeaders },
       body: JSON.stringify({ modelId, messages, conversationId }),
-      credentials: "include",
     });
 
     if (!resp.ok) {

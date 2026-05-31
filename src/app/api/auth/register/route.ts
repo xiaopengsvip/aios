@@ -86,6 +86,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
+      token: accessToken,
       user: { id: user.id, username: user.username, email: user.email, role: user.role, numericAccount },
     });
   } catch (error: any) {

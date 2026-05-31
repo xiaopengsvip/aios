@@ -113,6 +113,16 @@ export async function clearAuthCookie() {
 
 // API 路由中间件: 检查认证 (自动刷新过期 access token)
 export async function requireAuth(): Promise<JWTPayload & { _newAccessToken?: string }> {
+  // 优先检查 Authorization header (Desktop/Mobile 客户端)
+  const { headers } = await import('next/headers');
+  const headerStore = await headers();
+  const authHeader = headerStore.get('authorization');
+  if (authHeader?.startsWith('Bearer ')) {
+    const bearerToken = authHeader.slice(7);
+    const payload = verifyToken(bearerToken, 'access');
+    if (payload) return payload;
+  }
+
   const cookieStore = await cookies();
   const accessToken = cookieStore.get(COOKIE_NAME)?.value;
   const refreshToken = cookieStore.get(REFRESH_COOKIE_NAME)?.value;
