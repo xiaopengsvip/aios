@@ -21,6 +21,8 @@ const PUBLIC_PATHS = [
   '/api/auth/reset-password',
   '/v1/chat/completions',
   '/v1/models',
+  '/api/app/version',
+  '/api/auth/oauth',
 ];
 
 // Auth pages — logged-in users should be redirected away
