@@ -35,9 +35,9 @@ class KnowledgeViewModel @Inject constructor(private val api: ApiService) : View
         _state.value = _state.value.copy(loading = true)
         try {
             val r = api.getKnowledgeBases()
-            val body = r.body() ?: emptyMap()
-            val arr = body["bases"] as? List<*> ?: body["knowledgeBases"] as? List<*> ?: emptyList()
-            val bases = arr.mapNotNull { it as? Map<*, *> }.map { Kb(it["id"]?.toString() ?: "", it["name"]?.toString() ?: "", (it["docCount"] as? Number)?.toInt() ?: 0) }
+            val body = r.body() ?: emptyMap<String, Any>()
+            val arr = body["bases"] as? List<Map<String, Any>> ?: body["knowledgeBases"] as? List<Map<String, Any>> ?: emptyList()
+            val bases = arr.map { m -> Kb(m["id"]?.toString() ?: "", m["name"]?.toString() ?: "", (m["docCount"] as? Number)?.toInt() ?: 0) }
             _state.value = _state.value.copy(bases = bases, loading = false)
         } catch (e: Exception) { _state.value = _state.value.copy(loading = false) }
     }}
@@ -46,7 +46,7 @@ class KnowledgeViewModel @Inject constructor(private val api: ApiService) : View
         _state.value = _state.value.copy(searching = true)
         try {
             val r = api.searchKnowledge(mapOf("query" to _state.value.query))
-            val body = r.body() ?: emptyMap()
+            val body = r.body() ?: emptyMap<String, Any>()
             val results = (body["results"] as? List<*>)?.map { it.toString() } ?: emptyList()
             _state.value = _state.value.copy(results = results, searching = false)
         } catch (e: Exception) { _state.value = _state.value.copy(searching = false) }

@@ -31,9 +31,9 @@ class PromptsViewModel @Inject constructor(private val api: ApiService) : ViewMo
     fun load() { viewModelScope.launch {
         _state.value = _state.value.copy(loading = true)
         try {
-            val r = api.getPrompts(); val body = r.body() ?: emptyMap()
-            val arr = body["prompts"] as? List<*> ?: emptyList()
-            val prompts = arr.mapNotNull { item -> (item as? Map<*, *>)?.let { PromptItem(it["id"]?.toString() ?: "", it["title"]?.toString() ?: "", it["content"]?.toString() ?: "", it["category"]?.toString() ?: "") } }
+            val r = api.getPrompts(); val body = r.body() ?: emptyMap<String, Any>()
+            val arr = body["prompts"] as? List<Map<String, Any>> ?: emptyList()
+            val prompts = arr.map { m -> PromptItem(m["id"]?.toString() ?: "", m["title"]?.toString() ?: "", m["content"]?.toString() ?: "", m["category"]?.toString() ?: "") }
             _state.value = PromptsUiState(prompts = prompts)
         } catch (e: Exception) { _state.value = _state.value.copy(loading = false) }
     }}

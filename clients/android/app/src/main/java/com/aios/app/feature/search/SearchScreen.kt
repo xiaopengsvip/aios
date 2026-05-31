@@ -50,7 +50,7 @@ class SearchViewModel @Inject constructor(private val api: ApiService) : ViewMod
             try {
                 val resp = api.searchKnowledge(mapOf("query" to q))
                 if (resp.isSuccessful) {
-                    val body = resp.body() ?: emptyMap()
+                    val body = resp.body() ?: emptyMap<String, Any>()
                     val items = (body["results"] as? List<*>)?.mapNotNull { item ->
                         val map = item as? Map<*, *> ?: return@mapNotNull null
                         SearchResult(

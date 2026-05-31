@@ -60,7 +60,7 @@ class ImageViewModel @Inject constructor(
                     "size" to "1024x1024"
                 ))
                 if (resp.isSuccessful) {
-                    val body = resp.body() ?: emptyMap()
+                    val body = resp.body() ?: emptyMap<String, Any>()
                     val urls = (body["urls"] as? List<*>)?.mapNotNull { it as? String }
                         ?: (body["url"] as? String)?.let { listOf(it) }
                         ?: emptyList()

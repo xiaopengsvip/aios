@@ -32,9 +32,9 @@ class MarketplaceViewModel @Inject constructor(private val api: ApiService) : Vi
     fun load(type: String = _state.value.type) { viewModelScope.launch {
         _state.value = _state.value.copy(loading = true, type = type)
         try {
-            val r = api.getMarketplace(type = type); val body = r.body() ?: emptyMap()
-            val arr = body["items"] as? List<*> ?: emptyList()
-            val items = arr.mapNotNull { item -> (item as? Map<*, *>)?.let { MarketItem(it["id"]?.toString() ?: "", it["name"]?.toString() ?: "", it["description"]?.toString() ?: "", it["type"]?.toString() ?: "", it["price"]?.toString() ?: "免费") } }
+            val r = api.getMarketplace(type = type); val body = r.body() ?: emptyMap<String, Any>()
+            val arr = body["items"] as? List<Map<String, Any>> ?: emptyList()
+            val items = arr.map { m -> MarketItem(m["id"]?.toString() ?: "", m["name"]?.toString() ?: "", m["description"]?.toString() ?: "", m["type"]?.toString() ?: "", m["price"]?.toString() ?: "免费") }
             _state.value = _state.value.copy(items = items, loading = false)
         } catch (e: Exception) { _state.value = _state.value.copy(loading = false) }
     }}

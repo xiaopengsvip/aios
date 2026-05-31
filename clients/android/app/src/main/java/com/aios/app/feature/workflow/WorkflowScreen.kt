@@ -32,7 +32,7 @@ class WorkflowViewModel @Inject constructor(private val api: ApiService) : ViewM
     fun load() { viewModelScope.launch {
         _state.value = _state.value.copy(loading = true)
         try {
-            val r = api.getWorkflows(); val body = r.body() ?: emptyMap()
+            val r = api.getWorkflows(); val body = r.body() ?: emptyMap<String, Any>()
             val all = body.values.flatMap { it }.filterIsInstance<Workflow>()
             _state.value = WorkflowUiState(workflows = all)
         } catch (e: Exception) { _state.value = _state.value.copy(loading = false) }

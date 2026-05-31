@@ -39,9 +39,9 @@ class FilesViewModel @Inject constructor(private val api: ApiService) : ViewMode
     fun load() { viewModelScope.launch {
         _state.value = _state.value.copy(loading = true)
         try {
-            val r = api.getFiles(); val body = r.body() ?: emptyMap()
-            val arr = body["files"] as? List<*> ?: emptyList()
-            val files = arr.mapNotNull { item -> (item as? Map<*, *>)?.let { FileItem(it["id"]?.toString() ?: "", it["name"]?.toString() ?: "", (it["size"] as? Number)?.toLong() ?: 0, it["type"]?.toString() ?: "") } }
+            val r = api.getFiles(); val body = r.body() ?: emptyMap<String, Any>()
+            val arr = body["files"] as? List<Map<String, Any>> ?: emptyList()
+            val files = arr.map { m -> FileItem(m["id"]?.toString() ?: "", m["name"]?.toString() ?: "", (m["size"] as? Number)?.toLong() ?: 0, m["type"]?.toString() ?: "") }
             _state.value = _state.value.copy(files = files, loading = false)
         } catch (e: Exception) { _state.value = _state.value.copy(loading = false) }
     }}
