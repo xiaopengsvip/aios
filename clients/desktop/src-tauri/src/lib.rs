@@ -31,10 +31,11 @@ pub fn run() {
             let main_win = app.get_webview_window("main").unwrap();
             let _ = main_win.hide();
 
-            // After main window page loads, transition from splash
+            // Close splash and show main after a delay
             let splash_handle = splash_win.clone();
             let main_handle = main_win.clone();
-            main_win.on_page_load(move |_window, _event| {
+            std::thread::spawn(move || {
+                std::thread::sleep(std::time::Duration::from_secs(3));
                 let _ = main_handle.show();
                 let _ = main_handle.set_focus();
                 let _ = splash_handle.close();
