@@ -1,12 +1,1 @@
-[
-  {
-    "deviceId": "test-server-001",
-    "platform": "android",
-    "appVersion": "0.0.1",
-    "osVersion": "Android 15 (API 35)",
-    "deviceModel": "Xiaomi 15 Pro",
-    "firstSeen": "2026-05-31T23:31:03.054Z",
-    "lastSeen": "2026-05-31T23:31:03.054Z",
-    "ip": "172.64.213.52"
-  }
-]
+[]

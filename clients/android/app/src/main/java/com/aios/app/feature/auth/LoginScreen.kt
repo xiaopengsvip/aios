@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -48,9 +49,36 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
     var showPassword by remember { mutableStateOf(false) }
+    var rememberMe by remember { mutableStateOf(false) }
+
+    // Load saved credentials
+    val context = LocalContext.current
+    val loginPrefs = remember { context.getSharedPreferences("aios_login", android.content.Context.MODE_PRIVATE) }
+    LaunchedEffect(Unit) {
+        val savedEmail = loginPrefs.getString("email", "") ?: ""
+        val savedPassword = loginPrefs.getString("password", "") ?: ""
+        val savedRemember = loginPrefs.getBoolean("remember", false)
+        if (savedRemember && savedEmail.isNotBlank()) {
+            email = savedEmail
+            password = savedPassword
+            rememberMe = true
+        }
+    }
 
     LaunchedEffect(state.user) {
-        if (state.user != null) onLoginSuccess()
+        if (state.user != null) {
+            // Save or clear credentials on login success
+            if (rememberMe) {
+                loginPrefs.edit()
+                    .putString("email", email)
+                    .putString("password", password)
+                    .putBoolean("remember", true)
+                    .apply()
+            } else {
+                loginPrefs.edit().clear().apply()
+            }
+            onLoginSuccess()
+        }
     }
 
     Box(
@@ -174,17 +202,28 @@ fun LoginScreen(
                 })
             )
 
-            // Forgot password
-            if (!isRegister) {
-                Text(
-                    text = "忘记密码?",
-                    fontSize = 13.sp,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(top = 4.dp)
-                        .clickable { /* navigate to forgot password */ },
-                )
+            // Remember me + Forgot password
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Checkbox(
+                        checked = rememberMe,
+                        onCheckedChange = { rememberMe = it },
+                        modifier = Modifier.size(36.dp)
+                    )
+                    Text("记住我", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                if (!isRegister) {
+                    Text(
+                        text = "忘记密码?",
+                        fontSize = 13.sp,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.clickable { /* navigate to forgot password */ }
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(24.dp))
