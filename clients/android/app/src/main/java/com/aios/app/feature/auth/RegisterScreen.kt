@@ -42,7 +42,18 @@ fun RegisterScreen(
         if (state.user != null) onRegisterSuccess()
     }
 
-    Scaffold { padding ->
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text("注册") },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateToLogin) {
+                        Icon(Icons.Default.ArrowBack, "返回")
+                    }
+                }
+            )
+        }
+    ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -51,7 +62,7 @@ fun RegisterScreen(
                 .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(60.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
             Icon(Icons.Default.PersonAdd, null, modifier = Modifier.size(64.dp), tint = MaterialTheme.colorScheme.primary)
             Spacer(modifier = Modifier.height(12.dp))

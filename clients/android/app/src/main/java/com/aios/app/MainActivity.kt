@@ -230,6 +230,16 @@ fun MainApp(navController: NavHostController, onLogout: () -> Unit) {
             composable(Screen.Usage.route) { UsageScreen(onBack = { innerNavController.popBackStack() }) }
             composable(Screen.Credits.route) { CreditsScreen(onBack = { innerNavController.popBackStack() }) }
             composable(Screen.ApiPlatform.route) { ApiPlatformScreen(onBack = { innerNavController.popBackStack() }) }
+
+            // WebView (with URL query parameter)
+            composable("webview?url={url}") { backStackEntry ->
+                val encodedUrl = backStackEntry.arguments?.getString("url") ?: ""
+                val webUrl = java.net.URLDecoder.decode(encodedUrl, "UTF-8")
+                com.aios.app.feature.webview.WebViewScreen(
+                    url = webUrl,
+                    onBack = { innerNavController.popBackStack() }
+                )
+            }
         }
     }
 }

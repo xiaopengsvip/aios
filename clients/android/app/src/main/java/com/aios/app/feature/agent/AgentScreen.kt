@@ -87,22 +87,25 @@ class AgentViewModel @Inject constructor(
 fun AgentScreen(viewModel: AgentViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsState()
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        TopAppBar(
-            title = { Text("Agent", fontWeight = FontWeight.Bold) },
-            actions = {
-                IconButton(onClick = { viewModel.loadAgents() }) {
-                    Icon(Icons.Default.Refresh, "刷新")
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text("Agent", fontWeight = FontWeight.Bold) },
+                actions = {
+                    IconButton(onClick = { viewModel.loadAgents() }) {
+                        Icon(Icons.Default.Refresh, "刷新")
+                    }
                 }
-            }
-        )
-
+            )
+        }
+    ) { pad ->
         when {
             state.isLoading -> LoadingIndicator()
             state.agents.isEmpty() -> EmptyState(Icons.Default.SmartToy, "暂无 Agent", "还没有创建任何 Agent")
             else -> {
                 LazyVerticalGrid(
                     columns = GridCells.Adaptive(280.dp),
+                    modifier = Modifier.padding(pad),
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)

@@ -44,6 +44,7 @@ fun ChatScreen(viewModel: ChatViewModel = hiltViewModel()) {
                 onSelect = { viewModel.selectConversation(it) },
                 onNew = { viewModel.newConversation() },
                 onDelete = { viewModel.deleteConversation(it) },
+                onClose = { viewModel.toggleConversations() },
                 modifier = Modifier.width(280.dp).fillMaxHeight()
             )
         }
@@ -143,17 +144,22 @@ fun ConversationListPanel(
     onSelect: (String) -> Unit,
     onNew: () -> Unit,
     onDelete: (String) -> Unit,
+    onClose: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Surface(modifier = modifier, color = MaterialTheme.colorScheme.surfaceVariant) {
         Column {
             // Header
             Row(
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth().padding(8.dp, 12.dp, 8.dp, 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("会话", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                if (onClose != null) {
+                    IconButton(onClick = onClose) {
+                        Icon(Icons.Default.ArrowBack, "返回")
+                    }
+                }
+                Text("会话", fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.weight(1f))
                 FilledTonalButton(onClick = onNew) {
                     Icon(Icons.Default.Add, null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.width(4.dp))

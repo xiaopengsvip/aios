@@ -61,10 +61,14 @@ fun SettingsScreen(
     val state by viewModel.state.collectAsState()
     var showLogoutDialog by remember { mutableStateOf(false) }
 
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(title = { Text("设置", fontWeight = FontWeight.Bold) })
+        }
+    ) { pad ->
     Column(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())
+        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(pad)
     ) {
-        TopAppBar(title = { Text("设置", fontWeight = FontWeight.Bold) })
 
         // Profile card
         state.user?.let { user ->
