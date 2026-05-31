@@ -1,15 +1,15 @@
 {
   "latest": {
-    "versionCode": 1,
-    "versionName": "0.0.1-beta",
+    "versionCode": 2,
+    "versionName": "0.0.2",
     "minSupportedCode": 1,
     "downloadUrl": "https://aios.vios.top/apks/aios-0.0.1-beta-1.apk",
-    "releaseNotes": "0.0.1-beta 初始开发版\n- 登录/注册/OAuth (Google/GitHub/X)\n- AI 对话流式输出 + Markdown\n- 13 个功能页面\n- 应用内在线更新\n- 适配 Android 15-17",
-    "releasedAt": "2026-05-31T23:14:11.329Z",
+    "releaseNotes": "0.0.2 新功能版\n- 在线更新检测 (Android + Windows)\n- 设备安装统计\n- 内置 WebView 浏览器\n- 记住登录信息\n- 居中 TopAppBar\n- 返回按钮统一\n- 全屏适配 (edge-to-edge)",
+    "releasedAt": "2026-06-01T00:00:00Z",
     "apkSize": 9180400,
     "filename": "aios-0.0.1-beta-1.apk",
     "desktopDownloadUrl": "https://github.com/xiaopengsvip/aios/releases/latest",
-    "desktopVersion": "0.0.1"
+    "desktopVersion": "0.0.2"
   },
   "history": [
     {
