@@ -216,7 +216,12 @@ fun MainApp(navController: NavHostController, onLogout: () -> Unit) {
             composable(Screen.Agent.route) { AgentScreen() }
             composable(Screen.Knowledge.route) { KnowledgeScreen() }
             composable(Screen.Files.route) { FilesScreen() }
-            composable(Screen.Settings.route) { SettingsScreen(onLogout = onLogout, navController = innerNavController) }
+            composable(Screen.Settings.route) { SettingsScreen(onLogout = onLogout, onCheckUpdate = {
+                scope.launch {
+                    val info = updateManager.checkForUpdate()
+                    if (info != null) updateState = UpdateState(available = true, versionInfo = info)
+                }
+            }, navController = innerNavController) }
 
             // Feature pages (with back navigation)
             composable(Screen.Image.route) { ImageScreen(onBack = { innerNavController.popBackStack() }) }

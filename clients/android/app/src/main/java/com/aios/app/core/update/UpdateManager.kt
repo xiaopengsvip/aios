@@ -24,7 +24,9 @@ data class VersionInfo(
     val minSupportedCode: Int = 0,
     val downloadUrl: String = "",
     val releaseNotes: String = "",
-    val releasedAt: String = ""
+    val releasedAt: String = "",
+    val apkSize: Long = 0,
+    val filename: String = ""
 )
 
 data class UpdateState(

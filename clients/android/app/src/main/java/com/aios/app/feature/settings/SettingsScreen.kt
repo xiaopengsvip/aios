@@ -1,5 +1,6 @@
 package com.aios.app.feature.settings
 
+import android.os.Build
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -11,7 +12,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,135 +55,149 @@ class SettingsViewModel @Inject constructor(
 @Composable
 fun SettingsScreen(
     onLogout: () -> Unit,
+    onCheckUpdate: (() -> Unit)? = null,
     navController: NavController? = null,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     var showLogoutDialog by remember { mutableStateOf(false) }
+    val context = androidx.compose.ui.platform.LocalContext.current
+
+    // Get actual app version
+    val appVersion = remember {
+        try {
+            context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "0.0.2"
+        } catch (_: Exception) { "0.0.2" }
+    }
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(title = { Text("设置", fontWeight = FontWeight.Bold) })
         }
     ) { pad ->
-    Column(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(pad)
-    ) {
-
-        // Profile card
-        state.user?.let { user ->
-            ElevatedCard(
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Row(
-                    modifier = Modifier.padding(20.dp),
-                    verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(pad)
+        ) {
+            // Profile card
+            state.user?.let { user ->
+                ElevatedCard(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
-                    Surface(
-                        shape = CircleShape,
-                        color = MaterialTheme.colorScheme.primaryContainer,
-                        modifier = Modifier.size(56.dp)
+                    Row(
+                        modifier = Modifier.padding(20.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Text(
-                                user.displayName?.firstOrNull()?.uppercase()
-                                    ?: user.username.firstOrNull()?.uppercase() ?: "?",
-                                fontSize = 22.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
+                        Surface(
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            modifier = Modifier.size(56.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Text(
+                                    user.displayName?.firstOrNull()?.uppercase()
+                                        ?: user.username.firstOrNull()?.uppercase() ?: "?",
+                                    fontSize = 22.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            }
+                        }
+                        Spacer(Modifier.width(16.dp))
+                        Column {
+                            Text(user.displayName ?: user.username, fontWeight = FontWeight.SemiBold, fontSize = 18.sp)
+                            user.email?.let { Text(it, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                            Text("AI: ${user.numericAccount ?: "-"}", fontSize = 12.sp,
+                                 color = MaterialTheme.colorScheme.primary)
                         }
                     }
-                    Spacer(Modifier.width(16.dp))
-                    Column {
-                        Text(user.displayName ?: user.username, fontWeight = FontWeight.SemiBold, fontSize = 18.sp)
-                        user.email?.let { Text(it, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant) }
-                        Text("AI: ${user.numericAccount ?: "-"}", fontSize = 12.sp,
+                }
+            }
+
+            // Balance
+            state.user?.let { user ->
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    onClick = { navController?.navigate(Screen.Credits.route) }
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.AccountBalanceWallet, null, tint = MaterialTheme.colorScheme.primary)
+                        Spacer(Modifier.width(12.dp))
+                        Text("余额", fontSize = 14.sp)
+                        Spacer(Modifier.weight(1f))
+                        Text("${user.balance} 积分", fontWeight = FontWeight.SemiBold,
                              color = MaterialTheme.colorScheme.primary)
+                        Spacer(Modifier.width(8.dp))
+                        Icon(Icons.Default.ChevronRight, null, tint = MaterialTheme.colorScheme.outline)
                     }
                 }
             }
-        }
 
-        // Balance (clickable -> Credits)
-        state.user?.let { user ->
-            Card(
+            Spacer(Modifier.height(16.dp))
+
+            // AI Tools
+            SectionTitle("AI 工具")
+            SettingsMenuItem(Icons.Default.Image, "AI 绘图", "") { navController?.navigate(Screen.Image.route) }
+            SettingsMenuItem(Icons.Default.Mic, "音频生成", "") { navController?.navigate(Screen.Audio.route) }
+            SettingsMenuItem(Icons.Default.VideoCameraFront, "视频生成", "") { navController?.navigate(Screen.Video.route) }
+            SettingsMenuItem(Icons.Default.Code, "代码执行", "") { navController?.navigate(Screen.Code.route) }
+            SettingsMenuItem(Icons.Default.Search, "全局搜索", "") { navController?.navigate(Screen.Search.route) }
+
+            Spacer(Modifier.height(12.dp))
+
+            // Content
+            SectionTitle("内容管理")
+            SettingsMenuItem(Icons.Default.MenuBook, "知识库", "") { navController?.navigate(Screen.Knowledge.route) }
+            SettingsMenuItem(Icons.Default.Folder, "文件管理", "") { navController?.navigate(Screen.Files.route) }
+            SettingsMenuItem(Icons.Default.Lightbulb, "提示词库", "") { navController?.navigate(Screen.Prompts.route) }
+            SettingsMenuItem(Icons.Default.AccountTree, "工作流", "") { navController?.navigate(Screen.Workflow.route) }
+            SettingsMenuItem(Icons.Default.Store, "应用市场", "") { navController?.navigate(Screen.Marketplace.route) }
+
+            Spacer(Modifier.height(12.dp))
+
+            // Account
+            SectionTitle("账户")
+            SettingsMenuItem(Icons.Default.BarChart, "用量统计", "") { navController?.navigate(Screen.Usage.route) }
+            SettingsMenuItem(Icons.Default.AccountBalanceWallet, "积分余额", "") { navController?.navigate(Screen.Credits.route) }
+            SettingsMenuItem(Icons.Default.Api, "API 平台", "") { navController?.navigate(Screen.ApiPlatform.route) }
+
+            Spacer(Modifier.height(12.dp))
+
+            // System
+            SectionTitle("系统")
+            SettingsMenuItem(Icons.Default.DarkMode, "深色模式", "跟随系统") {}
+            SettingsMenuItem(Icons.Default.Language, "语言", "简体中文") {}
+            SettingsMenuItem(Icons.Default.SmartToy, "默认模型", "mimo-v2.5-pro") {}
+            SettingsMenuItem(Icons.Default.Info, "关于", "v$appVersion") {}
+            SettingsMenuItem(Icons.Default.Update, "检查更新", "v$appVersion") { onCheckUpdate?.invoke() }
+            SettingsMenuItem(Icons.Default.Description, "使用条款", "") {}
+            SettingsMenuItem(Icons.Default.Security, "隐私政策", "") {}
+
+            Spacer(Modifier.height(24.dp))
+
+            // Logout
+            Button(
+                onClick = { showLogoutDialog = true },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                shape = RoundedCornerShape(12.dp),
-                onClick = { navController?.navigate(Screen.Credits.route) }
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
             ) {
-                Row(
-                    modifier = Modifier.padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(Icons.Default.AccountBalanceWallet, null, tint = MaterialTheme.colorScheme.primary)
-                    Spacer(Modifier.width(12.dp))
-                    Text("余额", fontSize = 14.sp)
-                    Spacer(Modifier.weight(1f))
-                    Text("${user.balance} 积分", fontWeight = FontWeight.SemiBold,
-                         color = MaterialTheme.colorScheme.primary)
-                    Spacer(Modifier.width(8.dp))
-                    Icon(Icons.Default.ChevronRight, null, tint = MaterialTheme.colorScheme.outline)
-                }
+                Icon(Icons.Default.Logout, null)
+                Spacer(Modifier.width(8.dp))
+                Text("退出登录")
             }
+
+            Spacer(Modifier.height(32.dp))
         }
-
-        Spacer(Modifier.height(16.dp))
-
-        // AI Tools section
-        Text("AI 工具", style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), color = MaterialTheme.colorScheme.primary)
-        SettingsMenuItem(Icons.Default.Image, "AI 绘图", "") { navController?.navigate(Screen.Image.route) }
-        SettingsMenuItem(Icons.Default.Mic, "音频生成", "") { navController?.navigate(Screen.Audio.route) }
-        SettingsMenuItem(Icons.Default.VideoCameraFront, "视频生成", "") { navController?.navigate(Screen.Video.route) }
-        SettingsMenuItem(Icons.Default.Code, "代码执行", "") { navController?.navigate(Screen.Code.route) }
-        SettingsMenuItem(Icons.Default.Search, "全局搜索", "") { navController?.navigate(Screen.Search.route) }
-
-        Spacer(Modifier.height(12.dp))
-
-        // Content section
-        Text("内容管理", style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), color = MaterialTheme.colorScheme.primary)
-        SettingsMenuItem(Icons.Default.MenuBook, "知识库", "") { navController?.navigate(Screen.Knowledge.route) }
-        SettingsMenuItem(Icons.Default.Folder, "文件管理", "") { navController?.navigate(Screen.Files.route) }
-        SettingsMenuItem(Icons.Default.Lightbulb, "提示词库", "") { navController?.navigate(Screen.Prompts.route) }
-        SettingsMenuItem(Icons.Default.AccountTree, "工作流", "") { navController?.navigate(Screen.Workflow.route) }
-        SettingsMenuItem(Icons.Default.Store, "应用市场", "") { navController?.navigate(Screen.Marketplace.route) }
-
-        Spacer(Modifier.height(12.dp))
-
-        // Account section
-        Text("账户", style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), color = MaterialTheme.colorScheme.primary)
-        SettingsMenuItem(Icons.Default.BarChart, "用量统计", "") { navController?.navigate(Screen.Usage.route) }
-        SettingsMenuItem(Icons.Default.AccountBalanceWallet, "积分余额", "") { navController?.navigate(Screen.Credits.route) }
-        SettingsMenuItem(Icons.Default.Api, "API 平台", "") { navController?.navigate(Screen.ApiPlatform.route) }
-
-        Spacer(Modifier.height(12.dp))
-
-        // System section
-        Text("系统", style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), color = MaterialTheme.colorScheme.primary)
-        SettingsMenuItem(Icons.Default.DarkMode, "深色模式", "跟随系统") {}
-        SettingsMenuItem(Icons.Default.Language, "语言", "简体中文") {}
-        SettingsMenuItem(Icons.Default.SmartToy, "默认模型", "mimo-v2.5-pro") {}
-        SettingsMenuItem(Icons.Default.Info, "关于", "v1.0.0") {}
-        SettingsMenuItem(Icons.Default.Description, "使用条款", "") {}
-        SettingsMenuItem(Icons.Default.Security, "隐私政策", "") {}
-
-        Spacer(Modifier.height(24.dp))
-
-        // Logout button
-        Button(
-            onClick = { showLogoutDialog = true },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-        ) {
-            Icon(Icons.Default.Logout, null)
-            Spacer(Modifier.width(8.dp))
-            Text("退出登录")
-        }
-
-        Spacer(Modifier.height(32.dp))
     }
 
+    // Logout dialog (outside Scaffold)
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
@@ -198,11 +212,25 @@ fun SettingsScreen(
             dismissButton = { TextButton(onClick = { showLogoutDialog = false }) { Text("取消") } }
         )
     }
-    } // Scaffold
 }
 
 @Composable
-fun SettingsMenuItem(icon: androidx.compose.ui.graphics.vector.ImageVector, title: String, subtitle: String, onClick: () -> Unit) {
+private fun SectionTitle(title: String) {
+    Text(
+        title,
+        style = MaterialTheme.typography.titleSmall,
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        color = MaterialTheme.colorScheme.primary
+    )
+}
+
+@Composable
+fun SettingsMenuItem(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit
+) {
     Surface(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 2.dp),
         shape = RoundedCornerShape(8.dp),

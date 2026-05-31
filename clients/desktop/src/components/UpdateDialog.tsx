@@ -39,7 +39,7 @@ export function UpdateDialog({ info, onClose }: Props) {
           }}>A</div>
           <div>
             <div style={{ fontSize: 18, fontWeight: 700, color: "#e2e8f0" }}>
-              发现新版本
+              发现新版本 v{info.versionName}
             </div>
             <div style={{ fontSize: 13, color: "#64748b" }}>
               v{CURRENT_VERSION} → v{info.versionName}

@@ -25,6 +25,17 @@ fun UpdateDialog(
         },
         text = {
             Column {
+                // File size
+                if (versionInfo.apkSize > 0) {
+                    val sizeMB = "%.1f".format(versionInfo.apkSize / 1024.0 / 1024.0)
+                    Text(
+                        "安装包大小: ${sizeMB} MB",
+                        fontSize = 13.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(Modifier.height(8.dp))
+                }
+
                 if (versionInfo.releaseNotes.isNotBlank()) {
                     Text("更新内容:", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
                     Spacer(Modifier.height(4.dp))
