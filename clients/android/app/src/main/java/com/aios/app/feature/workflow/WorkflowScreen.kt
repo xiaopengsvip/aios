@@ -33,7 +33,9 @@ class WorkflowViewModel @Inject constructor(private val api: ApiService) : ViewM
         _state.value = _state.value.copy(loading = true)
         try {
             val r = api.getWorkflows(); val body = r.body() ?: emptyMap<String, Any>()
-            val all = body.values.flatMap { it }.filterIsInstance<Workflow>()
+            val all = body.values.flatMap { v -> (v as? List<Map<String, Any>>)?.map { w ->
+                Workflow(w["id"]?.toString() ?: "", w["name"]?.toString() ?: "", runCount = w["runCount"]?.toString() ?: "0", createdAt = w["createdAt"]?.toString() ?: "", updatedAt = w["updatedAt"]?.toString() ?: "")
+            } ?: emptyList() }
             _state.value = WorkflowUiState(workflows = all)
         } catch (e: Exception) { _state.value = _state.value.copy(loading = false) }
     }}
