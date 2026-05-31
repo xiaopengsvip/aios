@@ -5,7 +5,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -46,7 +45,7 @@ class MarketplaceViewModel @Inject constructor(private val api: ApiService) : Vi
 @Composable
 fun MarketplaceScreen(onBack: () -> Unit = {}, vm: MarketplaceViewModel = hiltViewModel()) {
     val s by vm.state.collectAsState()
-    Scaffold(topBar = { TopAppBar(title = { Text("应用市场") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回") } }, actions = { IconButton(onClick = { vm.load() }) { Icon(Icons.Default.Refresh, "刷新") } }) }) { pad ->
+    Scaffold(topBar = { TopAppBar(title = { Text("应用市场") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, "返回") } }, actions = { IconButton(onClick = { vm.load() }) { Icon(Icons.Default.Refresh, "刷新") } }) }) { pad ->
         Column(Modifier.fillMaxSize().padding(pad)) {
             ScrollableTabRow(selectedTabIndex = listOf("all", "agent", "workflow", "prompt").indexOf(s.type).coerceAtLeast(0)) {
                 Tab(s.type == "all", onClick = { vm.setType("all") }) { Text("全部", Modifier.padding(12.dp)) }

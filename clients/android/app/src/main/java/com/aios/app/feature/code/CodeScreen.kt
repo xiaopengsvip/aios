@@ -5,7 +5,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -43,7 +42,7 @@ class CodeViewModel @Inject constructor(private val api: ApiService) : ViewModel
 @Composable
 fun CodeScreen(onBack: () -> Unit = {}, vm: CodeViewModel = hiltViewModel()) {
     val s by vm.state.collectAsState()
-    Scaffold(topBar = { TopAppBar(title = { Text("代码执行") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回") } }) }) { pad ->
+    Scaffold(topBar = { TopAppBar(title = { Text("代码执行") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, "返回") } }) }) { pad ->
         Column(Modifier.fillMaxSize().padding(pad).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             OutlinedTextField(s.code, { vm.updateCode(it) }, Modifier.fillMaxWidth().weight(1f), label = { Text("输入代码") }, textStyle = LocalTextStyle.current.copy(fontFamily = FontFamily.Monospace), minLines = 8)
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {

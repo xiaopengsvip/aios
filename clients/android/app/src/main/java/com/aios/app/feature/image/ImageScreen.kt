@@ -8,7 +8,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -86,7 +85,7 @@ fun ImageScreen(onBack: () -> Unit = {}, viewModel: ImageViewModel = hiltViewMod
     val styles = listOf("realistic" to "写实", "anime" to "动漫", "oil" to "油画", "watercolor" to "水彩", "sketch" to "素描")
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("AI 绘图") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回") } }) }
+        topBar = { TopAppBar(title = { Text("AI 绘图") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.Default.ArrowBack, "返回") } }) }
     ) { padding ->
         Column(
             modifier = Modifier

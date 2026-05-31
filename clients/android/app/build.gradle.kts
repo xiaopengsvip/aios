@@ -86,6 +86,9 @@ dependencies {
     // DataStore (token persistence)
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 
+    // Chrome Custom Tabs (OAuth)
+    implementation("androidx.browser:browser:1.8.0")
+
     // Coil (image loading)
     implementation("io.coil-kt:coil-compose:2.7.0")
 
