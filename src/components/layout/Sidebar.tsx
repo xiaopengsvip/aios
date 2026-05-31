@@ -348,8 +348,8 @@ type Role = 'SUPER_ADMIN' | 'ADMIN' | 'USER' | 'GUEST';
 
 /** Admin items each role can see (index into adminKeys). */
 const adminAccess: Record<Role, number[]> = {
-  SUPER_ADMIN: [0, 1, 2, 3, 4, 5, 6, 7, 8], // all including roles
-  ADMIN:       [0, 2, 5, 6, 8],              // users, models, billing, monitor, pages
+  SUPER_ADMIN: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], // all including installs
+  ADMIN:       [0, 2, 5, 6, 8, 9],              // users, models, billing, monitor, pages, installs
   USER:        [],
   GUEST:       [],
 };
@@ -362,9 +362,9 @@ const navKeys = ['chat', 'image', 'video', 'audio', 'agent', 'workflow', 'code',
 const navIcons = ['💬', '🎨', '🎬', '🎤', '🤖', '⚡', '💻', '📁', '📚', '📝', '🏪', '💰', '🔌', '📊', '⚙️'];
 const navHrefs = ['/chat', '/image', '/video', '/audio', '/agent', '/workflow', '/code', '/files', '/knowledge', '/prompts', '/marketplace', '/credits', '/api-platform', '/usage', '/settings'];
 
-const adminKeys = ['users', 'roles', 'models', 'providers', 'keys', 'billing', 'monitor', 'tenants', 'pages'] as const;
-const adminIcons = ['👥', '🎭', '🧠', '🔌', '🔑', '💰', '📊', '🏢', '📄'];
-const adminHrefs = ['/admin/users', '/admin/roles', '/admin/models', '/admin/providers', '/admin/keys', '/admin/billing', '/admin/monitor', '/admin/tenants', '/admin/pages'];
+const adminKeys = ['users', 'roles', 'models', 'providers', 'keys', 'billing', 'monitor', 'tenants', 'pages', 'installs'] as const;
+const adminIcons = ['👥', '🎭', '🧠', '🔌', '🔑', '💰', '📊', '🏢', '📄', '📱'];
+const adminHrefs = ['/admin/users', '/admin/roles', '/admin/models', '/admin/providers', '/admin/keys', '/admin/billing', '/admin/monitor', '/admin/tenants', '/admin/pages', '/admin/installs'];
 
 /* ─── Sidebar Content (shared between desktop & drawer) ─── */
 function SidebarContent({
