@@ -35,7 +35,7 @@ export interface OAuthUserInfo {
 // Provider 配置
 // ────────────────────────────────────────────
 
-const APP_URL = process.env.APP_URL || 'https://aios.allapple.top';
+const APP_URL = process.env.APP_URL || 'https://aios.vios.top';
 
 export const OAUTH_CONFIGS: Record<OAuthProvider, OAuthConfig> = {
   github: {
@@ -57,7 +57,7 @@ export const OAUTH_CONFIGS: Record<OAuthProvider, OAuthConfig> = {
   twitter: {
     clientId: process.env.TWITTER_CLIENT_ID || '',
     clientSecret: process.env.TWITTER_CLIENT_SECRET || '',
-    authorizeUrl: 'https://twitter.com/i/oauth2/authorize',
+    authorizeUrl: 'https://x.com/i/oauth2/authorize',
     tokenUrl: 'https://api.twitter.com/2/oauth2/token',
     userinfoUrl: 'https://api.twitter.com/2/users/me',
     scope: 'users.read tweet.read',
@@ -87,14 +87,15 @@ export function generateState(): string {
 export function getAuthorizationUrl(
   provider: OAuthProvider,
   state: string,
-  codeChallenge?: string
+  codeChallenge?: string,
+  baseUrl?: string
 ): string {
   const config = OAUTH_CONFIGS[provider];
   if (!config.clientId) {
     throw new Error(`OAuth provider ${provider} not configured`);
   }
 
-  const redirectUri = `${APP_URL}/api/auth/oauth/callback`;
+  const redirectUri = `${baseUrl || APP_URL}/api/auth/oauth/callback`;
 
   const params = new URLSearchParams({
     client_id: config.clientId,
@@ -126,28 +127,31 @@ export function getAuthorizationUrl(
 export async function exchangeCodeForToken(
   provider: OAuthProvider,
   code: string,
-  codeVerifier?: string
+  codeVerifier?: string,
+  baseUrl?: string
 ): Promise<string> {
   const config = OAUTH_CONFIGS[provider];
-  const redirectUri = `${APP_URL}/api/auth/oauth/callback`;
+  const redirectUri = `${baseUrl || APP_URL}/api/auth/oauth/callback`;
 
   const body: Record<string, string> = {
-    client_id: config.clientId,
-    client_secret: config.clientSecret,
     code,
     redirect_uri: redirectUri,
     grant_type: 'authorization_code',
   };
 
-  // X/Twitter 需要 code_verifier
-  if (provider === 'twitter' && codeVerifier) {
-    body.code_verifier = codeVerifier;
-  }
-
   const headers: Record<string, string> = {
     'Content-Type': 'application/x-www-form-urlencoded',
     Accept: 'application/json',
   };
+
+  // X/Twitter OAuth 2.0 要求 Basic Auth + PKCE
+  if (provider === 'twitter') {
+    if (codeVerifier) body.code_verifier = codeVerifier;
+    headers['Authorization'] = `Basic ${Buffer.from(`${config.clientId}:${config.clientSecret}`).toString('base64')}`;
+  } else {
+    body.client_id = config.clientId;
+    body.client_secret = config.clientSecret;
+  }
 
   const resp = await fetch(config.tokenUrl, {
     method: 'POST',
@@ -277,7 +281,7 @@ export async function findOrCreateOAuthUser(
       });
     }
 
-    return { user: existingAccount.user, isNewUser: false };
+    return { user: existingAccount.user, isNewUser: false, needEmail: false };
   }
 
   // 2. 尝试通过邮箱匹配已有用户
@@ -298,6 +302,23 @@ export async function findOrCreateOAuthUser(
       username = `${userInfo.username}_${Math.floor(Math.random() * 10000)}`;
     }
 
+    // 自动分配数字账号 (5位起)
+    let numericAccount: string | undefined;
+    try {
+      const seq = await prisma.accountSequence.upsert({
+        where: { id: 1 },
+        update: {},
+        create: { id: 1, nextValue: 10000 },
+      });
+      numericAccount = String(seq.nextValue);
+      await prisma.accountSequence.update({
+        where: { id: 1 },
+        data: { nextValue: seq.nextValue + 1 },
+      });
+    } catch (e) {
+      console.warn('[OAuth] Failed to assign numericAccount:', e);
+    }
+
     user = await prisma.user.create({
       data: {
         username,
@@ -306,6 +327,7 @@ export async function findOrCreateOAuthUser(
         avatar: userInfo.avatar,
         emailVerifiedAt: userInfo.email ? new Date() : null,
         locale: 'zh-CN',
+        numericAccount,
       },
     });
   }
@@ -324,7 +346,7 @@ export async function findOrCreateOAuthUser(
     },
   });
 
-  return { user, isNewUser: true };
+  return { user, isNewUser: true, needEmail: !userInfo.email };
 }
 
 // ────────────────────────────────────────────

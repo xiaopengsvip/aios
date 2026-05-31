@@ -9,70 +9,60 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { username, email, password, code } = body;
 
-    // 参数验证
     if (!username || !email || !password || !code) {
-      return NextResponse.json(
-        { error: '请填写所有必填字段' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: '请填写所有必填字段' }, { status: 400 });
     }
 
     if (password.length < 8) {
-      return NextResponse.json(
-        { error: '密码至少8位' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: '密码至少8位' }, { status: 400 });
     }
 
-    // 限流
     const ip = req.headers.get('x-forwarded-for') || 'unknown';
     const rateLimit = checkRateLimit(`register:${ip}`, 5, 300000);
     if (!rateLimit.allowed) {
-      return NextResponse.json(
-        { error: '注册请求过于频繁，请稍后再试' },
-        { status: 429 }
-      );
+      return NextResponse.json({ error: '注册请求过于频繁，请稍后再试' }, { status: 429 });
     }
 
-    // 检查用户名/邮箱是否已存在
     const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [{ username }, { email }],
-      },
+      where: { OR: [{ username }, { email }] },
     });
-
     if (existingUser) {
       return NextResponse.json(
         { error: existingUser.username === username ? '用户名已存在' : '邮箱已注册' },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
     // 验证验证码
     const validCode = await prisma.emailVerification.findFirst({
-      where: {
-        email,
-        code,
-        type: 'REGISTER',
-        usedAt: null,
-        expiresAt: { gt: new Date() },
-      },
+      where: { email, code, type: 'REGISTER', usedAt: null, expiresAt: { gt: new Date() } },
     });
-
     if (!validCode) {
-      return NextResponse.json(
-        { error: '验证码无效或已过期' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: '验证码无效或已过期' }, { status: 400 });
     }
-
-    // 标记验证码已使用
     await prisma.emailVerification.update({
       where: { id: validCode.id },
       data: { usedAt: new Date() },
     });
 
-    // 创建用户
+    // 自动分配数字账号 (5位起, 从 AccountSequence 表取)
+    let numericAccount: string | undefined;
+    try {
+      // 确保序列行存在
+      const seq = await prisma.accountSequence.upsert({
+        where: { id: 1 },
+        update: {},
+        create: { id: 1, nextValue: 10000 },
+      });
+      numericAccount = String(seq.nextValue);
+      await prisma.accountSequence.update({
+        where: { id: 1 },
+        data: { nextValue: seq.nextValue + 1 },
+      });
+    } catch (e) {
+      console.warn('[Register] Failed to assign numericAccount:', e);
+    }
+
     const passwordHash = await hashPassword(password);
     const user = await prisma.user.create({
       data: {
@@ -81,38 +71,25 @@ export async function POST(req: NextRequest) {
         passwordHash,
         emailVerifiedAt: new Date(),
         locale: req.headers.get('accept-language')?.includes('en') ? 'en-US' : 'zh-CN',
+        numericAccount,
       },
     });
 
-    // 发送欢迎邮件
     const locale = user.locale || 'zh-CN';
     const { subject, html } = welcomeEmail(username, locale);
     await sendMail({ to: email, subject, html });
 
-    // 生成 JWT 并设置 Cookie (access + refresh)
-    const tokenPayload = {
-      userId: user.id,
-      username: user.username,
-      role: user.role,
-    };
+    const tokenPayload = { userId: user.id, username: user.username, role: user.role };
     const accessToken = signToken(tokenPayload);
     const refreshToken = signRefreshToken(tokenPayload);
     await setAuthCookie(accessToken, refreshToken);
 
     return NextResponse.json({
       success: true,
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-      },
+      user: { id: user.id, username: user.username, email: user.email, role: user.role, numericAccount },
     });
   } catch (error: any) {
     console.error('[Register Error]', error);
-    return NextResponse.json(
-      { error: '注册失败，请稍后再试' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: '注册失败，请稍后再试' }, { status: 500 });
   }
 }

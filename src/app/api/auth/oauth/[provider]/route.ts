@@ -4,7 +4,6 @@
 // ============================================================
 
 import { NextRequest, NextResponse } from 'next/server';
-const APP_URL = process.env.APP_URL || 'https://aios.allapple.top';
 import {
   getAuthorizationUrl,
   generateState,
@@ -12,6 +11,16 @@ import {
   generateCodeChallenge,
   type OAuthProvider,
 } from '@/lib/auth/oauth';
+
+function getOrigin(req: NextRequest): string {
+  const allowed = (process.env.ALLOWED_ORIGINS || 'https://aios.allapple.top,https://vios.top')
+    .split(',').map(s => s.trim());
+  const host = req.headers.get('x-forwarded-host') || req.headers.get('host') || '';
+  const proto = req.headers.get('x-forwarded-proto') || 'https';
+  const origin = `${proto}://${host}`;
+  if (allowed.some(a => origin.startsWith(a))) return origin;
+  return process.env.APP_URL || 'https://aios.vios.top';
+}
 
 const VALID_PROVIDERS: OAuthProvider[] = ['github', 'google', 'twitter'];
 
@@ -44,7 +53,8 @@ export async function GET(
       codeChallenge = generateCodeChallenge(codeVerifier);
     }
 
-    const authUrl = getAuthorizationUrl(provider, state, codeChallenge);
+    const origin = getOrigin(req);
+    const authUrl = getAuthorizationUrl(provider, state, codeChallenge, origin);
 
     const response = NextResponse.redirect(authUrl);
 
@@ -67,7 +77,7 @@ export async function GET(
   } catch (error: any) {
     console.error('[OAuth Init Error]', error);
     return NextResponse.redirect(
-      new URL(`/login?error=oauth_init_failed`, APP_URL)
+      new URL(`/login?error=oauth_init_failed`, getOrigin(req))
     );
   }
 }

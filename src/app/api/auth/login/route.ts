@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
 
     if (!email || !password) {
       return NextResponse.json(
-        { error: '请填写邮箱和密码' },
+        { error: '请填写账号和密码' },
         { status: 400 }
       );
     }
@@ -25,10 +25,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 查找用户
+    // 查找用户: 支持邮箱、AI账号(数字账号)登录
+    const trimmedInput = email.trim();
     const user = await prisma.user.findFirst({
       where: {
-        OR: [{ email }, { username: email }],
+        OR: [
+          { email: trimmedInput },
+          { numericAccount: trimmedInput },
+        ],
       },
     });
 
@@ -40,9 +44,15 @@ export async function POST(req: NextRequest) {
     }
 
     // 检查账号状态
-    if (user.status === 'SUSPENDED' || user.status === 'BANNED') {
+    if (user.status === 'SUSPENDED') {
       return NextResponse.json(
-        { error: '账号已被禁用，请联系管理员' },
+        { error: '账号已被暂停使用，请联系管理员' },
+        { status: 403 }
+      );
+    }
+    if (user.status === 'BANNED') {
+      return NextResponse.json(
+        { error: '账号已被封禁，请联系管理员' },
         { status: 403 }
       );
     }
@@ -58,7 +68,7 @@ export async function POST(req: NextRequest) {
     // 验证密码
     if (!user.passwordHash) {
       return NextResponse.json(
-        { error: '该账号使用第三方登录，请使用 GitHub/Google/X 登录' },
+        { error: '该账号未设置密码，请使用第三方登录（GitHub/Google/X），或前往设置页面绑定邮箱后设置密码', noPassword: true },
         { status: 400 }
       );
     }

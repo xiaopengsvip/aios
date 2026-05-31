@@ -65,6 +65,7 @@ export async function getCurrentUser() {
     where: { id: payload.userId },
     select: {
       id: true,
+      numericAccount: true,
       username: true,
       email: true,
       role: true,

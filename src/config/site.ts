@@ -15,7 +15,8 @@ export const siteConfig = {
   versionPhase: 'Phase 1: UI 重设计 + 响应式布局',
 
   // 域名
-  url: 'https://aios.allapple.top',
+  url: 'https://aios.vios.top',
+  altUrl: 'https://vios.top',
   betaUrl: 'https://beta-aios.allapple.top',
 
   // 公司信息

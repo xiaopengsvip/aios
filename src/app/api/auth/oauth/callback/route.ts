@@ -6,7 +6,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth';
-const APP_URL = process.env.APP_URL || 'https://aios.allapple.top';
 import {
   exchangeCodeForToken,
   fetchUserInfo,
@@ -15,6 +14,16 @@ import {
   bindOAuthAccount,
   type OAuthProvider,
 } from '@/lib/auth/oauth';
+
+function getOrigin(req: NextRequest): string {
+  const allowed = (process.env.ALLOWED_ORIGINS || 'https://aios.allapple.top,https://vios.top')
+    .split(',').map(s => s.trim());
+  const host = req.headers.get('x-forwarded-host') || req.headers.get('host') || '';
+  const proto = req.headers.get('x-forwarded-proto') || 'https';
+  const origin = `${proto}://${host}`;
+  if (allowed.some(a => origin.startsWith(a))) return origin;
+  return process.env.APP_URL || 'https://aios.vios.top';
+}
 
 const VALID_PROVIDERS: OAuthProvider[] = ['github', 'google', 'twitter'];
 
@@ -28,13 +37,13 @@ export async function GET(req: NextRequest) {
     // 用户拒绝授权
     if (error) {
       return NextResponse.redirect(
-        new URL(`/login?error=oauth_denied`, APP_URL)
+        new URL(`/login?error=oauth_denied`, getOrigin(req))
       );
     }
 
     if (!code || !state) {
       return NextResponse.redirect(
-        new URL(`/login?error=oauth_invalid`, APP_URL)
+        new URL(`/login?error=oauth_invalid`, getOrigin(req))
       );
     }
 
@@ -45,7 +54,7 @@ export async function GET(req: NextRequest) {
 
     if (!savedState || savedState !== state) {
       return NextResponse.redirect(
-        new URL(`/login?error=oauth_state_mismatch`, APP_URL)
+        new URL(`/login?error=oauth_state_mismatch`, getOrigin(req))
       );
     }
 
@@ -55,15 +64,17 @@ export async function GET(req: NextRequest) {
 
     if (!provider || !VALID_PROVIDERS.includes(provider)) {
       return NextResponse.redirect(
-        new URL(`/login?error=oauth_invalid_state`, APP_URL)
+        new URL(`/login?error=oauth_invalid_state`, getOrigin(req))
       );
     }
 
     // 用授权码换 Token
+    const origin = getOrigin(req);
     const accessToken = await exchangeCodeForToken(
       provider,
       code,
-      provider === 'twitter' ? codeVerifier : undefined
+      provider === 'twitter' ? codeVerifier : undefined,
+      origin
     );
 
     // 获取用户信息
@@ -72,7 +83,7 @@ export async function GET(req: NextRequest) {
     // 清理 OAuth cookies
     const cleanCookies = () => {
       const r = NextResponse.redirect(
-        new URL(action === 'bind' ? '/settings/account' : '/chat', APP_URL)
+        new URL(action === 'bind' ? '/settings' : '/chat', origin)
       );
       r.cookies.delete('oauth_state');
       r.cookies.delete('oauth_action');
@@ -97,11 +108,23 @@ export async function GET(req: NextRequest) {
     }
 
     // 登录/注册
-    const { user, isNewUser } = await findOrCreateOAuthUser(
+    const { user, isNewUser, needEmail } = await findOrCreateOAuthUser(
       provider,
       userInfo,
       accessToken
     );
+
+    // 新用户 + 无邮箱（GitHub/X）→ 跳转补填邮箱页面
+    if (isNewUser && needEmail) {
+      const r = cleanCookies();
+      r.cookies.set('oauth_pending', JSON.stringify({
+        userId: user.id,
+        provider,
+        username: userInfo.username,
+      }), { httpOnly: true, secure: true, sameSite: 'lax', maxAge: 600, path: '/' });
+      r.headers.set('Location', '/register/complete');
+      return r;
+    }
 
     await loginOAuthUser(user);
 
@@ -126,7 +149,7 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
     console.error('[OAuth Callback Error]', error);
     return NextResponse.redirect(
-      new URL(`/login?error=oauth_failed`, APP_URL)
+      new URL(`/login?error=oauth_failed`, getOrigin(req))
     );
   }
 }

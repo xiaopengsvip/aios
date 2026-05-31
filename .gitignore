@@ -48,6 +48,9 @@ scripts/seed-mimo-key.js
 # Vercel
 .vercel
 
+# Uploads (user files)
+public/uploads/
+
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts

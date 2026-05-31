@@ -32,7 +32,6 @@ export async function GET(req: NextRequest) {
           id: true,
           username: true,
           email: true,
-          phone: true,
           role: true,
           status: true,
           displayName: true,

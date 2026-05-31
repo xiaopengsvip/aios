@@ -11,6 +11,7 @@ import { useTranslations } from 'next-intl';
 /* ─── User Context ─── */
 interface UserInfo {
   id: string;
+  numericAccount: string | null;
   username: string;
   email: string | null;
   displayName: string | null;
@@ -54,19 +55,101 @@ export function DrawerProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-/* ─── User Menu (with logout) ─── */
+/* ─── Multi-Account Storage ─── */
+interface SavedAccount {
+  id: string;
+  username: string;
+  displayName: string | null;
+  avatar: string | null;
+  numericAccount: string | null;
+  role: string;
+  savedAt: number;
+}
+
+const ACCOUNTS_KEY = 'aios_accounts';
+const MAX_ACCOUNTS = 5;
+
+function getSavedAccounts(): SavedAccount[] {
+  try { return JSON.parse(localStorage.getItem(ACCOUNTS_KEY) || '[]'); }
+  catch { return []; }
+}
+
+function saveAccount(account: SavedAccount) {
+  const accounts = getSavedAccounts().filter(a => a.id !== account.id);
+  accounts.unshift({ ...account, savedAt: Date.now() });
+  if (accounts.length > MAX_ACCOUNTS) accounts.length = MAX_ACCOUNTS;
+  localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
+}
+
+function removeSavedAccount(id: string) {
+  const accounts = getSavedAccounts().filter(a => a.id !== id);
+  localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts));
+}
+
+/* ─── User Menu (with logout & multi-account) ─── */
 function UserMenu({ collapsed }: { collapsed: boolean }) {
   const user = useUser();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [confirmLogout, setConfirmLogout] = useState(false);
+  const [savedAccounts, setSavedAccounts] = useState<SavedAccount[]>([]);
+  const [switching, setSwitching] = useState<string | null>(null);
   const tCommon = useTranslations('common');
 
+  // Load saved accounts & auto-save current user
+  useEffect(() => {
+    if (user) {
+      saveAccount({
+        id: user.id,
+        username: user.username,
+        displayName: user.displayName,
+        avatar: user.avatar,
+        numericAccount: user.numericAccount || null,
+        role: user.role,
+        savedAt: Date.now(),
+      });
+    }
+    setSavedAccounts(getSavedAccounts());
+  }, [user]);
+
+  // Reset confirmLogout when menu closes
+  useEffect(() => {
+    if (!open) setConfirmLogout(false);
+  }, [open]);
+
   const handleLogout = async () => {
+    if (user) removeSavedAccount(user.id);
+    try { await fetch('/api/auth/logout', { method: 'POST' }); } catch {}
+    const remaining = getSavedAccounts();
+    if (remaining.length > 0) {
+      await handleSwitchAccount(remaining[0].id);
+    } else {
+      window.location.href = '/login';
+    }
+  };
+
+  const handleSwitchAccount = async (targetId: string) => {
+    if (targetId === user?.id) return;
+    setSwitching(targetId);
     try {
-      await fetch('/api/auth/logout', { method: 'POST' });
-    } catch {}
-    window.location.href = '/login';
+      const res = await fetch('/api/auth/switch-account', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: targetId }),
+      });
+      if (!res.ok) { const data = await res.json(); throw new Error(data.error); }
+      setOpen(false);
+      window.location.reload();
+    } catch (e: any) {
+      alert(e.message || '切换失败');
+      setSwitching(null);
+    }
+  };
+
+  const handleRemoveAccount = (targetId: string) => {
+    removeSavedAccount(targetId);
+    setSavedAccounts(getSavedAccounts());
   };
 
   const handleCopyId = () => {
@@ -84,6 +167,8 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
     GUEST: '访客',
   };
 
+  const otherAccounts = savedAccounts.filter(a => a.id !== user?.id);
+
   return (
     <div className="relative">
       <button
@@ -100,7 +185,7 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
         {!collapsed && (
           <div className="flex-1 min-w-0">
             <div className="text-sm font-medium truncate">{user?.displayName || user?.username || '未登录'}</div>
-            <div className="text-xs text-zinc-500 truncate">{user?.email || `ID: ${user?.id?.slice(-8) || '---'}`}</div>
+            <div className="text-xs text-zinc-500 truncate">{user?.numericAccount ? `AI: ${user.numericAccount}` : user?.email || `ID: ${user?.id?.slice(-8) || '---'}`}</div>
           </div>
         )}
       </button>
@@ -117,7 +202,11 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
               className="absolute bottom-full left-0 right-0 mb-1 z-50 bg-popover border border-border rounded-xl shadow-xl overflow-hidden"
             >
               {user && (
-                <div className="p-4 border-b border-border">
+                <div className="p-4 border-b border-border relative">
+                  {/* Close button */}
+                  <button onClick={() => setOpen(false)} className="absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center hover:bg-accent text-muted-foreground hover:text-foreground transition-colors" aria-label="关闭">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
                   {/* Avatar + name */}
                   <div className="flex items-center gap-3 mb-3">
                     {user.avatar ? (
@@ -136,7 +225,7 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
                   {/* Detail rows */}
                   <div className="space-y-1.5 text-xs">
                     <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">ID</span>
+                      <span className="text-muted-foreground">系统ID</span>
                       <button
                         onClick={handleCopyId}
                         className="font-mono text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
@@ -145,6 +234,12 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
                         {copied ? '✓ 已复制' : `${user.id.slice(0, 8)}...${user.id.slice(-4)}`}
                       </button>
                     </div>
+                    {user.numericAccount && (
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">AI 账号</span>
+                        <span className="font-mono font-medium">{user.numericAccount}</span>
+                      </div>
+                    )}
                     <div className="flex items-center justify-between">
                       <span className="text-muted-foreground">用户名</span>
                       <span className="font-medium">{user.username}</span>
@@ -163,9 +258,7 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
                       <div className="flex items-center justify-between">
                         <span className="text-muted-foreground">状态</span>
                         <span className="flex items-center gap-1">
-                          <span className={`w-1.5 h-1.5 rounded-full ${
-                            user.status === 'ACTIVE' ? 'bg-green-500' : 'bg-zinc-500'
-                          }`} />
+                          <span className={`w-1.5 h-1.5 rounded-full ${user.status === 'ACTIVE' ? 'bg-green-500' : 'bg-zinc-500'}`} />
                           {user.status === 'ACTIVE' ? '正常' : user.status}
                         </span>
                       </div>
@@ -179,6 +272,43 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
                   </div>
                 </div>
               )}
+
+              {/* Other accounts */}
+              {otherAccounts.length > 0 && (
+                <div className="px-3 py-2 border-b border-border">
+                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider px-1 mb-1.5">切换账号</div>
+                  {otherAccounts.map(acc => (
+                    <div key={acc.id} className="flex items-center gap-2 px-1 py-1.5 rounded-lg hover:bg-accent group">
+                      <button
+                        onClick={() => handleSwitchAccount(acc.id)}
+                        disabled={switching === acc.id}
+                        className="flex items-center gap-2 flex-1 min-w-0 text-left disabled:opacity-50"
+                      >
+                        {acc.avatar ? (
+                          <img src={acc.avatar} alt="" className="w-6 h-6 rounded-full object-cover shrink-0" />
+                        ) : (
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-[10px] font-bold shrink-0 text-white">
+                            {(acc.displayName || acc.username || 'U').charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs font-medium truncate">{acc.displayName || acc.username}</div>
+                          <div className="text-[10px] text-muted-foreground truncate">{acc.numericAccount ? `AI: ${acc.numericAccount}` : acc.username}</div>
+                        </div>
+                        {switching === acc.id && <div className="animate-spin w-3 h-3 border border-indigo-500 border-t-transparent rounded-full" />}
+                      </button>
+                      <button
+                        onClick={() => handleRemoveAccount(acc.id)}
+                        className="opacity-0 group-hover:opacity-100 w-5 h-5 rounded flex items-center justify-center hover:bg-red-500/10 text-muted-foreground hover:text-red-400 transition-all"
+                        title="移除该账号"
+                      >
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <div className="py-1">
                 <Link
                   href="/settings"
@@ -189,11 +319,20 @@ function UserMenu({ collapsed }: { collapsed: boolean }) {
                   <span>{tCommon('settings')}</span>
                 </Link>
                 <button
-                  onClick={handleLogout}
-                  className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-500 hover:bg-red-500/10 transition-colors"
+                  onClick={() => {
+                    if (confirmLogout) {
+                      handleLogout();
+                    } else {
+                      setConfirmLogout(true);
+                      setTimeout(() => setConfirmLogout(false), 3000);
+                    }
+                  }}
+                  className={`w-full flex items-center gap-2 px-4 py-2.5 text-sm transition-colors ${
+                    confirmLogout ? 'text-white bg-red-600 hover:bg-red-500' : 'text-red-500 hover:bg-red-500/10'
+                  }`}
                 >
-                  <span>🚪</span>
-                  <span>退出登录</span>
+                  <span>{confirmLogout ? '⚠️' : '🚪'}</span>
+                  <span>{confirmLogout ? '再次点击确认退出' : '退出登录'}</span>
                 </button>
               </div>
             </motion.div>

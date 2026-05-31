@@ -125,9 +125,10 @@ enum AuditAction {
 
 model User {
   id                String     @id @default(cuid())
+  numericAccount    String?    @unique     // 纯数字账号 (3-16位, 保留前导零: "000", "0", "10000")
   username          String     @unique
   email             String?    @unique
-  phone             String?    @unique
+  phone             String?    @unique     // [预留] 暂未接入短信服务，前端不显示，后续开放手机登录时启用
   passwordHash      String?
   role              UserRole   @default(USER)
   customRoleId      String?
@@ -169,12 +170,28 @@ model User {
   agents            Agent[]
   workflows         Workflow[]
 
+  preferences         Json?      // {theme, defaultModel, ...}
+
+  // 用户名管理
+  usernameChangedAt   DateTime?  // 上次改用户名时间
+
   createdAt         DateTime   @default(now())
   updatedAt          DateTime   @updatedAt
 
   @@index([tenantId])
   @@index([email])
   @@index([status])
+}
+
+// 用户名历史（冻结期管理）
+model UsernameHistory {
+  id          String   @id @default(cuid())
+  userId      String
+  username    String   @unique
+  releasedAt  DateTime // 冻结到期时间（改名后 90 天）
+
+  @@index([releasedAt])
+  @@index([userId])
 }
 
 
@@ -770,6 +787,18 @@ model Prompt {
   @@index([category])
   @@index([isPublic])
   @@index([isBuiltin])
+}
+
+// ============================================================
+// 数字账号序列号 (自增分配)
+// ============================================================
+
+model AccountSequence {
+  id        Int      @id @default(autoincrement())
+  // 单行表，用 id=1 记录当前最大值
+  nextValue Int      @default(10000)  // 下一个可分配的 5+ 位数字账号
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // ============================================================
