@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.aios.app.data.model.Agent
 import com.aios.app.data.repository.AgentExecutionResult
 import com.aios.app.data.repository.AgentRepository

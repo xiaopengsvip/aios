@@ -25,17 +25,7 @@ jobs:
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode.app
 
-      - name: Build for simulator (compile check)
-        run: |
-          xcodebuild build \
-            -project AiOS.xcodeproj \
-            -scheme AiOS \
-            -sdk iphonesimulator \
-            -destination 'platform=iOS Simulator,name=iPhone 16' \
-            -configuration Debug \
-            CODE_SIGNING_ALLOWED=NO
-
-      - name: Build .app for device
+      - name: Build .app for device (no signing)
         run: |
           xcodebuild build \
             -project AiOS.xcodeproj \
@@ -43,28 +33,28 @@ jobs:
             -sdk iphoneos \
             -configuration Release \
             -derivedDataPath build \
+            SWIFT_VERSION=5.0 \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGN_IDENTITY=""
-
-      - name: Find .app
-        id: find-app
-        run: |
-          APP_PATH=$(find build -name "AiOS.app" -type d | head -1)
-          echo "app_path=$APP_PATH" >> "$GITHUB_OUTPUT"
-          echo "Found: $APP_PATH"
-          ls -la "$APP_PATH"
+            | xcpretty || true
 
       - name: Package .ipa
         run: |
           mkdir -p Payload
-          cp -r "${{ steps.find-app.outputs.app_path }}" Payload/
+          cp -r build/Build/Products/Release-iphoneos/AiOS.app Payload/
           zip -r AiOS.ipa Payload
-          ls -la AiOS.ipa
+          rm -rf Payload
 
       - name: Upload .ipa
         uses: actions/upload-artifact@v4
         with:
           name: aios-ios-ipa
           path: clients/ios/AiOS.ipa
+          retention-days: 30
+
+      - name: Upload .app
+        uses: actions/upload-artifact@v4
+        with:
+          name: aios-ios-app
+          path: clients/ios/build/Build/Products/Release-iphoneos/AiOS.app
           retention-days: 30
