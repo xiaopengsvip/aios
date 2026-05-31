@@ -149,7 +149,7 @@ fun MainApp(navController: NavHostController, onLogout: () -> Unit) {
             composable(Screen.Agent.route) { AgentScreen() }
             composable(Screen.Workflow.route) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    Text("工作流", modifier = Modifier.padding(androidx.compose.ui.unit.dp.times(16)))
+                    Text("工作流", modifier = Modifier.padding(16.dp))
                 }
             }
             composable(Screen.Settings.route) { SettingsScreen(onLogout = onLogout) }
