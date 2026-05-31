@@ -12,6 +12,8 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.util.concurrent.TimeUnit
 
@@ -63,10 +65,10 @@ class UpdateManager(
                 put("osVersion", "Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})")
                 put("deviceModel", "${Build.MANUFACTURER} ${Build.MODEL}")
             }
+            val mediaType = "application/json".toMediaTypeOrNull()
             val request = Request.Builder()
                 .url("$baseUrl/api/app/install")
-                .post(okhttp3.RequestBody.create(
-                    okhttp3.MediaType.parse("application/json"), body.toString()))
+                .post(body.toString().toRequestBody(mediaType))
                 .build()
             client.newCall(request).execute()
         } catch (_: Exception) { }
