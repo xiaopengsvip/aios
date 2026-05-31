@@ -17,7 +17,7 @@ struct AuthResponse: Codable {
     let message: String?
 }
 
-struct AIModel: Codable, Identifiable {
+struct AIModel: Codable, Identifiable, Hashable {
     let id: String
     let name: String
     let displayName: [String: String]?
