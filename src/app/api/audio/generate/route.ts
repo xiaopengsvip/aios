@@ -8,34 +8,24 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: '未登录' }, { status: 401 });
 
   const body = await req.json();
-  const { text, voice, speed, format, modelId } = body;
+  const { text, voice, speed, format, modelId, style } = body;
   if (!text) return NextResponse.json({ error: '请输入文本' }, { status: 400 });
 
-  // Find TTS model
+  // Find TTS model (mimo-v2.5-tts series)
   let model;
   if (modelId) {
     model = await prisma.model.findUnique({ where: { id: modelId }, include: { provider: true } });
   } else {
     model = await prisma.model.findFirst({
-      where: { isEnabled: true, OR: [
-        { name: { contains: 'tts', mode: 'insensitive' } },
-        { name: { contains: 'speech', mode: 'insensitive' } },
-        { name: { contains: 'audio', mode: 'insensitive' } },
-      ]},
+      where: { isEnabled: true, name: { contains: 'tts', mode: 'insensitive' } },
       include: { provider: true },
     });
-    // Fallback to OpenAI-compatible provider
-    if (!model) {
-      model = await prisma.model.findFirst({
-        where: { isEnabled: true, provider: { baseUrl: { contains: 'openai', mode: 'insensitive' } } },
-        include: { provider: true },
-      });
-    }
   }
 
   if (!model) {
     return NextResponse.json({
-      error: '暂无可用的 TTS 模型，请在管理后台配置语音模型',
+      error: '暂无可用的语音合成服务',
+      hint: '需要接入 MiMo V2.5 TTS 或 OpenAI TTS。请在管理后台配置。',
     }, { status: 400 });
   }
 
@@ -47,21 +37,32 @@ export async function POST(req: NextRequest) {
 
   const apiKey = decrypt(keys[0].keyEncrypted);
   const baseUrl = model.provider.baseUrl.replace(/\/v1\/?$/, '');
-  const ttsModel = model.name.includes('tts') ? model.name : 'tts-1';
 
   try {
-    const response = await fetch(`${baseUrl}/v1/audio/speech`, {
+    // MiMo TTS 使用 chat completions 端点
+    // target text 放在 assistant message, style instruction 放在 user message
+    const messages: any[] = [];
+
+    if (style) {
+      messages.push({ role: 'user', content: style });
+    }
+
+    messages.push({ role: 'assistant', content: text.slice(0, 4096) });
+
+    const response = await fetch(`${baseUrl}/v1/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
+        'api-key': apiKey,
       },
       body: JSON.stringify({
-        model: ttsModel,
-        input: text.slice(0, 4096),
-        voice: voice || 'alloy',
-        speed: speed || 1.0,
-        response_format: format || 'mp3',
+        model: model.name,
+        messages,
+        stream: false,
+        audio: {
+          format: format || 'wav',
+          voice: voice || 'Chloe',
+        },
       }),
       signal: AbortSignal.timeout(60000),
     });
@@ -69,18 +70,30 @@ export async function POST(req: NextRequest) {
     if (!response.ok) {
       const err = await response.text();
       console.error('[TTS API Error]', response.status, err);
-      return NextResponse.json({ error: `语音生成失败: ${response.status}` }, { status: 500 });
+      return NextResponse.json({ error: `语音生成失败: ${response.status}` }, { status: 502 });
     }
 
-    const audioBuffer = await response.arrayBuffer();
-    const contentType = response.headers.get('content-type') || 'audio/mpeg';
+    const data = await response.json();
+    const audioBase64 = data.choices?.[0]?.message?.audio?.data;
+    const audioUrl = data.choices?.[0]?.message?.audio?.url;
 
-    return new NextResponse(audioBuffer, {
-      headers: {
-        'Content-Type': contentType,
-        'Content-Length': audioBuffer.byteLength.toString(),
-      },
-    });
+    if (audioUrl) {
+      // Return URL directly
+      return NextResponse.json({ url: audioUrl, model: model.name });
+    }
+
+    if (audioBase64) {
+      // Decode base64 and return as audio
+      const audioBuffer = Buffer.from(audioBase64, 'base64');
+      return new NextResponse(audioBuffer, {
+        headers: {
+          'Content-Type': format === 'wav' ? 'audio/wav' : 'audio/mpeg',
+          'Content-Length': audioBuffer.length.toString(),
+        },
+      });
+    }
+
+    return NextResponse.json({ error: '未返回音频数据' }, { status: 502 });
   } catch (error: any) {
     if (error.name === 'TimeoutError') {
       return NextResponse.json({ error: '语音生成超时' }, { status: 504 });

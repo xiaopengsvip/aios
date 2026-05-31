@@ -20,7 +20,7 @@
     "statsUsers": "10K+ Users"
   },
   "heroDemo": {
-    "chatTitle": "AI Chat — GPT-4o",
+    "chatTitle": "AI Chat — MiMo V2.5",
     "userMsg": "Write a Python quicksort algorithm with detailed comments",
     "aiThinking": "Thinking...",
     "agentTitle": "Agent Execution",
@@ -60,7 +60,7 @@
     },
     "video": {
       "name": "AI Video",
-      "desc": "Sora / Runway / Kling one-click generation. Text-to-video, image-to-video, and video editing.",
+      "desc": "Video understanding & generation via MiMo V2.5 and JimengAI (requires AK/SK)",
       "tag": "Create"
     },
     "image": {
@@ -70,7 +70,7 @@
     },
     "audio": {
       "name": "AI Audio",
-      "desc": "TTS, voice cloning, and music generation. Multi-language, multi-voice real-time synthesis.",
+      "desc": "MiMo V2.5-TTS synthesis with built-in voices, voice cloning, and natural language style control",
       "tag": "Voice"
     }
   },
@@ -117,7 +117,7 @@
     "items": [
       {
         "q": "Which AI models does AIOS support?",
-        "a": "50+ models including GPT-4o, Claude 4, Gemini 2.5, DeepSeek V3, Qwen 3, and more. One-click switching with auto-routing to the optimal provider."
+        "a": "30+ models integrated including Xiaomi MiMo V2.5 series, Volcengine Ark (Doubao Seed 2.0, DeepSeek V4, GLM-4.7), and more. One-click switching with auto-routing."
       },
       {
         "q": "What are MCP tools?",

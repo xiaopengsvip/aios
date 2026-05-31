@@ -26,25 +26,38 @@ export async function POST(req: NextRequest) {
 
     // 优先选择支持 vision 的模型
     const visionModels = [
+      'mimo-v2.5',  // MiMo 多模态 (图片/音频/视频理解, 1M context)
+      'mimo-v2-omni',  // [即将废弃 6/30] 仍可用, 自动路由到 v2.5
+      'doubao-seed-1-6-vision-250815', 'doubao-1-5-vision-pro-32k-250115',
+      'doubao-seed-2-0-pro-260215',  // Seed 2.0 也支持视觉
       'gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo',
-      'claude-sonnet-4-20250514', 'claude-3-5-haiku-20241022', 'claude-3-opus',
-      'gemini-2.5-pro', 'gemini-2.0-flash', 'gemini-1.5-pro',
-      'qwen-vl-max', 'qwen-vl-plus',
+      'claude-sonnet-4-20250514', 'claude-3-5-haiku-20241022',
+      'gemini-2.5-pro', 'gemini-2.0-flash',
     ];
 
     // 先尝试 vision 模型，再 fallback 到指定 modelId
-    const model = await prisma.model.findFirst({
-      where: {
-        OR: [
-          ...(modelId ? [{ id: modelId }] : []),
-          ...visionModels.map(name => ({ name, isEnabled: true })),
-          { name: 'mimo-v2.5-pro' },
-        ],
-        isEnabled: true,
-      },
-      include: { provider: true },
-      orderBy: { name: 'asc' },  // 稳定排序
-    });
+    let model = null;
+    for (const vm of visionModels) {
+      model = await prisma.model.findFirst({
+        where: { name: vm, isEnabled: true },
+        include: { provider: true },
+      });
+      if (model) break;
+    }
+    // Fallback: 指定的 modelId
+    if (!model && modelId) {
+      model = await prisma.model.findUnique({
+        where: { id: modelId },
+        include: { provider: true },
+      });
+    }
+    // Fallback: mimo-v2.5-pro (文本 only)
+    if (!model) {
+      model = await prisma.model.findFirst({
+        where: { name: 'mimo-v2.5-pro', isEnabled: true },
+        include: { provider: true },
+      });
+    }
 
     if (!model) {
       return NextResponse.json({
@@ -100,14 +113,30 @@ export async function POST(req: NextRequest) {
 
     content.push({ type: 'text', text: prompt });
 
-    // 调用 MiMo API
+    // 调用 API (区分 MiMo 和 OpenAI 兼容认证)
     const baseUrl = model.provider.baseUrl.replace(/\/v1\/?$/, '');
-    const response = await fetch(`${baseUrl}/v1/chat/completions`, {
+    const isMiMo = model.provider.type === 'CUSTOM' && model.provider.baseUrl.includes('xiaomimimo');
+    const isArk = model.provider.type === 'CUSTOM' && model.provider.baseUrl.includes('volces.com');
+
+    let endpoint: string;
+    let headers: Record<string, string>;
+
+    if (isMiMo) {
+      endpoint = `${baseUrl}/v1/chat/completions`;
+      headers = { 'Content-Type': 'application/json', 'api-key': decryptedKey };
+    } else if (isArk) {
+      // Ark: URL 已含 /v3, 直接拼 /chat/completions
+      const rawBase = model.provider.baseUrl.replace(/\/+$/, '');
+      endpoint = /\/v\d+$/.test(rawBase) ? `${rawBase}/chat/completions` : `${rawBase}/v1/chat/completions`;
+      headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${decryptedKey}` };
+    } else {
+      endpoint = `${baseUrl}/v1/chat/completions`;
+      headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${decryptedKey}` };
+    }
+
+    const response = await fetch(endpoint, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'api-key': decryptedKey,
-      },
+      headers,
       body: JSON.stringify({
         model: model.name,
         messages: [

@@ -25,7 +25,11 @@ export async function POST(req: NextRequest) {
     });
 
     if (!provider || provider.keys.length === 0) {
-      return NextResponse.json({ error: '没有可用的图片生成服务' }, { status: 503 });
+      return NextResponse.json({
+        error: '暂无可用的图片生成服务',
+        hint: '需要接入以下任一服务: 1) OpenAI (DALL-E 3) — 需要 OpenAI API Key; 2) 火山引擎即梦AI — 需要 AK/SK 凭证 (visual.volcengineapi.com)。当前 Provider 不支持图片生成。',
+        providers: ['OpenAI DALL-E 3', '即梦AI (jimeng_t2i_v40)', 'Stability AI', 'Midjourney API'],
+      }, { status: 503 });
     }
 
     const decryptedKey = decrypt(provider.keys[0].keyEncrypted);

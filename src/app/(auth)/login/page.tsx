@@ -100,7 +100,7 @@ export default function LoginPage() {
             </p>
           </motion.div>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="mt-12 flex flex-wrap justify-center gap-2">
-            {['GPT-4o', 'Claude 4', 'Gemini', 'DeepSeek', 'Qwen'].map((m, i) => (
+            {['MiMo V2.5', 'Doubao Seed', 'DeepSeek V4', 'GLM-4.7', 'Nous'].map((m, i) => (
               <motion.span key={m} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 + i * 0.1 }}
                 className="px-3 py-1 rounded-full border border-gray-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02] text-xs text-gray-500 dark:text-zinc-400 shadow-sm dark:shadow-none">
                 {m}

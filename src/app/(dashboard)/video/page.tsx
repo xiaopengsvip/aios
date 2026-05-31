@@ -31,10 +31,10 @@ interface UnderstandResult {
 }
 
 const videoModels = [
-  { id: 'sora', name: 'Sora', icon: '🟢', provider: 'OpenAI' },
-  { id: 'runway', name: 'Runway Gen-3', icon: '🔵', provider: 'Runway' },
-  { id: 'kling', name: 'Kling', icon: '🟡', provider: 'Kuaishou' },
-  { id: 'pika', name: 'Pika', icon: '🟣', provider: 'Pika Labs' },
+  { id: 'jimeng', name: '即梦AI', icon: '🟡', provider: '火山引擎 (需 AK/SK)' },
+  { id: 'runway', name: 'Runway Gen-3', icon: '🔵', provider: 'Runway (需 API Key)' },
+  { id: 'kling', name: 'Kling', icon: '🟡', provider: '快手 (需 API Key)' },
+  { id: 'pika', name: 'Pika', icon: '🟣', provider: 'Pika Labs (需 API Key)' },
 ];
 
 const durations = ['5s', '10s', '15s'];
