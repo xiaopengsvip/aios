@@ -1,7 +1,7 @@
 package com.aios.app.feature.chat
 
+import android.widget.TextView
 import androidx.compose.animation.*
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -11,12 +11,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.zachklipp.richtext.ui.RichText
-import com.zachklipp.richtext.ui.printing.DisableRenders
-import com.zachklipp.richtext.commonmark.CommonMarkdownRichText
+import androidx.compose.ui.viewinterop.AndroidView
+import io.noties.markwon.Markwon
+import io.noties.markwon.ext.strikethrough.StrikethroughPlugin
 
 @Composable
 fun MessageBubble(
@@ -109,20 +109,9 @@ fun MessageBubble(
                         Text("正在思考...", fontSize = 13.sp, color = textColor)
                     }
                 } else if (isUser) {
-                    // User messages: plain text
-                    Text(
-                        text = content,
-                        color = textColor,
-                        fontSize = 14.sp,
-                        lineHeight = 20.sp
-                    )
+                    Text(text = content, color = textColor, fontSize = 14.sp, lineHeight = 20.sp)
                 } else {
-                    // AI messages: Markdown rendering
-                    CommonMarkdownRichText(content) {
-                        RichText(
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
+                    MarkdownText(content)
                 }
             }
         }
@@ -136,4 +125,27 @@ fun MessageBubble(
             )
         }
     }
+}
+
+@Composable
+fun MarkdownText(markdown: String) {
+    val context = LocalContext.current
+    val markwon = remember {
+        Markwon.builder(context)
+            .usePlugin(StrikethroughPlugin.create())
+            .build()
+    }
+
+    AndroidView(
+        factory = { ctx ->
+            TextView(ctx).apply {
+                setTextColor(android.graphics.Color.parseColor("#E0E0E0"))
+                textSize = 14f
+                setLineSpacing(0f, 1.3f)
+            }
+        },
+        update = { textView ->
+            markwon.setMarkdown(textView, markdown)
+        }
+    )
 }
