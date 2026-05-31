@@ -86,4 +86,6 @@ npm run tauri build       # 生成 .exe 和 .msi
 
 ## 后端 API 参考
 
-详细 API 文档见 AIOS 项目: `/www/wwwroot/aios.allapple.top/`
+- 后端仓库: https://github.com/xiaopengsvip/aios
+- 线上地址: https://aios.vios.top
+- OpenAI 兼容: https://aios.vios.top/v1/chat/completions
