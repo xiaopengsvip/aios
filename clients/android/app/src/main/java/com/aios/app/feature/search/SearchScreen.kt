@@ -77,7 +77,7 @@ fun SearchScreen(onBack: () -> Unit = {}, viewModel: SearchViewModel = hiltViewM
     val state by viewModel.state.collectAsState()
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("搜索") }) }
+        topBar = { TopAppBar(title = { Text("搜索") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回") } }) }
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp)) {
             OutlinedTextField(
