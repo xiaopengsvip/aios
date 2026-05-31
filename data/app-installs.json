@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "deviceId": "3da204f0-eccd-4a91-ad44-c368d84aeb19",
+    "platform": "android",
+    "appVersion": "0.0.1-beta",
+    "osVersion": "Android 16 (API 36)",
+    "deviceModel": "vivo V2301A",
+    "firstSeen": "2026-05-31T23:42:52.293Z",
+    "lastSeen": "2026-05-31T23:44:02.061Z",
+    "ip": "172.70.214.47"
+  }
+]

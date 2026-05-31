@@ -198,6 +198,7 @@ fun SettingsScreen(
             dismissButton = { TextButton(onClick = { showLogoutDialog = false }) { Text("取消") } }
         )
     }
+    } // Scaffold
 }
 
 @Composable
