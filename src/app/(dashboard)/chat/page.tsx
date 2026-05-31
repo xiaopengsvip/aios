@@ -13,13 +13,24 @@ interface DBModel {
   providerStatus?: 'online' | 'unknown';
   providerLatency?: number | null;
   supportsVision?: boolean;
+  supportsAudio?: boolean;
+  supportsVideo?: boolean;
   supportsToolUse?: boolean;
+}
+
+interface Attachment {
+  name: string;
+  type: string; // mime type
+  size: number;
+  base64: string; // data URL
+  preview?: string; // thumbnail for images
 }
 
 interface Message {
   id: string;
   role: 'user' | 'assistant' | 'system';
   content: string;
+  attachments?: Attachment[];
   reasoning?: string;
   model?: string;
   provider?: string;
@@ -64,6 +75,16 @@ export default function ChatPage() {
   const [isLoadingConversations, setIsLoadingConversations] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+
+  // Check if selected model supports any attachment type
+  const modelCapabilities = selectedModel ? {
+    image: !!selectedModel.supportsVision,
+    audio: !!selectedModel.supportsAudio,
+    video: !!selectedModel.supportsVideo,
+  } : { image: false, audio: false, video: false };
+  const canAttach = modelCapabilities.image || modelCapabilities.audio || modelCapabilities.video;
 
   // Load models from DB
   useEffect(() => {
@@ -157,6 +178,69 @@ export default function ChatPage() {
   };
 
   // New conversation
+  // File attachment handling
+  const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const maxSize = 20 * 1024 * 1024; // 20MB per file
+    const newAttachments: Attachment[] = [];
+
+    for (const file of Array.from(files)) {
+      if (file.size > maxSize) {
+        alert(`${file.name} 超过 20MB 限制`);
+        continue;
+      }
+
+      // Check if model supports this file type
+      const isImage = file.type.startsWith('image/');
+      const isAudio = file.type.startsWith('audio/');
+      const isVideo = file.type.startsWith('video/');
+
+      if (isImage && !modelCapabilities.image) {
+        alert(`当前模型不支持图片理解`);
+        continue;
+      }
+      if (isAudio && !modelCapabilities.audio) {
+        alert(`当前模型不支持音频理解，请切换到 mimo-v2-omni`);
+        continue;
+      }
+      if (isVideo && !modelCapabilities.video) {
+        alert(`当前模型不支持视频理解，请切换到 mimo-v2-omni`);
+        continue;
+      }
+      if (!isImage && !isAudio && !isVideo) {
+        alert(`${file.name} 不是支持的文件类型（图片/音频/视频）`);
+        continue;
+      }
+
+      // Read as base64
+      const base64 = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.readAsDataURL(file);
+      });
+
+      const attachment: Attachment = {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        base64,
+        preview: isImage ? base64 : undefined,
+      };
+
+      newAttachments.push(attachment);
+    }
+
+    setAttachments((prev) => [...prev, ...newAttachments]);
+    // Reset file input so same file can be re-selected
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }, [modelCapabilities]);
+
+  const removeAttachment = useCallback((index: number) => {
+    setAttachments((prev) => prev.filter((_, i) => i !== index));
+  }, []);
+
   const newConversation = () => {
     setConversationId(null);
     setMessages([]);
@@ -164,17 +248,20 @@ export default function ChatPage() {
   };
 
   const sendMessage = async () => {
-    if (!input.trim() || isStreaming || !selectedModel) return;
+    if ((!input.trim() && attachments.length === 0) || isStreaming || !selectedModel) return;
 
+    const currentAttachments = [...attachments];
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
       content: input.trim(),
+      attachments: currentAttachments.length > 0 ? currentAttachments : undefined,
       timestamp: new Date(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
+    setAttachments([]);
     setIsStreaming(true);
 
     const assistantMessage: Message = {
@@ -198,7 +285,26 @@ export default function ChatPage() {
           conversationId: conversationId || undefined,
           messages: messages
             .concat(userMessage)
-            .map((m) => ({ role: m.role, content: m.content })),
+            .map((m) => {
+              // Build multimodal content if message has attachments
+              if (m.attachments && m.attachments.length > 0) {
+                const content: any[] = [];
+                for (const att of m.attachments) {
+                  if (att.type.startsWith('image/')) {
+                    content.push({ type: 'image_url', image_url: { url: att.base64 } });
+                  } else if (att.type.startsWith('audio/')) {
+                    // Extract raw base64 (strip data:...;base64, prefix)
+                    const raw = att.base64.split(',')[1] || att.base64;
+                    content.push({ type: 'input_audio', input_audio: { data: raw, format: att.type.split('/')[1] || 'mp3' } });
+                  } else if (att.type.startsWith('video/')) {
+                    content.push({ type: 'video_url', video_url: { url: att.base64 } });
+                  }
+                }
+                if (m.content) content.push({ type: 'text', text: m.content });
+                return { role: m.role, content };
+              }
+              return { role: m.role, content: m.content };
+            }),
         }),
       });
 
@@ -463,6 +569,8 @@ export default function ChatPage() {
                       </div>
                       <div className="ml-auto flex gap-1 shrink-0">
                         {model.supportsVision && <span className="text-xs">👁</span>}
+                        {model.supportsAudio && <span className="text-xs">🎵</span>}
+                        {model.supportsVideo && <span className="text-xs">🎬</span>}
                         {model.supportsToolUse && <span className="text-xs">🔧</span>}
                       </div>
                     </button>
@@ -545,6 +653,22 @@ export default function ChatPage() {
                       </details>
                     )}
 
+                    {/* Attachment thumbnails in message */}
+                    {message.attachments && message.attachments.length > 0 && (
+                      <div className="flex gap-2 mb-2 flex-wrap">
+                        {message.attachments.map((att, i) => (
+                          att.preview ? (
+                            <img key={i} src={att.preview} alt={att.name} className="w-20 h-20 rounded-lg object-cover border border-primary-foreground/20" />
+                          ) : (
+                            <div key={i} className="w-20 h-20 rounded-lg border border-primary-foreground/20 flex flex-col items-center justify-center">
+                              <span className="text-lg">{att.type.startsWith('audio/') ? '🎵' : '🎬'}</span>
+                              <span className="text-[10px] opacity-70 truncate max-w-[70px]">{att.name}</span>
+                            </div>
+                          )
+                        ))}
+                      </div>
+                    )}
+
                     <MarkdownRenderer content={message.content} className="text-sm" />
 
                     {message.status === 'streaming' && (
@@ -578,14 +702,60 @@ export default function ChatPage() {
         {/* Input area */}
         <div className="border-t border-border bg-card p-4 pb-20 md:pb-4">
           <div className="max-w-3xl mx-auto">
-            <div className="relative flex items-end gap-3">
+            {/* Attachment previews */}
+            {attachments.length > 0 && (
+              <div className="flex gap-2 mb-3 overflow-x-auto pb-1">
+                {attachments.map((att, i) => (
+                  <div key={i} className="relative group shrink-0">
+                    {att.preview ? (
+                      <img src={att.preview} alt={att.name} className="w-16 h-16 rounded-lg object-cover border border-border" />
+                    ) : (
+                      <div className="w-16 h-16 rounded-lg border border-border bg-muted flex flex-col items-center justify-center">
+                        <span className="text-lg">{att.type.startsWith('audio/') ? '🎵' : '🎬'}</span>
+                        <span className="text-[10px] text-muted-foreground truncate max-w-[60px]">{att.name}</span>
+                      </div>
+                    )}
+                    <button
+                      onClick={() => removeAttachment(i)}
+                      className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >×</button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="relative flex items-end gap-2">
+              {/* Hidden file input */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept="image/*,audio/*,video/*"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+
+              {/* Attachment button */}
+              {canAttach && (
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isStreaming}
+                  className="px-3 py-3 rounded-xl border border-border hover:bg-accent disabled:opacity-50 transition-all shrink-0 text-muted-foreground"
+                  title={modelCapabilities.audio ? '图片/音频/视频' : modelCapabilities.video ? '图片/视频' : '图片'}
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                  </svg>
+                </button>
+              )}
+
               <div className="flex-1 relative">
                 <textarea
                   ref={inputRef}
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder={t('placeholder')}
+                  placeholder={canAttach ? (attachments.length > 0 ? '添加文字说明（可选）...' : t('placeholder')) : t('placeholder')}
                   rows={1}
                   className="w-full px-4 py-3 rounded-xl bg-input border border-border text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all resize-none"
                   style={{ minHeight: '48px', maxHeight: '200px' }}
@@ -598,7 +768,7 @@ export default function ChatPage() {
               </div>
               <button
                 onClick={sendMessage}
-                disabled={!input.trim() || isStreaming || !selectedModel}
+                disabled={(!input.trim() && attachments.length === 0) || isStreaming || !selectedModel}
                 className="px-4 py-3 rounded-xl bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all shrink-0 text-primary-foreground"
               >
                 {isStreaming ? (
@@ -611,8 +781,11 @@ export default function ChatPage() {
               </button>
             </div>
             <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
-              <span>
+              <span className="flex items-center gap-2">
                 {t('currentModel')}: {selectedModel ? `${getIcon(selectedModel)} ${getDisplayName(selectedModel)}` : t('loadingModel')}
+                {selectedModel?.supportsVision && <span className="px-1 py-0.5 rounded bg-blue-500/10 text-blue-400 text-[10px]">👁 图片</span>}
+                {selectedModel?.supportsAudio && <span className="px-1 py-0.5 rounded bg-green-500/10 text-green-400 text-[10px]">🎵 音频</span>}
+                {selectedModel?.supportsVideo && <span className="px-1 py-0.5 rounded bg-purple-500/10 text-purple-400 text-[10px]">🎬 视频</span>}
               </span>
               <span>
                 {selectedModel?.provider?.name || ''} · {t('streamSupport')}

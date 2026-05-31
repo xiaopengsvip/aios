@@ -28,6 +28,8 @@ export async function GET() {
         contextWindow: true,
         supportsStreaming: true,
         supportsVision: true,
+        supportsAudio: true,
+        supportsVideo: true,
         supportsToolUse: true,
         supportsJson: true,
         provider: {

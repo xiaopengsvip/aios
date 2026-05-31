@@ -393,6 +393,8 @@ model Model {
   contextWindow     Int        @default(128000)
   supportsStreaming Boolean    @default(true)
   supportsVision    Boolean    @default(false)
+  supportsAudio     Boolean    @default(false)
+  supportsVideo     Boolean    @default(false)
   supportsToolUse   Boolean    @default(false)
   supportsJson      Boolean    @default(false)
 

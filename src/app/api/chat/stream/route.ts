@@ -46,14 +46,26 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Helper: extract text from multimodal content
+    const extractText = (content: any): string => {
+      if (typeof content === 'string') return content;
+      if (Array.isArray(content)) {
+        const textPart = content.find((p: any) => p.type === 'text');
+        return textPart?.text || '[附件]';
+      }
+      return '';
+    };
+
     // 创建或获取会话 (logged-in users only)
     let convId = conversationId;
     if (user && !convId) {
+      const lastMsg = messages[messages.length - 1];
+      const title = extractText(lastMsg?.content).slice(0, 50) || '新对话';
       const conv = await prisma.conversation.create({
         data: {
           userId: user.id,
           modelId: model.id,
-          title: messages[messages.length - 1]?.content?.slice(0, 50) || '新对话',
+          title,
         },
       });
       convId = conv.id;
@@ -66,7 +78,7 @@ export async function POST(req: NextRequest) {
         data: {
           conversationId: convId,
           role: 'USER',
-          content: lastUserMsg.content,
+          content: extractText(lastUserMsg.content),
         },
       });
     }
