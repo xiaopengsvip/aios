@@ -14,6 +14,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.zachklipp.richtext.ui.RichText
+import com.zachklipp.richtext.ui.printing.DisableRenders
+import com.zachklipp.richtext.commonmark.CommonMarkdownRichText
 
 @Composable
 fun MessageBubble(
@@ -100,19 +103,26 @@ fun MessageBubble(
         ) {
             Column(modifier = Modifier.padding(12.dp)) {
                 if (content.isEmpty() && isStreaming) {
-                    // Streaming indicator
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
                         Spacer(Modifier.width(8.dp))
                         Text("正在思考...", fontSize = 13.sp, color = textColor)
                     }
-                } else {
+                } else if (isUser) {
+                    // User messages: plain text
                     Text(
                         text = content,
                         color = textColor,
                         fontSize = 14.sp,
                         lineHeight = 20.sp
                     )
+                } else {
+                    // AI messages: Markdown rendering
+                    CommonMarkdownRichText(content) {
+                        RichText(
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
             }
         }
