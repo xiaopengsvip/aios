@@ -40,7 +40,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          cache: npm
+          cache: 'npm'
+          cache-dependency-path: clients/desktop/package-lock.json
+
+      - name: Upgrade npm
+        run: npm install -g npm@latest
+
+      - name: Install frontend dependencies
+        run: npm install --no-audit --no-fund
 
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
@@ -51,9 +58,6 @@ jobs:
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './src-tauri -> target'
-
-      - name: Install frontend dependencies
-        run: npm ci
 
       - uses: tauri-apps/tauri-action@v0
         env:
