@@ -18,6 +18,7 @@ data class RegisterRequest(
 @Serializable
 data class AuthResponse(
     val success: Boolean,
+    val token: String? = null,
     val user: UserInfo? = null,
     val message: String? = null
 )

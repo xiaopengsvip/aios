@@ -8,8 +8,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * AuthInterceptor - Adds auth headers to API requests
- * Uses Cookie-based auth (aios_token) to match web session
+ * AuthInterceptor - Adds Bearer token to all API requests
  */
 @Singleton
 class AuthInterceptor @Inject constructor(
@@ -20,17 +19,12 @@ class AuthInterceptor @Inject constructor(
         val original = chain.request()
         val token = runBlocking { authManager.getToken() }
 
-        val request = if (token != null && token != "cookie") {
-            // Bearer token mode (for platform API keys)
+        val request = if (!token.isNullOrEmpty() && token != "cookie") {
             original.newBuilder()
                 .header("Authorization", "Bearer $token")
-                .header("Content-Type", "application/json")
                 .build()
         } else {
-            // Cookie mode: cookies are handled by OkHttp CookieJar
-            original.newBuilder()
-                .header("Content-Type", "application/json")
-                .build()
+            original
         }
 
         return chain.proceed(request)

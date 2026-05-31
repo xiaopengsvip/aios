@@ -10,6 +10,7 @@ import javax.inject.Singleton
 
 /**
  * Auth Repository - 登录/注册/用户信息
+ * 使用 JWT Bearer token 认证（非 cookie）
  */
 @Singleton
 class AuthRepository @Inject constructor(
@@ -22,10 +23,16 @@ class AuthRepository @Inject constructor(
     suspend fun login(email: String, password: String): Result<UserInfo> = try {
         val resp = api.login(LoginRequest(email = email, password = password))
         if (resp.isSuccessful && resp.body()?.success == true) {
-            val user = resp.body()!!.user!!
-            // Cookie-based auth: cookies are stored by OkHttp CookieJar
+            val body = resp.body()!!
+            val user = body.user!!
+            // Save JWT token from response (Bearer auth)
+            val token = resp.headers()["set-cookie"]
+                ?.let { cookie -> parseTokenFromCookie(cookie) }
+                ?: body.token
+            if (token != null) {
+                authManager.saveToken(token)
+            }
             authManager.saveUser(user)
-            authManager.saveToken("cookie") // marker
             Result.success(user)
         } else {
             Result.failure(Exception(resp.body()?.message ?: "登录失败"))
@@ -37,9 +44,13 @@ class AuthRepository @Inject constructor(
     suspend fun register(username: String, email: String, password: String): Result<UserInfo> = try {
         val resp = api.register(RegisterRequest(username = username, email = email, password = password))
         if (resp.isSuccessful && resp.body()?.success == true) {
-            val user = resp.body()!!.user!!
+            val body = resp.body()!!
+            val user = body.user!!
+            val token = body.token
+            if (token != null) {
+                authManager.saveToken(token)
+            }
             authManager.saveUser(user)
-            authManager.saveToken("cookie")
             Result.success(user)
         } else {
             Result.failure(Exception(resp.body()?.message ?: "注册失败"))
@@ -74,5 +85,14 @@ class AuthRepository @Inject constructor(
         if (resp.isSuccessful) getMe() else Result.failure(Exception("更新失败"))
     } catch (e: Exception) {
         Result.failure(e)
+    }
+
+    private fun parseTokenFromCookie(cookieHeader: String): String? {
+        // Parse aios_access=xxx from Set-Cookie header
+        return cookieHeader.split(";")
+            .map { it.trim() }
+            .firstOrNull { it.startsWith("aios_access=") }
+            ?.substringAfter("aios_access=")
+            ?.takeIf { it.isNotBlank() }
     }
 }
