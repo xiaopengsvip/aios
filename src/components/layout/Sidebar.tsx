@@ -1,0 +1,399 @@
+'use client';
+
+import { useState, useEffect, useCallback, createContext, useContext } from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+import ThemeToggle from '@/components/ui/ThemeToggle';
+import LanguageToggle from '@/components/ui/LanguageToggle';
+import { useTranslations } from 'next-intl';
+
+/* ─── User Context ─── */
+interface UserInfo {
+  id: string;
+  username: string;
+  email: string | null;
+  displayName: string | null;
+  avatar: string | null;
+  role: string;
+}
+
+const UserContext = createContext<UserInfo | null>(null);
+export const useUser = () => useContext(UserContext);
+
+export function UserProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<UserInfo | null>(null);
+
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then(res => res.ok ? res.json() : null)
+      .then(data => { if (data?.user) setUser(data.user); })
+      .catch(() => {});
+  }, []);
+
+  return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
+}
+
+/* ─── Drawer Context ─── */
+type DrawerCtx = { open: boolean; setOpen: (v: boolean) => void; toggle: () => void };
+const DrawerContext = createContext<DrawerCtx>({ open: false, setOpen: () => {}, toggle: () => {} });
+export const useDrawer = () => useContext(DrawerContext);
+
+export function DrawerProvider({ children }: { children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  const toggle = useCallback(() => setOpen((v) => !v), []);
+  return (
+    <DrawerContext.Provider value={{ open, setOpen, toggle }}>
+      {children}
+    </DrawerContext.Provider>
+  );
+}
+
+/* ─── User Menu (with logout) ─── */
+function UserMenu({ collapsed }: { collapsed: boolean }) {
+  const user = useUser();
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const tCommon = useTranslations('common');
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch {}
+    window.location.href = '/login';
+  };
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-accent cursor-pointer transition-all text-left"
+      >
+        {user?.avatar ? (
+          <img src={user.avatar} alt="" className="w-8 h-8 rounded-full shrink-0 object-cover" />
+        ) : (
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xs font-bold shrink-0 text-white">
+            {(user?.displayName || user?.username || 'U').charAt(0).toUpperCase()}
+          </div>
+        )}
+        {!collapsed && (
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-medium truncate">{user?.displayName || user?.username || '未登录'}</div>
+            <div className="text-xs text-zinc-500 truncate">{user?.email || `ID: ${user?.id?.slice(-8) || '---'}`}</div>
+          </div>
+        )}
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+            <motion.div
+              initial={{ opacity: 0, y: 4, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 4, scale: 0.95 }}
+              transition={{ duration: 0.15 }}
+              className="absolute bottom-full left-0 right-0 mb-1 z-50 bg-popover border border-border rounded-xl shadow-lg overflow-hidden"
+            >
+              {user && (
+                <div className="px-3 py-2 border-b border-border">
+                  <div className="text-sm font-medium truncate">{user.displayName || user.username}</div>
+                  <div className="text-xs text-muted-foreground truncate">{user.email}</div>
+                </div>
+              )}
+              <div className="py-1">
+                <Link
+                  href="/settings"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-accent transition-colors"
+                >
+                  <span>⚙️</span>
+                  <span>{tCommon('settings')}</span>
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 hover:bg-red-500/10 transition-colors"
+                >
+                  <span>🚪</span>
+                  <span>退出登录</span>
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/* ─── Nav Data ─── */
+const navKeys = ['chat', 'image', 'video', 'audio', 'agent', 'workflow', 'code', 'files', 'knowledge', 'prompts', 'marketplace', 'credits', 'apiPlatform', 'usage', 'settings'] as const;
+const navIcons = ['💬', '🎨', '🎬', '🎤', '🤖', '⚡', '💻', '📁', '📚', '📝', '🏪', '💰', '🔌', '📊', '⚙️'];
+const navHrefs = ['/chat', '/image', '/video', '/audio', '/agent', '/workflow', '/code', '/files', '/knowledge', '/prompts', '/marketplace', '/credits', '/api-platform', '/usage', '/settings'];
+
+const adminKeys = ['users', 'models', 'providers', 'keys', 'billing', 'monitor', 'tenants', 'pages'] as const;
+const adminIcons = ['👥', '🧠', '🔌', '🔑', '💰', '📊', '🏢', '📄'];
+const adminHrefs = ['/admin/users', '/admin/models', '/admin/providers', '/admin/keys', '/admin/billing', '/admin/monitor', '/admin/tenants', '/admin/pages'];
+
+/* ─── Sidebar Content (shared between desktop & drawer) ─── */
+function SidebarContent({
+  collapsed,
+  onToggleCollapse,
+  showAdmin,
+  onToggleAdmin,
+  onNavClick,
+  isDrawer,
+}: {
+  collapsed: boolean;
+  onToggleCollapse: () => void;
+  showAdmin: boolean;
+  onToggleAdmin: () => void;
+  onNavClick?: () => void;
+  isDrawer?: boolean;
+}) {
+  const pathname = usePathname();
+  const t = useTranslations('nav');
+  const tCommon = useTranslations('common');
+  const user = useUser();
+
+  const handleLinkClick = useCallback(() => {
+    onNavClick?.();
+  }, [onNavClick]);
+
+  return (
+    <div className={`flex flex-col h-full ${isDrawer ? 'bg-card' : 'bg-card/50 backdrop-blur-sm'}`}>
+      {/* Logo */}
+      <div className="h-14 flex items-center justify-between px-4 border-b border-border shrink-0">
+        <Link href="/chat" className="flex items-center gap-3 overflow-hidden" onClick={handleLinkClick}>
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-sm shrink-0 text-white">
+            A
+          </div>
+          <AnimatePresence>
+            {!collapsed && (
+              <motion.span
+                initial={{ opacity: 0, width: 0 }}
+                animate={{ opacity: 1, width: 'auto' }}
+                exit={{ opacity: 0, width: 0 }}
+                className="font-semibold text-sm whitespace-nowrap"
+              >
+                {tCommon('appName')}
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </Link>
+
+        {isDrawer && (
+          <button
+            onClick={onNavClick}
+            className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-accent transition-colors text-muted-foreground"
+            aria-label="Close menu"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
+
+        {!isDrawer && (
+          <button
+            onClick={onToggleCollapse}
+            className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-accent transition-colors text-muted-foreground"
+            title={collapsed ? tCommon('more') : tCommon('less')}
+          >
+            <svg
+              className={`w-3.5 h-3.5 transition-transform duration-300 ${collapsed ? 'rotate-180' : ''}`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2.5}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+          </button>
+        )}
+      </div>
+
+      {/* New Chat */}
+      <div className="p-3">
+        <Link
+          href="/chat"
+          onClick={handleLinkClick}
+          className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-indigo-600/10 border border-indigo-500/20 text-indigo-400 hover:bg-indigo-600/20 transition-all text-sm"
+        >
+          <span>✨</span>
+          <AnimatePresence>
+            {!collapsed && (
+              <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="whitespace-nowrap">
+                {t('chat')}
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </Link>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-1">
+        {navKeys.map((key, i) => {
+          const isActive = pathname === navHrefs[i];
+          return (
+            <Link
+              key={navHrefs[i]}
+              href={navHrefs[i]}
+              onClick={handleLinkClick}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all ${
+                isActive
+                  ? 'bg-accent text-accent-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+              }`}
+            >
+              <span className="text-base shrink-0">{navIcons[i]}</span>
+              <AnimatePresence>
+                {!collapsed && (
+                  <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="whitespace-nowrap">
+                    {t(key)}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </Link>
+          );
+        })}
+
+        {/* Admin */}
+        <div className="pt-4 mt-4 border-t border-border">
+          <button
+            onClick={onToggleAdmin}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-zinc-500 hover:text-zinc-300 w-full transition-all"
+          >
+            <span className="text-base shrink-0">🛡️</span>
+            {!collapsed && (
+              <>
+                <span className="flex-1 text-left whitespace-nowrap">{t('admin')}</span>
+                <svg className={`w-3.5 h-3.5 transition-transform ${showAdmin ? 'rotate-90' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </>
+            )}
+          </button>
+          <AnimatePresence>
+            {showAdmin && !collapsed && (
+              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                {adminKeys.map((key, i) => {
+                  const isActive = pathname === adminHrefs[i];
+                  return (
+                    <Link
+                      key={adminHrefs[i]}
+                      href={adminHrefs[i]}
+                      onClick={handleLinkClick}
+                      className={`flex items-center gap-3 px-3 py-2 ml-3 rounded-lg text-sm transition-all ${
+                        isActive ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+                      }`}
+                    >
+                      <span className="text-sm shrink-0">{adminIcons[i]}</span>
+                      <span className="whitespace-nowrap">{t(key)}</span>
+                    </Link>
+                  );
+                })}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </nav>
+
+      {/* Bottom: settings + user */}
+      <div className="p-3 border-t border-border shrink-0">
+        <div className="flex items-center justify-between px-1 mb-2">
+          {!collapsed && <span className="text-xs text-muted-foreground">{tCommon('settings')}</span>}
+          <div className="flex items-center gap-0.5">
+            <LanguageToggle className="!w-8 !h-8" />
+            <ThemeToggle className="!w-8 !h-8" />
+          </div>
+        </div>
+        <UserMenu collapsed={collapsed} />
+      </div>
+    </div>
+  );
+}
+
+/* ─── Desktop Sidebar ─── */
+function DesktopSidebar() {
+  const [collapsed, setCollapsed] = useState(false);
+  const [showAdmin, setShowAdmin] = useState(false);
+
+  return (
+    <motion.aside
+      animate={{ width: collapsed ? 64 : 240 }}
+      transition={{ duration: 0.2, ease: [0.25, 0.4, 0.25, 1] }}
+      className="h-screen hidden lg:flex flex-col border-r border-border relative shrink-0"
+    >
+      <SidebarContent
+        collapsed={collapsed}
+        onToggleCollapse={() => setCollapsed(!collapsed)}
+        showAdmin={showAdmin}
+        onToggleAdmin={() => setShowAdmin(!showAdmin)}
+      />
+    </motion.aside>
+  );
+}
+
+/* ─── Mobile/Tablet Drawer ─── */
+function DrawerSidebar() {
+  const { open, setOpen } = useDrawer();
+  const pathname = usePathname();
+  const [showAdmin, setShowAdmin] = useState(false);
+
+  // Close on route change
+  useEffect(() => { setOpen(false); }, [pathname, setOpen]);
+
+  // Lock body scroll
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [open]);
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm lg:hidden"
+            onClick={() => setOpen(false)}
+          />
+          <motion.aside
+            initial={{ x: -280 }}
+            animate={{ x: 0 }}
+            exit={{ x: -280 }}
+            transition={{ duration: 0.25, ease: [0.25, 0.4, 0.25, 1] }}
+            className="fixed left-0 top-0 bottom-0 w-[280px] z-50 lg:hidden border-r border-border"
+          >
+            <SidebarContent
+              collapsed={false}
+              onToggleCollapse={() => {}}
+              showAdmin={showAdmin}
+              onToggleAdmin={() => setShowAdmin(!showAdmin)}
+              onNavClick={() => setOpen(false)}
+              isDrawer
+            />
+          </motion.aside>
+        </>
+      )}
+    </AnimatePresence>
+  );
+}
+
+/* ─── Export: Sidebar (desktop + drawer combined) ─── */
+export default function Sidebar() {
+  return (
+    <>
+      <DesktopSidebar />
+      <DrawerSidebar />
+    </>
+  );
+}

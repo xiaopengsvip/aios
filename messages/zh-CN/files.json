@@ -1,0 +1,32 @@
+{
+  "files": {
+    "title": "文件管理",
+    "fileCount": "{count} 个文件",
+    "searchPlaceholder": "搜索文件...",
+    "allTypes": "全部类型",
+    "typeImage": "图片",
+    "typeVideo": "视频",
+    "typeAudio": "音频",
+    "typePdf": "PDF",
+    "typeDoc": "文档",
+    "typeCode": "代码",
+    "typeArchive": "压缩包",
+    "upload": "+ 上传",
+    "uploading": "上传中...",
+    "dragDrop": "拖拽文件到此处上传",
+    "dragDropHint": "支持图片、文档、代码、音视频等文件",
+    "noMatchTitle": "未找到匹配的文件",
+    "noMatchDesc": "尝试调整搜索条件或筛选器",
+    "noFilesTitle": "暂无文件",
+    "noFilesDesc": "上传你的第一个文件开始使用",
+    "usedTimes": "使用 {count} 次",
+    "fileDetails": "文件详情",
+    "fileType": "类型",
+    "fileSize": "大小",
+    "uploadTime": "上传时间",
+    "usageCount": "对话使用",
+    "downloadFile": "下载文件",
+    "deleteFile": "删除文件",
+    "timesCount": "{count} 次"
+  }
+}

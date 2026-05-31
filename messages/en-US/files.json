@@ -1,0 +1,32 @@
+{
+  "files": {
+    "title": "Files",
+    "fileCount": "{count} files",
+    "searchPlaceholder": "Search files...",
+    "allTypes": "All Types",
+    "typeImage": "Image",
+    "typeVideo": "Video",
+    "typeAudio": "Audio",
+    "typePdf": "PDF",
+    "typeDoc": "Document",
+    "typeCode": "Code",
+    "typeArchive": "Archive",
+    "upload": "+ Upload",
+    "uploading": "Uploading...",
+    "dragDrop": "Drag and drop files here",
+    "dragDropHint": "Supports images, documents, code, audio and video files",
+    "noMatchTitle": "No matching files found",
+    "noMatchDesc": "Try adjusting your search or filter criteria",
+    "noFilesTitle": "No files",
+    "noFilesDesc": "Upload your first file to get started",
+    "usedTimes": "Used {count} times",
+    "fileDetails": "File Details",
+    "fileType": "Type",
+    "fileSize": "Size",
+    "uploadTime": "Upload Time",
+    "usageCount": "Chat Usage",
+    "downloadFile": "Download File",
+    "deleteFile": "Delete File",
+    "timesCount": "{count} times"
+  }
+}

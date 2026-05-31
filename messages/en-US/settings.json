@@ -1,0 +1,73 @@
+{
+  "settings": {
+    "title": "Settings",
+    "tabs": {
+      "profile": "Profile",
+      "security": "Security",
+      "linked": "Linked Accounts",
+      "preferences": "Preferences",
+      "apikeys": "API Keys",
+      "billing": "Billing",
+      "danger": "Danger Zone"
+    },
+    "profile": {
+      "title": "Profile",
+      "changeAvatar": "Change Avatar",
+      "avatarHint": "Supports JPG, PNG, max 2MB",
+      "displayName": "Display Name",
+      "username": "Username",
+      "email": "Email",
+      "save": "Save Changes"
+    },
+    "security": {
+      "title": "Security Settings",
+      "changePassword": "Change Password",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmNewPassword": "Confirm New Password",
+      "updatePassword": "Update Password",
+      "twoFactor": "Two-Factor Authentication",
+      "twoFactorDesc": "Use an authenticator app to add extra security"
+    },
+    "preferences": {
+      "title": "Preferences",
+      "theme": "Theme",
+      "themeDesc": "Choose interface theme",
+      "dark": "Dark",
+      "light": "Light",
+      "language": "Language",
+      "languageDesc": "Choose interface language",
+      "defaultModel": "Default Model",
+      "defaultModelDesc": "Default model used for new conversations",
+      "savePreferences": "Save Preferences"
+    },
+    "apikeys": {
+      "title": "API Keys",
+      "addKey": "+ Add Key",
+      "description": "Add your own API keys to directly access models without going through the platform.",
+      "keyName": "Key Name",
+      "addButton": "Add",
+      "createdAt": "Created on {date}",
+      "lastUsed": "Last used {date}"
+    },
+    "billing": {
+      "title": "Billing",
+      "balance": "Current Balance",
+      "topup": "Top Up",
+      "usageHistory": "Usage History",
+      "date": "Date",
+      "model": "Model",
+      "tokens": "Tokens",
+      "cost": "Cost"
+    },
+    "danger": {
+      "title": "Danger Zone",
+      "deleteAccount": "Delete Account",
+      "deleteAccountDesc": "This action is irreversible. After deletion, all data including chat history, files, and workflows will be permanently deleted.",
+      "deleteAccountButton": "Delete Account",
+      "clearData": "Clear Data",
+      "clearDataDesc": "Clear all chat history and files, but keep account information.",
+      "clearDataButton": "Clear All Data"
+    }
+  }
+}

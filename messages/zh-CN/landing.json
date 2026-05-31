@@ -1,0 +1,182 @@
+{
+  "nav": {
+    "appName": "AI 工作台",
+    "login": "登录",
+    "register": "免费注册",
+    "features": "功能",
+    "pricing": "价格",
+    "docs": "文档"
+  },
+  "hero": {
+    "badge": "Agent Native AI 操作系统",
+    "title": "一个平台，连接所有AI，驱动所有Agent",
+    "subtitle": "融合聊天、Agent、Workflow、MCP、知识库、AI视频、AI图片、AI音频 — 一站式AI超级工作台",
+    "cta": "立即开始",
+    "ctaSecondary": "查看演示",
+    "ctaGhost": "查看文档",
+    "statsModels": "50+ 模型",
+    "statsMCP": "100+ MCP 工具",
+    "statsUptime": "99.9% 可用性",
+    "statsUsers": "10K+ 用户"
+  },
+  "heroDemo": {
+    "chatTitle": "AI Chat — GPT-4o",
+    "userMsg": "帮我写一个Python快速排序算法，并加上详细注释",
+    "aiThinking": "正在思考...",
+    "agentTitle": "Agent 执行",
+    "step1": "分析代码需求",
+    "step2": "生成算法代码",
+    "step3": "添加详细注释",
+    "step4": "代码优化检查",
+    "status": "执行完成"
+  },
+  "features": {
+    "title": "全能 AI 能力矩阵",
+    "subtitle": "八大核心模块，覆盖AI全场景",
+    "chat": {
+      "name": "AI Chat",
+      "desc": "多模型智能对话，GPT-4o / Claude 4 / Gemini 2.5 自由切换，支持上下文记忆与多轮推理",
+      "tag": "核心能力"
+    },
+    "agent": {
+      "name": "AI Agent",
+      "desc": "自主规划、工具调用、多步推理。让AI像人一样思考和执行复杂任务",
+      "tag": "智能体"
+    },
+    "workflow": {
+      "name": "Workflow",
+      "desc": "可视化编排工作流，拖拽式设计，自动化复杂业务流程，无需代码即可构建AI流水线",
+      "tag": "自动化"
+    },
+    "mcp": {
+      "name": "MCP 工具",
+      "desc": "Model Context Protocol 原生支持，100+ 工具即插即用，无缝连接外部服务",
+      "tag": "集成"
+    },
+    "knowledge": {
+      "name": "知识库",
+      "desc": "智能文档解析与向量检索，支持PDF/网页/代码，RAG增强精准回答",
+      "tag": "RAG"
+    },
+    "video": {
+      "name": "AI 视频",
+      "desc": "Sora / Runway / Kling 一键生成，文生视频、图生视频、视频编辑全覆盖",
+      "tag": "创作"
+    },
+    "image": {
+      "name": "AI 图片",
+      "desc": "DALL-E / Stable Diffusion / Flux 全模型覆盖，高质量图片生成与编辑",
+      "tag": "设计"
+    },
+    "audio": {
+      "name": "AI 音频",
+      "desc": "TTS语音合成、语音克隆、音乐生成，多语言多音色实时生成",
+      "tag": "语音"
+    }
+  },
+  "stats": {
+    "title": "被全球团队信赖",
+    "subtitle": "数字会说话",
+    "models": "AI 模型",
+    "modelsNum": "50",
+    "agents": "已创建 Agent",
+    "agentsNum": "12",
+    "workflows": "已运行工作流",
+    "workflowsNum": "1",
+    "tokens": "已处理 Token",
+    "tokensNum": "86",
+    "tokensSuffix": "B+"
+  },
+  "testimonials": {
+    "title": "用户怎么说",
+    "subtitle": "来自真实用户的反馈",
+    "items": [
+      {
+        "quote": "AIOS 彻底改变了我们团队的工作方式。Agent 自动化了80%的重复性工作，Workflow 让复杂流程变得简单。",
+        "name": "张明",
+        "role": "CTO · 科技创业公司",
+        "avatar": "ZM"
+      },
+      {
+        "quote": "作为一个设计师，AI 图片和视频功能让我效率提升了10倍。一个平台搞定所有AI创作需求，太方便了。",
+        "name": "李雪",
+        "role": "创意总监 · 设计工作室",
+        "avatar": "LX"
+      },
+      {
+        "quote": "MCP 工具集成太强大了。我们通过AIOS连接了内部所有系统，构建了完整的智能化工作流。",
+        "name": "王浩",
+        "role": "技术负责人 · 互联网大厂",
+        "avatar": "WH"
+      }
+    ]
+  },
+  "faq": {
+    "title": "常见问题",
+    "subtitle": "快速解答你的疑问",
+    "items": [
+      {
+        "q": "AIOS 支持哪些 AI 模型？",
+        "a": "支持 50+ 主流模型，包括 GPT-4o、Claude 4、Gemini 2.5、DeepSeek V3、Qwen 3 等。一键切换，自动路由最优 Provider。"
+      },
+      {
+        "q": "什么是 MCP 工具？",
+        "a": "MCP (Model Context Protocol) 是一种开放标准，让AI模型能够安全地连接外部工具和数据源。AIOS 内置 100+ MCP 工具，支持即插即用。"
+      },
+      {
+        "q": "数据安全如何保障？",
+        "a": "企业级安全架构：API Key 加密存储、RBAC 权限控制、审计日志、WAF 防护，满足企业合规要求。支持私有化部署。"
+      },
+      {
+        "q": "是否支持私有化部署？",
+        "a": "支持。提供完整的私有化部署方案，包括 Docker / K8s 部署、数据本地化存储、自定义模型接入等企业级功能。"
+      },
+      {
+        "q": "Workflow 和 Agent 有什么区别？",
+        "a": "Workflow 适合固定流程的自动化编排，Agent 适合需要自主决策的复杂任务。两者可以组合使用，构建智能化业务系统。"
+      },
+      {
+        "q": "如何开始使用？",
+        "a": "注册免费账号即可开始。免费套餐包含基础模型额度和核心功能。企业用户可联系销售获取定制方案。"
+      }
+    ]
+  },
+  "cta": {
+    "title": "开始你的 AI 之旅",
+    "subtitle": "免费注册，立即体验全栈 AI 能力。无需信用卡，即刻开始。",
+    "button": "免费开始 →",
+    "note": "免费套餐可用 · 无需信用卡"
+  },
+  "footer": {
+    "product": {
+      "title": "产品",
+      "chat": "AI Chat",
+      "agent": "AI Agent",
+      "workflow": "Workflow",
+      "mcp": "MCP 工具",
+      "pricing": "价格"
+    },
+    "resources": {
+      "title": "资源",
+      "docs": "文档",
+      "api": "API 参考",
+      "blog": "博客",
+      "changelog": "更新日志",
+      "status": "系统状态"
+    },
+    "company": {
+      "title": "公司",
+      "about": "关于我们",
+      "careers": "加入我们",
+      "contact": "联系我们",
+      "partners": "合作伙伴"
+    },
+    "legal": {
+      "title": "法律",
+      "privacy": "隐私政策",
+      "terms": "服务条款",
+      "security": "安全"
+    },
+    "copyright": "© 2026 AIOS · Powered by All Apple"
+  }
+}

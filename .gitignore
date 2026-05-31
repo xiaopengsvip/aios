@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Next.js
+.next/
+out/
+build/
+
+# Database
+*.db
+*.db-journal
+
+# Environment (contains secrets!)
+.env
+.env.local
+.env.*.local
+
+# Prisma
+prisma/migrations/**/migration_lock.toml
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backups (contains real DB data)
+backups/
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Logs
+logs/
+
+# Seed scripts with secrets
+scripts/seed-mimo-key.js
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# PM2
+ecosystem.config.js
+
+# Hermes
+.hermes/

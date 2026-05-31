@@ -1,0 +1,182 @@
+{
+  "nav": {
+    "appName": "AIOS",
+    "login": "Sign In",
+    "register": "Get Started",
+    "features": "Features",
+    "pricing": "Pricing",
+    "docs": "Docs"
+  },
+  "hero": {
+    "badge": "Agent Native AI Operating System",
+    "title": "One Platform, All AI, Every Agent",
+    "subtitle": "Chat, Agent, Workflow, MCP, Knowledge Base, AI Video, AI Image, AI Audio — your all-in-one AI super workspace",
+    "cta": "Get Started",
+    "ctaSecondary": "View Demo",
+    "ctaGhost": "Read Docs",
+    "statsModels": "50+ Models",
+    "statsMCP": "100+ MCP Tools",
+    "statsUptime": "99.9% Uptime",
+    "statsUsers": "10K+ Users"
+  },
+  "heroDemo": {
+    "chatTitle": "AI Chat — GPT-4o",
+    "userMsg": "Write a Python quicksort algorithm with detailed comments",
+    "aiThinking": "Thinking...",
+    "agentTitle": "Agent Execution",
+    "step1": "Analyze code requirements",
+    "step2": "Generate algorithm code",
+    "step3": "Add detailed comments",
+    "step4": "Code optimization check",
+    "status": "Completed"
+  },
+  "features": {
+    "title": "Full-Stack AI Matrix",
+    "subtitle": "8 core modules covering every AI scenario",
+    "chat": {
+      "name": "AI Chat",
+      "desc": "Multi-model intelligent chat with GPT-4o / Claude 4 / Gemini 2.5. Context memory and multi-turn reasoning.",
+      "tag": "Core"
+    },
+    "agent": {
+      "name": "AI Agent",
+      "desc": "Autonomous planning, tool use, and multi-step reasoning. Let AI think and execute complex tasks like a human.",
+      "tag": "Intelligent"
+    },
+    "workflow": {
+      "name": "Workflow",
+      "desc": "Visual workflow orchestration, drag-and-drop design, automate complex business processes without code.",
+      "tag": "Automation"
+    },
+    "mcp": {
+      "name": "MCP Tools",
+      "desc": "Model Context Protocol native support, 100+ plug-and-play tools, seamless external service integration.",
+      "tag": "Integration"
+    },
+    "knowledge": {
+      "name": "Knowledge Base",
+      "desc": "Intelligent document parsing and vector retrieval. Supports PDF/web/code with RAG-enhanced answers.",
+      "tag": "RAG"
+    },
+    "video": {
+      "name": "AI Video",
+      "desc": "Sora / Runway / Kling one-click generation. Text-to-video, image-to-video, and video editing.",
+      "tag": "Create"
+    },
+    "image": {
+      "name": "AI Image",
+      "desc": "DALL-E / Stable Diffusion / Flux full model coverage. High-quality image generation and editing.",
+      "tag": "Design"
+    },
+    "audio": {
+      "name": "AI Audio",
+      "desc": "TTS, voice cloning, and music generation. Multi-language, multi-voice real-time synthesis.",
+      "tag": "Voice"
+    }
+  },
+  "stats": {
+    "title": "Trusted by Teams Worldwide",
+    "subtitle": "The numbers speak for themselves",
+    "models": "AI Models",
+    "modelsNum": "50",
+    "agents": "Agents Created",
+    "agentsNum": "12",
+    "workflows": "Workflows Run",
+    "workflowsNum": "1",
+    "tokens": "Tokens Processed",
+    "tokensNum": "86",
+    "tokensSuffix": "B+"
+  },
+  "testimonials": {
+    "title": "What Users Say",
+    "subtitle": "Feedback from real users",
+    "items": [
+      {
+        "quote": "AIOS completely transformed how our team works. Agents automate 80% of repetitive tasks, and Workflow makes complex processes simple.",
+        "name": "Alex Zhang",
+        "role": "CTO · Tech Startup",
+        "avatar": "AZ"
+      },
+      {
+        "quote": "As a designer, the AI Image and Video features boosted my productivity 10x. One platform for all AI creative needs — incredibly convenient.",
+        "name": "Sarah Lee",
+        "role": "Creative Director · Design Studio",
+        "avatar": "SL"
+      },
+      {
+        "quote": "The MCP tool integration is incredibly powerful. We connected all our internal systems through AIOS and built a complete intelligent workflow.",
+        "name": "David Wang",
+        "role": "Tech Lead · Enterprise",
+        "avatar": "DW"
+      }
+    ]
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Quick answers to common questions",
+    "items": [
+      {
+        "q": "Which AI models does AIOS support?",
+        "a": "50+ models including GPT-4o, Claude 4, Gemini 2.5, DeepSeek V3, Qwen 3, and more. One-click switching with auto-routing to the optimal provider."
+      },
+      {
+        "q": "What are MCP tools?",
+        "a": "MCP (Model Context Protocol) is an open standard that lets AI models securely connect to external tools and data sources. AIOS includes 100+ plug-and-play MCP tools."
+      },
+      {
+        "q": "How is data security ensured?",
+        "a": "Enterprise-grade security: encrypted API key storage, RBAC permissions, audit logs, WAF protection. Meets enterprise compliance requirements. Supports on-premise deployment."
+      },
+      {
+        "q": "Do you support on-premise deployment?",
+        "a": "Yes. We offer complete on-premise deployment including Docker/K8s, local data storage, and custom model integration for enterprise customers."
+      },
+      {
+        "q": "What's the difference between Workflow and Agent?",
+        "a": "Workflow is for automating fixed processes. Agent is for tasks requiring autonomous decisions. They can be combined to build intelligent business systems."
+      },
+      {
+        "q": "How do I get started?",
+        "a": "Create a free account to start. The free plan includes basic model credits and core features. Enterprise users can contact sales for custom plans."
+      }
+    ]
+  },
+  "cta": {
+    "title": "Start Your AI Journey",
+    "subtitle": "Sign up free and experience full-stack AI capabilities. No credit card required.",
+    "button": "Get Started Free →",
+    "note": "Free plan available · No credit card required"
+  },
+  "footer": {
+    "product": {
+      "title": "Product",
+      "chat": "AI Chat",
+      "agent": "AI Agent",
+      "workflow": "Workflow",
+      "mcp": "MCP Tools",
+      "pricing": "Pricing"
+    },
+    "resources": {
+      "title": "Resources",
+      "docs": "Documentation",
+      "api": "API Reference",
+      "blog": "Blog",
+      "changelog": "Changelog",
+      "status": "System Status"
+    },
+    "company": {
+      "title": "Company",
+      "about": "About Us",
+      "careers": "Careers",
+      "contact": "Contact",
+      "partners": "Partners"
+    },
+    "legal": {
+      "title": "Legal",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "security": "Security"
+    },
+    "copyright": "© 2026 AIOS · Powered by All Apple"
+  }
+}

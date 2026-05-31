@@ -1,0 +1,73 @@
+{
+  "settings": {
+    "title": "设置",
+    "tabs": {
+      "profile": "个人资料",
+      "security": "安全设置",
+      "linked": "关联账号",
+      "preferences": "偏好设置",
+      "apikeys": "API 密钥",
+      "billing": "账单",
+      "danger": "危险操作"
+    },
+    "profile": {
+      "title": "个人资料",
+      "changeAvatar": "更换头像",
+      "avatarHint": "支持 JPG, PNG, 最大 2MB",
+      "displayName": "显示名称",
+      "username": "用户名",
+      "email": "邮箱",
+      "save": "保存更改"
+    },
+    "security": {
+      "title": "安全设置",
+      "changePassword": "修改密码",
+      "currentPassword": "当前密码",
+      "newPassword": "新密码",
+      "confirmNewPassword": "确认新密码",
+      "updatePassword": "更新密码",
+      "twoFactor": "两步验证",
+      "twoFactorDesc": "使用身份验证器应用增加账户安全性"
+    },
+    "preferences": {
+      "title": "偏好设置",
+      "theme": "主题",
+      "themeDesc": "选择界面主题",
+      "dark": "深色",
+      "light": "浅色",
+      "language": "语言",
+      "languageDesc": "选择界面语言",
+      "defaultModel": "默认模型",
+      "defaultModelDesc": "新建对话时使用的默认模型",
+      "savePreferences": "保存偏好"
+    },
+    "apikeys": {
+      "title": "API 密钥",
+      "addKey": "+ 添加密钥",
+      "description": "添加您自己的 API 密钥可以直接访问模型，无需通过平台中转。",
+      "keyName": "密钥名称",
+      "addButton": "添加",
+      "createdAt": "创建于 {date}",
+      "lastUsed": "最后使用 {date}"
+    },
+    "billing": {
+      "title": "账单",
+      "balance": "当前余额",
+      "topup": "充值",
+      "usageHistory": "使用记录",
+      "date": "日期",
+      "model": "模型",
+      "tokens": "Tokens",
+      "cost": "费用"
+    },
+    "danger": {
+      "title": "危险操作",
+      "deleteAccount": "删除账户",
+      "deleteAccountDesc": "此操作不可逆。删除账户后，所有数据将被永久删除，包括对话历史、文件、工作流等。",
+      "deleteAccountButton": "删除账户",
+      "clearData": "清除数据",
+      "clearDataDesc": "清除所有对话历史和文件，但保留账户信息。",
+      "clearDataButton": "清除所有数据"
+    }
+  }
+}

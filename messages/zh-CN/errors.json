@@ -1,0 +1,15 @@
+{
+  "errors": {
+    "notFound": {
+      "title": "页面未找到",
+      "description": "抱歉，您访问的页面不存在。",
+      "backHome": "返回首页"
+    },
+    "error": {
+      "title": "出错了",
+      "description": "抱歉，发生了意外错误。",
+      "retry": "重试",
+      "backHome": "返回首页"
+    }
+  }
+}

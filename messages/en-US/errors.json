@@ -1,0 +1,15 @@
+{
+  "errors": {
+    "notFound": {
+      "title": "Page Not Found",
+      "description": "Sorry, the page you are looking for does not exist.",
+      "backHome": "Back to Home"
+    },
+    "error": {
+      "title": "Something Went Wrong",
+      "description": "Sorry, an unexpected error occurred.",
+      "retry": "Retry",
+      "backHome": "Back to Home"
+    }
+  }
+}
