@@ -1,0 +1,86 @@
+name: Build Desktop (Tauri)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'clients/desktop/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'clients/desktop/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: windows-latest
+            target: windows
+            label: Windows
+          - platform: ubuntu-latest
+            target: linux
+            label: Linux
+          - platform: macos-latest
+            target: macos
+            label: macOS
+
+    runs-on: ${{ matrix.platform }}
+    defaults:
+      run:
+        working-directory: clients/desktop
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies (Linux)
+        if: matrix.target == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libgtk-3-dev
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: clients/desktop/src-tauri -> target
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: clients/desktop/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci || npm install
+
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: clients/desktop
+          tagName: desktop-v__VERSION__
+          releaseName: AIOS Desktop v__VERSION__
+          releaseBody: 'Download the installer for your platform below.'
+          releaseDraft: true
+          prerelease: false
+
+      - name: Upload artifacts (${{ matrix.label }})
+        uses: actions/upload-artifact@v4
+        with:
+          name: aios-desktop-${{ matrix.target }}
+          path: |
+            clients/desktop/src-tauri/target/release/bundle/**/*.exe
+            clients/desktop/src-tauri/target/release/bundle/**/*.msi
+            clients/desktop/src-tauri/target/release/bundle/**/*.deb
+            clients/desktop/src-tauri/target/release/bundle/**/*.AppImage
+            clients/desktop/src-tauri/target/release/bundle/**/*.dmg
+            clients/desktop/src-tauri/target/release/bundle/**/*.app
+          retention-days: 90
