@@ -43,9 +43,7 @@ export default function ChatMessage({
       className={`flex gap-4 ${message.role === 'user' ? 'justify-end' : ''}`}
     >
       {message.role === 'assistant' && (
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xs font-bold shrink-0">
-          AI
-        </div>
+        <img src="/icons/icon-192.png" alt="AIOS" className="w-8 h-8 rounded-lg shrink-0 object-cover" />
       )}
 
       <div

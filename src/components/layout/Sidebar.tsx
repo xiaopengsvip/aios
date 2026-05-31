@@ -396,9 +396,7 @@ function SidebarContent({
       {/* Logo */}
       <div className="h-14 flex items-center justify-between px-4 border-b border-border shrink-0">
         <Link href="/chat" className="flex items-center gap-3 overflow-hidden" onClick={handleLinkClick}>
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-sm shrink-0 text-white">
-            A
-          </div>
+          <img src="/icons/icon-192.png" alt="AIOS" className="w-8 h-8 rounded-lg shrink-0 object-cover" />
           <AnimatePresence>
             {!collapsed && (
               <motion.span

@@ -135,7 +135,7 @@ export default function DocsPage() {
       <header className="sticky top-0 z-50 border-b border-border bg-card/80 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 font-bold text-sm">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold">A</div>
+            <img src="/icons/icon-192.png" alt="AIOS" className="w-7 h-7 rounded-lg object-cover" />
             AI 工作台
           </Link>
           <div className="flex items-center gap-3">

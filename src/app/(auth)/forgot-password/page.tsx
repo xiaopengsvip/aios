@@ -55,7 +55,7 @@ export default function ForgotPasswordPage() {
 
         <div className="relative text-center px-12">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-3xl mx-auto mb-8 text-white shadow-xl shadow-indigo-500/20">A</div>
+            <img src="/icons/icon-192.png" alt="AIOS" className="w-16 h-16 rounded-2xl mx-auto mb-8 shadow-xl shadow-indigo-500/20 object-cover" />
             <h2 className="text-3xl font-bold mb-4">{tCommon('appName')}</h2>
             <p className="text-gray-500 dark:text-zinc-500 text-lg max-w-sm mx-auto leading-relaxed">
               {tCommon('appDescription')}
@@ -68,7 +68,7 @@ export default function ForgotPasswordPage() {
       <div className="flex-1 flex items-center justify-center px-6 py-12">
         <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }} className="w-full max-w-[400px]">
           <div className="lg:hidden flex items-center gap-3 mb-10">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-lg text-white shadow-lg shadow-indigo-500/20">A</div>
+            <img src="/icons/icon-192.png" alt="AIOS" className="w-10 h-10 rounded-xl shadow-lg shadow-indigo-500/20 object-cover" />
             <span className="text-xl font-semibold">{tCommon('appName')}</span>
           </div>
 

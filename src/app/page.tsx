@@ -295,7 +295,7 @@ export default function LandingPage() {
       <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${scrolled ? 'glass shadow-lg' : ''}`}>
         <div className="container-responsive flex items-center justify-between h-14 sm:h-16">
           <Link href="/" className="flex items-center gap-2 font-bold text-lg">
-            <span className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-sm font-black text-white">A</span>
+            <img src="/icons/icon-192.png" alt="AIOS" className="w-8 h-8 rounded-lg object-cover" />
             <span className="hidden xs:inline">AIOS</span>
           </Link>
 
@@ -612,7 +612,7 @@ export default function LandingPage() {
 
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 sm:pt-8 border-t border-border">
             <div className="flex items-center gap-2">
-              <span className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-[10px] font-black text-white">A</span>
+              <img src="/icons/icon-192.png" alt="AIOS" className="w-7 h-7 rounded-lg object-cover" />
               <span className="text-sm font-semibold">AIOS</span>
             </div>
             <div className="text-xs sm:text-sm text-muted-foreground">
