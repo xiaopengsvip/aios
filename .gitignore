@@ -60,3 +60,16 @@ ecosystem.config.js
 
 # Hermes
 .hermes/
+
+# === Clients (Android/Desktop/iOS) ===
+clients/android/.gradle/
+clients/android/build/
+clients/android/app/build/
+clients/android/local.properties
+clients/desktop/node_modules/
+clients/desktop/dist/
+clients/desktop/src-tauri/target/
+*.apk
+*.exe
+*.msi
+*.dmg
