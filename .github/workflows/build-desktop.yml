@@ -5,27 +5,22 @@ on:
     branches: [main]
     paths:
       - 'clients/desktop/**'
-  pull_request:
-    branches: [main]
-    paths:
-      - 'clients/desktop/**'
   workflow_dispatch:
 
 jobs:
   build:
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
         include:
-          - platform: windows-latest
-            target: windows
-            label: Windows
-          - platform: ubuntu-latest
-            target: linux
-            label: Linux
           - platform: macos-latest
-            target: macos
-            label: macOS
+            args: '--target aarch64-apple-darwin'
+          - platform: ubuntu-22.04
+            args: ''
+          - platform: windows-latest
+            args: ''
 
     runs-on: ${{ matrix.platform }}
     defaults:
@@ -33,41 +28,44 @@ jobs:
         working-directory: clients/desktop
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install system dependencies (Linux)
-        if: matrix.target == 'linux'
+      - name: Install dependencies (Linux)
+        if: matrix.platform == 'ubuntu-22.04'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libgtk-3-dev
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
 
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin' || '' }}
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
-          workspaces: clients/desktop/src-tauri -> target
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
+          workspaces: './src-tauri -> target'
 
       - name: Install frontend dependencies
         run: npm install
 
-      - name: Install Tauri CLI
-        run: npm install -g @tauri-apps/cli@latest
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: clients/desktop
+          args: ${{ matrix.args }}
 
-      - name: Build Tauri app
-        run: tauri build
-
-      - name: Upload artifacts (${{ matrix.label }})
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: aios-desktop-${{ matrix.target }}
+          name: aios-desktop-${{ matrix.platform }}
           path: |
             clients/desktop/src-tauri/target/release/bundle/**/*.exe
             clients/desktop/src-tauri/target/release/bundle/**/*.msi

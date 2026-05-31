@@ -5,10 +5,6 @@ on:
     branches: [main]
     paths:
       - 'clients/ios/**'
-  pull_request:
-    branches: [main]
-    paths:
-      - 'clients/ios/**'
   workflow_dispatch:
 
 jobs:
@@ -19,42 +15,48 @@ jobs:
         working-directory: clients/ios
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode.app
 
-      - name: Build .app for device (no signing)
+      - name: Build for simulator (compile check)
+        run: |
+          xcodebuild build \
+            -project AiOS.xcodeproj \
+            -scheme AiOS \
+            -sdk iphonesimulator \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Build for device (unsigned)
         run: |
           xcodebuild build \
             -project AiOS.xcodeproj \
             -scheme AiOS \
             -sdk iphoneos \
             -configuration Release \
-            -derivedDataPath build \
-            SWIFT_VERSION=5.0 \
+            -derivedDataPath DerivedData \
             CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO \
-            | xcpretty || true
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Find .app
+        id: find
+        run: |
+          APP=$(find DerivedData -name "AiOS.app" -type d | head -1)
+          echo "path=$APP" >> "$GITHUB_OUTPUT"
+          ls -la "$APP"
 
       - name: Package .ipa
         run: |
           mkdir -p Payload
-          cp -r build/Build/Products/Release-iphoneos/AiOS.app Payload/
-          zip -r AiOS.ipa Payload
-          rm -rf Payload
+          cp -r "${{ steps.find.outputs.path }}" Payload/
+          zip -r -y AiOS.ipa Payload
+          ls -lh AiOS.ipa
 
-      - name: Upload .ipa
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: aios-ios-ipa
+          name: aios-ios
           path: clients/ios/AiOS.ipa
-          retention-days: 30
-
-      - name: Upload .app
-        uses: actions/upload-artifact@v4
-        with:
-          name: aios-ios-app
-          path: clients/ios/build/Build/Products/Release-iphoneos/AiOS.app
           retention-days: 30
