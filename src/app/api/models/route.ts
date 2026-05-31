@@ -47,7 +47,7 @@ export async function GET() {
       orderBy: [{ provider: { name: 'asc' } }, { name: 'asc' }],
     });
 
-    // 为每个模型附加在线状态
+    // 为每个模型附加在线状态 & Xiaomi MiMo 优先排序
     const modelsWithStatus = models.map((model) => {
       const provider = model.provider;
       // 判断在线状态：provider.status 为 healthy 或有近期健康检查
@@ -61,6 +61,14 @@ export async function GET() {
         providerLatency: provider.avgLatency,
         providerSuccessRate: provider.successRate,
       };
+    });
+
+    // Xiaomi MiMo 模型排最前
+    modelsWithStatus.sort((a, b) => {
+      const aXiaomi = a.provider.name === 'Xiaomi MiMo' ? 0 : 1;
+      const bXiaomi = b.provider.name === 'Xiaomi MiMo' ? 0 : 1;
+      if (aXiaomi !== bXiaomi) return aXiaomi - bXiaomi;
+      return a.name.localeCompare(b.name);
     });
 
     return NextResponse.json({ models: modelsWithStatus });

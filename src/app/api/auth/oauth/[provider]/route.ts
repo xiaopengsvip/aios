@@ -13,7 +13,7 @@ import {
 } from '@/lib/auth/oauth';
 
 function getOrigin(req: NextRequest): string {
-  const allowed = (process.env.ALLOWED_ORIGINS || 'https://aios.allapple.top,https://vios.top')
+  const allowed = (process.env.ALLOWED_ORIGINS || 'https://aios.vios.top,https://vios.top')
     .split(',').map(s => s.trim());
   const host = req.headers.get('x-forwarded-host') || req.headers.get('host') || '';
   const proto = req.headers.get('x-forwarded-proto') || 'https';

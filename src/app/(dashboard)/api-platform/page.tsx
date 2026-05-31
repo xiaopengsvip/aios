@@ -234,7 +234,7 @@ export default function ApiPlatformPage() {
 
           <div className="rounded-xl border border-border bg-card p-4">
             <h3 className="text-sm font-semibold mb-3">📝 示例请求</h3>
-            <pre className="bg-background rounded-lg p-3 text-xs font-mono overflow-x-auto whitespace-pre">{`curl -X POST https://aios.allapple.top/v1/chat/completions \
+            <pre className="bg-background rounded-lg p-3 text-xs font-mono overflow-x-auto whitespace-pre">{`curl -X POST https://aios.vios.top/v1/chat/completions \
   -H "Authorization: Bearer ak_xxxxxxxx" \
   -H "Content-Type: application/json" \
   -d '{

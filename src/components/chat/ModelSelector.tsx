@@ -12,12 +12,13 @@ interface Model {
 }
 
 const defaultModels: Model[] = [
+  { id: 'mimo-v2.5-pro', name: 'MiMo V2.5 Pro', provider: 'Xiaomi MiMo', icon: '🟠', description: '小米旗舰推理模型 · 1M context' },
+  { id: 'mimo-v2.5', name: 'MiMo V2.5', provider: 'Xiaomi MiMo', icon: '🟠', description: '多模态理解 · 图片/音频/视频' },
+  { id: 'mimo-v2-flash', name: 'MiMo V2 Flash', provider: 'Xiaomi MiMo', icon: '🟠', description: '轻量快速模型' },
   { id: 'gpt-4o', name: 'GPT-4o', provider: 'OpenAI', icon: '🟢', description: '多模态旗舰模型' },
   { id: 'gpt-4o-mini', name: 'GPT-4o Mini', provider: 'OpenAI', icon: '🟢', description: '轻量高效模型' },
-  { id: 'claude-sonnet-4-20250514', name: 'Claude 4 Sonnet', provider: 'Anthropic', icon: '🟠', description: '平衡性能与速度' },
-  { id: 'claude-opus-4-20250514', name: 'Claude 4 Opus', provider: 'Anthropic', icon: '🟠', description: '最强推理能力' },
+  { id: 'claude-sonnet-4-20250514', name: 'Claude 4 Sonnet', provider: 'Anthropic', icon: '🟣', description: '平衡性能与速度' },
   { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro', provider: 'Google', icon: '🔵', description: '谷歌旗舰模型' },
-  { id: 'deepseek-chat', name: 'DeepSeek V3', provider: 'DeepSeek', icon: '🟣', description: '深度推理模型' },
   { id: 'qwen-max', name: 'Qwen 3 Max', provider: 'Alibaba', icon: '🟡', description: '通义千问旗舰' },
   { id: 'grok-3', name: 'Grok 3', provider: 'xAI', icon: '⚫', description: 'xAI 旗舰模型' },
 ];
@@ -33,7 +34,7 @@ export default function ModelSelector({
 }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
-  const [favorites, setFavorites] = useState<string[]>(['gpt-4o', 'claude-sonnet-4-20250514']);
+  const [favorites, setFavorites] = useState<string[]>(['mimo-v2.5-pro', 'mimo-v2.5']);
 
   const filtered = useMemo(() => {
     if (!search) return models;

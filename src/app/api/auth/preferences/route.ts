@@ -16,7 +16,7 @@ export async function GET() {
       locale: user.locale || 'zh-CN',
       timezone: user.timezone || 'Asia/Shanghai',
       theme: prefs.theme || 'dark',
-      defaultModel: prefs.defaultModel || 'gpt-4o',
+      defaultModel: prefs.defaultModel || 'mimo-v2.5-pro',
     });
   } catch (e: any) {
     if (e?.status === 401) return NextResponse.json({ error: '未登录' }, { status: 401 });

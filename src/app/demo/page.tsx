@@ -81,7 +81,7 @@ print(quicksort([3, 6, 8, 10, 1, 2, 1]))
     desc: 'OpenAI 兼容接口，支持第三方集成',
     demo: {
       type: 'api',
-      code: `curl -X POST https://aios.allapple.top/v1/chat/completions \\
+      code: `curl -X POST https://aios.vios.top/v1/chat/completions \\
   -H "Authorization: Bearer sk-..." \\
   -H "Content-Type: application/json" \\
   -d '{

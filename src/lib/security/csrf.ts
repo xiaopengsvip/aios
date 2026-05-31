@@ -27,7 +27,7 @@ export function csrfMiddleware(request: Request): boolean {
   // For API routes, check Origin/Referer header as fallback
   const origin = request.headers.get('origin') || request.headers.get('referer');
   if (origin) {
-    const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'https://aios.allapple.top,https://vios.top')
+    const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'https://aios.vios.top,https://vios.top')
       .split(',').map(s => s.trim());
     const allowed = process.env.NEXT_PUBLIC_APP_URL || 'https://aios.vios.top';
     if (!allowedOrigins.includes(allowed)) allowedOrigins.push(allowed);

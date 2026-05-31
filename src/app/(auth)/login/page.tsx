@@ -27,15 +27,15 @@ export default function LoginPage() {
     const oauthError = searchParams.get('error');
     if (oauthError) {
       const errorMessages: Record<string, string> = {
-        oauth_denied: '授权被拒绝',
-        oauth_invalid: '无效的授权请求',
-        oauth_state_mismatch: '授权状态不匹配，请重试',
-        oauth_invalid_state: '无效的授权状态',
-        oauth_failed: 'OAuth 登录失败',
-        oauth_init_failed: 'OAuth 初始化失败',
-        not_logged_in: '请先登录后再绑定账号',
+        oauth_denied: t('oauthDenied'),
+        oauth_invalid: t('oauthInvalid'),
+        oauth_state_mismatch: t('oauthStateMismatch'),
+        oauth_invalid_state: t('oauthInvalidState'),
+        oauth_failed: t('oauthFailed'),
+        oauth_init_failed: t('oauthInitFailed'),
+        not_logged_in: t('oauthNotLoggedIn'),
       };
-      setError(errorMessages[oauthError] || `OAuth 错误: ${oauthError}`);
+      setError(errorMessages[oauthError] || `${t('oauthError')}: ${oauthError}`);
     }
     
     const oauthBind = searchParams.get('oauth_bind');
@@ -139,10 +139,10 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2">账号</label>
-              <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="邮箱 / AI 账号" required
+              <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2">{t('email')}</label>
+              <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t('emailPlaceholder')} required
                 className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-white/[0.04] border border-gray-200 dark:border-white/[0.08] text-foreground placeholder-gray-400 dark:placeholder-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/30 transition-all text-sm" />
-              <p className="mt-1.5 text-xs text-gray-400 dark:text-zinc-600">支持邮箱或 AI 账号（如 10000、10001）登录</p>
+              <p className="mt-1.5 text-xs text-gray-400 dark:text-zinc-600">{t('emailHint')}</p>
             </div>
 
             <div>

@@ -17,7 +17,7 @@ export const siteConfig = {
   // 域名
   url: 'https://aios.vios.top',
   altUrl: 'https://vios.top',
-  betaUrl: 'https://beta-aios.allapple.top',
+  betaUrl: 'https://beta-aios.vios.top',
 
   // 公司信息
   company: 'All Apple',

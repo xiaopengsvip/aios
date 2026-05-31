@@ -8,9 +8,9 @@ const SMTP_HOST = process.env.SMTP_HOST || '';
 const SMTP_PORT = parseInt(process.env.SMTP_PORT || '465');
 const SMTP_USER = process.env.SMTP_USER || '';
 const SMTP_PASS = process.env.SMTP_PASS || '';
-const MAIL_FROM = process.env.MAIL_FROM || 'noreply@allapple.top';
+const MAIL_FROM = process.env.MAIL_FROM || 'noreply@vios.top';
 const MAIL_FROM_NAME = process.env.MAIL_FROM_NAME || 'AI Workspace OS';
-const TEST_EMAIL = process.env.TEST_EMAIL || 'test@allapple.top';
+const TEST_EMAIL = process.env.TEST_EMAIL || 'test@vios.top';
 
 // 创建 transporter
 const transporter = nodemailer.createTransport({

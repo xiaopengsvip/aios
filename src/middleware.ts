@@ -8,6 +8,10 @@ const PUBLIC_PATHS = [
   '/register',
   '/register/complete',
   '/forgot-password',
+  '/docs',
+  '/demo',
+  '/marketplace',
+  '/api-platform',
   '/api/auth/login',
   '/api/auth/register',
   '/api/auth/send-code',
@@ -29,6 +33,8 @@ function isPublicPath(pathname: string): boolean {
   if (PUBLIC_PATHS.includes(pathname)) return true;
   if (pathname.startsWith('/api/auth/')) return true;
   if (pathname.startsWith('/api/v1/')) return true;
+  if (pathname.startsWith('/api/pages/')) return true;
+  if (pathname.startsWith('/p/')) return true;
   if (pathname.startsWith('/_next/') || pathname.startsWith('/favicon')) return true;
   if (pathname.includes('.')) return true; // static files
   return false;

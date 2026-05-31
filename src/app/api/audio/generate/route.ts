@@ -16,10 +16,22 @@ export async function POST(req: NextRequest) {
   if (modelId) {
     model = await prisma.model.findUnique({ where: { id: modelId }, include: { provider: true } });
   } else {
-    model = await prisma.model.findFirst({
-      where: { isEnabled: true, name: { contains: 'tts', mode: 'insensitive' } },
-      include: { provider: true },
-    });
+    // 优先小米 MiMo TTS，再 fallback 其他
+    const ttsPriority = ['mimo-v2.5-tts', 'mimo-v2.5-tts-voiceclone', 'mimo-v2.5-tts-voicedesign'];
+    for (const ttsName of ttsPriority) {
+      model = await prisma.model.findFirst({
+        where: { isEnabled: true, name: ttsName },
+        include: { provider: true },
+      });
+      if (model) break;
+    }
+    // Fallback: 任意 TTS 模型
+    if (!model) {
+      model = await prisma.model.findFirst({
+        where: { isEnabled: true, name: { contains: 'tts', mode: 'insensitive' } },
+        include: { provider: true },
+      });
+    }
   }
 
   if (!model) {

@@ -11,7 +11,7 @@ const SECTIONS = [
     content: [
       {
         heading: '注册账号',
-        text: '访问 aios.allapple.top/register 注册账号，完成邮箱验证后即可使用。',
+        text: '访问 aios.vios.top/register 注册账号，完成邮箱验证后即可使用。',
       },
       {
         heading: '选择模型',

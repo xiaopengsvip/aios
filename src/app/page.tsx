@@ -80,7 +80,7 @@ function HeroDemo() {
             <div className="w-3 h-3 rounded-full bg-green-500/80" />
           </div>
           <div className="flex-1 text-center">
-            <span className="text-xs text-muted-foreground font-mono">aios.allapple.top/chat</span>
+            <span className="text-xs text-muted-foreground font-mono">aios.vios.top/chat</span>
           </div>
           <div className="flex gap-2">
             <ThemeToggle />
@@ -92,7 +92,7 @@ function HeroDemo() {
         <div className="p-4 sm:p-6 space-y-4 min-h-[320px] sm:min-h-[400px]">
           {/* Model selector bar */}
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span className="px-2 py-1 rounded-md bg-indigo-500/10 text-indigo-400 font-medium">GPT-4o</span>
+            <span className="px-2 py-1 rounded-md bg-indigo-500/10 text-indigo-400 font-medium">MiMo V2.5 Pro</span>
             <span>·</span>
             <span>Streaming</span>
             <span>·</span>

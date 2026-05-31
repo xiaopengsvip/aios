@@ -35,7 +35,7 @@
     "subtitle": "8 core modules covering every AI scenario",
     "chat": {
       "name": "AI Chat",
-      "desc": "Multi-model intelligent chat with GPT-4o / Claude 4 / Gemini 2.5. Context memory and multi-turn reasoning.",
+      "desc": "Multi-model intelligent chat with MiMo V2.5 / GPT-5.5 / Claude Opus 4.8 / Gemini 3.5 / Grok 4. Context memory and multi-turn reasoning.",
       "tag": "Core"
     },
     "agent": {
@@ -65,7 +65,7 @@
     },
     "image": {
       "name": "AI Image",
-      "desc": "DALL-E / Stable Diffusion / Flux full model coverage. High-quality image generation and editing.",
+      "desc": "DALL-E 3 / Stable Diffusion / Flux / JimengAI full model coverage. High-quality image generation and editing.",
       "tag": "Design"
     },
     "audio": {
@@ -117,7 +117,7 @@
     "items": [
       {
         "q": "Which AI models does AIOS support?",
-        "a": "30+ models integrated including Xiaomi MiMo V2.5 series, Volcengine Ark (Doubao Seed 2.0, DeepSeek V4, GLM-4.7), and more. One-click switching with auto-routing."
+        "a": "50+ models integrated including Xiaomi MiMo V2.5 Pro, GPT-5.5, Claude Opus 4.8, Gemini 3.5, DeepSeek V4, Qwen 3.7, Grok 4, GLM 5, Llama 4, and more. One-click switching with auto-routing."
       },
       {
         "q": "What are MCP tools?",
