@@ -1,0 +1,13 @@
+{
+  "latest": {
+    "versionCode": 1,
+    "versionName": "0.0.1-beta",
+    "minSupportedCode": 1,
+    "downloadUrl": "https://tc.allapple.top/raw/f8745a14ecde",
+    "releaseNotes": "0.0.1-beta 初始开发版\n- 登录/注册/OAuth\n- AI 对话流式输出\n- 13 个功能页面\n- 应用内在线更新",
+    "releasedAt": "2026-06-01T00:00:00Z",
+    "apkSize": 9180400,
+    "filename": "aios-0.0.1-beta-1.apk"
+  },
+  "history": []
+}

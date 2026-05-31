@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
+import { readFile } from 'fs/promises';
+import path from 'path';
 
-// Android app version config
-// Update this when publishing a new release
-const LATEST_VERSION = {
+const VERSION_FILE = path.join(process.cwd(), 'data', 'app-versions.json');
+
+// Default fallback if no version file exists
+const DEFAULT_VERSION = {
   versionCode: 1,
   versionName: '0.0.1-beta',
   minSupportedCode: 1,
@@ -12,5 +15,12 @@ const LATEST_VERSION = {
 };
 
 export async function GET() {
-  return NextResponse.json(LATEST_VERSION);
+  try {
+    const data = await readFile(VERSION_FILE, 'utf-8');
+    const versions = JSON.parse(data);
+    return NextResponse.json(versions.latest);
+  } catch {
+    // Fallback to default
+    return NextResponse.json(DEFAULT_VERSION);
+  }
 }
