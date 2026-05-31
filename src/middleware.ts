@@ -22,6 +22,9 @@ const PUBLIC_PATHS = [
   '/v1/chat/completions',
   '/v1/models',
   '/api/app/version',
+  '/api/app/upload',
+  '/api/app/install',
+  '/api/app/stats',
   '/api/auth/oauth',
 ];
 

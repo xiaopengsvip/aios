@@ -40,10 +40,37 @@ class UpdateManager(
     private val json: Json
 ) {
     private val baseUrl = "https://aios.vios.top"
+    private val prefs = context.getSharedPreferences("aios_prefs", Context.MODE_PRIVATE)
     private val client = OkHttpClient.Builder()
         .connectTimeout(10, TimeUnit.SECONDS)
         .readTimeout(10, TimeUnit.SECONDS)
         .build()
+
+    /**
+     * Report device install on first launch.
+     * Uses SharedPreferences to track if already reported.
+     */
+    suspend fun reportInstall() = withContext(Dispatchers.IO) {
+        val deviceId = prefs.getString("device_id", null)
+            ?: java.util.UUID.randomUUID().toString().also { prefs.edit().putString("device_id", it).apply() }
+
+        // Report on every launch (updates lastSeen)
+        try {
+            val body = org.json.JSONObject().apply {
+                put("deviceId", deviceId)
+                put("platform", "android")
+                put("appVersion", getCurrentVersionName())
+                put("osVersion", "Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})")
+                put("deviceModel", "${Build.MANUFACTURER} ${Build.MODEL}")
+            }
+            val request = Request.Builder()
+                .url("$baseUrl/api/app/install")
+                .post(okhttp3.RequestBody.create(
+                    okhttp3.MediaType.parse("application/json"), body.toString()))
+                .build()
+            client.newCall(request).execute()
+        } catch (_: Exception) { }
+    }
 
     fun getCurrentVersionCode(): Int {
         return try {

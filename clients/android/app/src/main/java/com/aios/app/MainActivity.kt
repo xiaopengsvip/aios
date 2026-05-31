@@ -65,6 +65,8 @@ class MainActivity : ComponentActivity() {
 
                 LaunchedEffect(Unit) {
                     isLoggedIn = authManager.isLoggedIn()
+                    // Report device install
+                    updateManager.reportInstall()
                     // Check for updates
                     val versionInfo = updateManager.checkForUpdate()
                     if (versionInfo != null) {

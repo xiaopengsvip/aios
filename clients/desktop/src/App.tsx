@@ -6,9 +6,8 @@ import { Agent } from "./features/Agent";
 import { Settings } from "./features/Settings";
 import { UpdateDialog } from "./components/UpdateDialog";
 import { AuthService } from "./services/auth";
-import { api, UpdateInfo } from "./services/api";
+import { api, UpdateInfo, APP_VERSION } from "./services/api";
 
-const APP_VERSION = "0.0.1";
 type Page = "login" | "chat" | "agent" | "workflow" | "settings";
 
 export default function App() {
@@ -40,6 +39,9 @@ export default function App() {
     api.checkUpdate(APP_VERSION).then((info) => {
       if (info) setUpdateInfo(info);
     });
+
+    // Report device install
+    api.reportInstall();
   }, []);
 
   const handleLogin = () => {

@@ -1,4 +1,5 @@
 const BASE_URL = "https://aios.vios.top";
+export const APP_VERSION = "0.0.1";
 
 interface RequestConfig {
   method?: string;
@@ -154,6 +155,39 @@ class ApiService {
       if (this.isNewerVersion(info.versionName, currentVersion)) return info;
       return null;
     } catch { return null; }
+  }
+
+  // ── Device Install Report ──
+  async reportInstall() {
+    try {
+      let deviceId = localStorage.getItem("aios_device_id");
+      if (!deviceId) {
+        deviceId = crypto.randomUUID();
+        localStorage.setItem("aios_device_id", deviceId);
+      }
+      const ua = navigator.userAgent;
+      // Detect OS from user agent
+      let osVersion = "Unknown";
+      if (ua.includes("Windows NT 10")) osVersion = "Windows 10/11";
+      else if (ua.includes("Windows NT 6.3")) osVersion = "Windows 8.1";
+      else if (ua.includes("Windows NT 6.1")) osVersion = "Windows 7";
+      else if (ua.includes("Mac OS X")) {
+        const m = ua.match(/Mac OS X (\d+[._]\d+[._]?\d*)/);
+        osVersion = `macOS ${m?.[1]?.replace(/_/g, ".") || ""}`;
+      } else if (ua.includes("Linux")) osVersion = "Linux";
+
+      await fetch(`${this.baseUrl}/api/app/install`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          deviceId,
+          platform: "windows",
+          appVersion: APP_VERSION,
+          osVersion,
+          deviceModel: "Desktop PC",
+        }),
+      });
+    } catch { /* silent */ }
   }
 
   private isNewerVersion(remote: string, local: string): boolean {
