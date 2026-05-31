@@ -77,4 +77,10 @@ jobs:
             clients/desktop/src-tauri/target/release/bundle/**/*.AppImage
             clients/desktop/src-tauri/target/release/bundle/**/*.dmg
             clients/desktop/src-tauri/target/release/bundle/**/*.app
+            clients/desktop/src-tauri/target/*/release/bundle/**/*.exe
+            clients/desktop/src-tauri/target/*/release/bundle/**/*.msi
+            clients/desktop/src-tauri/target/*/release/bundle/**/*.deb
+            clients/desktop/src-tauri/target/*/release/bundle/**/*.AppImage
+            clients/desktop/src-tauri/target/*/release/bundle/**/*.dmg
+            clients/desktop/src-tauri/target/*/release/bundle/**/*.app
           retention-days: 90
