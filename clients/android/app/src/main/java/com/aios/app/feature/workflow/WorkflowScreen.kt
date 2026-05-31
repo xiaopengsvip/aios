@@ -48,9 +48,9 @@ class WorkflowViewModel @Inject constructor(private val api: ApiService) : ViewM
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WorkflowScreen(vm: WorkflowViewModel = hiltViewModel()) {
+fun WorkflowScreen(onBack: () -> Unit = {}, vm: WorkflowViewModel = hiltViewModel()) {
     val s by vm.state.collectAsState()
-    Scaffold(topBar = { TopAppBar(title = { Text("工作流") }, actions = { IconButton(onClick = { vm.load() }) { Icon(Icons.Default.Refresh, "刷新") } }) }) { pad ->
+    Scaffold(topBar = { TopAppBar(title = { Text("工作流") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回") } }, actions = { IconButton(onClick = { vm.load() }) { Icon(Icons.Default.Refresh, "刷新") } }) }) { pad ->
         if (s.loading) { Box(Modifier.fillMaxSize().padding(pad), Alignment.Center) { CircularProgressIndicator() } }
         else if (s.workflows.isEmpty()) { Box(Modifier.fillMaxSize().padding(pad), Alignment.Center) { Text("暂无工作流") } }
         else {

@@ -73,7 +73,7 @@ class SearchViewModel @Inject constructor(private val api: ApiService) : ViewMod
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchScreen(viewModel: SearchViewModel = hiltViewModel()) {
+fun SearchScreen(onBack: () -> Unit = {}, viewModel: SearchViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsState()
 
     Scaffold(

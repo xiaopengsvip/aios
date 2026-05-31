@@ -12,8 +12,8 @@ import com.aios.app.feature.common.EmptyState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VideoScreen() {
-    Scaffold(topBar = { TopAppBar(title = { Text("视频生成") }) }) { pad ->
+fun VideoScreen(onBack: () -> Unit = {}) {
+    Scaffold(topBar = { TopAppBar(title = { Text("视频生成") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回") } }) }) { pad ->
         EmptyState(icon = Icons.Default.VideoCameraFront, title = "视频生成", subtitle = "使用 AI 生成视频内容，功能即将上线", modifier = Modifier.padding(pad))
     }
 }

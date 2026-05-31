@@ -40,9 +40,9 @@ class CodeViewModel @Inject constructor(private val api: ApiService) : ViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CodeScreen(vm: CodeViewModel = hiltViewModel()) {
+fun CodeScreen(onBack: () -> Unit = {}, vm: CodeViewModel = hiltViewModel()) {
     val s by vm.state.collectAsState()
-    Scaffold(topBar = { TopAppBar(title = { Text("代码执行") }) }) { pad ->
+    Scaffold(topBar = { TopAppBar(title = { Text("代码执行") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回") } }) }) { pad ->
         Column(Modifier.fillMaxSize().padding(pad).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             OutlinedTextField(s.code, { vm.updateCode(it) }, Modifier.fillMaxWidth().weight(1f), label = { Text("输入代码") }, textStyle = LocalTextStyle.current.copy(fontFamily = FontFamily.Monospace), minLines = 8)
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {

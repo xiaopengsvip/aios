@@ -38,9 +38,9 @@ class AudioViewModel @Inject constructor(private val api: ApiService) : ViewMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AudioScreen(vm: AudioViewModel = hiltViewModel()) {
+fun AudioScreen(onBack: () -> Unit = {}, vm: AudioViewModel = hiltViewModel()) {
     val s by vm.state.collectAsState()
-    Scaffold(topBar = { TopAppBar(title = { Text("音频生成") }) }) { pad ->
+    Scaffold(topBar = { TopAppBar(title = { Text("音频生成") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回") } }) }) { pad ->
         Column(Modifier.fillMaxSize().padding(pad).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             OutlinedTextField(s.prompt, { vm.updatePrompt(it) }, Modifier.fillMaxWidth(), label = { Text("描述你想生成的音频") }, minLines = 3)
             Button(onClick = { vm.generate() }, enabled = !s.generating && s.prompt.isNotBlank(), modifier = Modifier.fillMaxWidth()) {

@@ -38,9 +38,9 @@ class CreditsViewModel @Inject constructor(private val api: ApiService) : ViewMo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreditsScreen(vm: CreditsViewModel = hiltViewModel()) {
+fun CreditsScreen(onBack: () -> Unit = {}, vm: CreditsViewModel = hiltViewModel()) {
     val s by vm.state.collectAsState()
-    Scaffold(topBar = { TopAppBar(title = { Text("积分余额") }, actions = { IconButton(onClick = { vm.load() }) { Icon(Icons.Default.Refresh, "刷新") } }) }) { pad ->
+    Scaffold(topBar = { TopAppBar(title = { Text("积分余额") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回") } }, actions = { IconButton(onClick = { vm.load() }) { Icon(Icons.Default.Refresh, "刷新") } }) }) { pad ->
         if (s.loading) { Box(Modifier.fillMaxSize().padding(pad), Alignment.Center) { CircularProgressIndicator() } }
         else if (s.error != null) { Box(Modifier.fillMaxSize().padding(pad), Alignment.Center) { Text("错误: ${s.error}") } }
         else {

@@ -38,9 +38,9 @@ class UsageViewModel @Inject constructor(private val api: ApiService) : ViewMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UsageScreen(vm: UsageViewModel = hiltViewModel()) {
+fun UsageScreen(onBack: () -> Unit = {}, vm: UsageViewModel = hiltViewModel()) {
     val s by vm.state.collectAsState()
-    Scaffold(topBar = { TopAppBar(title = { Text("用量统计") }, actions = { IconButton(onClick = { vm.load() }) { Icon(Icons.Default.Refresh, "刷新") } }) }) { pad ->
+    Scaffold(topBar = { TopAppBar(title = { Text("用量统计") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回") } }, actions = { IconButton(onClick = { vm.load() }) { Icon(Icons.Default.Refresh, "刷新") } }) }) { pad ->
         if (s.loading) { Box(Modifier.fillMaxSize().padding(pad), Alignment.Center) { CircularProgressIndicator() } }
         else if (s.error != null) { Box(Modifier.fillMaxSize().padding(pad), Alignment.Center) { Text("错误: ${s.error}") } }
         else {

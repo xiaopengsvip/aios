@@ -55,9 +55,9 @@ class KnowledgeViewModel @Inject constructor(private val api: ApiService) : View
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun KnowledgeScreen(vm: KnowledgeViewModel = hiltViewModel()) {
+fun KnowledgeScreen(onBack: () -> Unit? = null, vm: KnowledgeViewModel = hiltViewModel()) {
     val s by vm.state.collectAsState()
-    Scaffold(topBar = { TopAppBar(title = { Text("知识库") }, actions = { IconButton(onClick = { vm.load() }) { Icon(Icons.Default.Refresh, "刷新") } }) }) { pad ->
+    Scaffold(topBar = { TopAppBar(title = { Text("知识库") }, navigationIcon = onBack?.let { { IconButton(onClick = it) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回") } } }, actions = { IconButton(onClick = { vm.load() }) { Icon(Icons.Default.Refresh, "刷新") } }) }) { pad ->
         if (s.loading) { Box(Modifier.fillMaxSize().padding(pad), Alignment.Center) { CircularProgressIndicator() } }
         else {
             LazyColumn(Modifier.fillMaxSize().padding(pad), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {

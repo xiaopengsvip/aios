@@ -13,7 +13,7 @@ import com.aios.app.feature.common.EmptyState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ApiPlatformScreen() {
+fun ApiPlatformScreen(onBack: () -> Unit = {}) {
     Scaffold(
         topBar = { TopAppBar(title = { Text("API平台") }) }
     ) { padding ->

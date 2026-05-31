@@ -80,12 +80,12 @@ class ImageViewModel @Inject constructor(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ImageScreen(viewModel: ImageViewModel = hiltViewModel()) {
+fun ImageScreen(onBack: () -> Unit = {}, viewModel: ImageViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsState()
     val styles = listOf("realistic" to "写实", "anime" to "动漫", "oil" to "油画", "watercolor" to "水彩", "sketch" to "素描")
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("AI 绘图") }) }
+        topBar = { TopAppBar(title = { Text("AI 绘图") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回") } }) }
     ) { padding ->
         Column(
             modifier = Modifier

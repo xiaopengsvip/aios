@@ -59,11 +59,11 @@ class FilesViewModel @Inject constructor(private val api: ApiService) : ViewMode
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FilesScreen(vm: FilesViewModel = hiltViewModel()) {
+fun FilesScreen(onBack: () -> Unit? = null, vm: FilesViewModel = hiltViewModel()) {
     val s by vm.state.collectAsState()
     val ctx = LocalContext.current
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri -> uri?.let { vm.upload(it, ctx) } }
-    Scaffold(topBar = { TopAppBar(title = { Text("文件管理") }, actions = {
+    Scaffold(topBar = { TopAppBar(title = { Text("文件管理") }, navigationIcon = onBack?.let { { IconButton(onClick = it) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回") } } }, actions = {
         IconButton(onClick = { vm.load() }) { Icon(Icons.Default.Refresh, "刷新") }
         IconButton(onClick = { launcher.launch("*/*") }, enabled = !s.uploading) { Icon(Icons.Default.Upload, "上传") }
     }) }) { pad ->

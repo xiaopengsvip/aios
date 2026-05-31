@@ -5,9 +5,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -16,6 +18,9 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.*
 import com.aios.app.core.auth.AuthManager
+import com.aios.app.core.update.UpdateManager
+import com.aios.app.core.update.UpdateDialog
+import com.aios.app.core.update.UpdateState
 import com.aios.app.core.navigation.Screen
 import com.aios.app.core.theme.AIOSTheme
 import com.aios.app.feature.auth.LoginScreen
@@ -45,6 +50,7 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
 
     @Inject lateinit var authManager: AuthManager
+    @Inject lateinit var updateManager: UpdateManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -56,9 +62,15 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val scope = rememberCoroutineScope()
                 var isLoggedIn by remember { mutableStateOf<Boolean?>(null) }
+                var updateState by remember { mutableStateOf(UpdateState()) }
 
                 LaunchedEffect(Unit) {
                     isLoggedIn = authManager.isLoggedIn()
+                    // Check for updates
+                    val versionInfo = updateManager.checkForUpdate()
+                    if (versionInfo != null) {
+                        updateState = UpdateState(available = true, versionInfo = versionInfo)
+                    }
                 }
 
                 when (isLoggedIn) {
@@ -112,10 +124,46 @@ class MainActivity : ComponentActivity() {
                         })
                     }
                 }
+
+                // Update dialog
+                if (updateState.available && updateState.versionInfo != null) {
+                    val isForce = updateState.versionInfo!!.versionCode < updateManager.getCurrentVersionCode().let {
+                        // Force if below min supported
+                        updateState.versionInfo!!.minSupportedCode
+                    } && updateManager.getCurrentVersionCode() < updateState.versionInfo!!.minSupportedCode
+
+                    UpdateDialog(
+                        versionInfo = updateState.versionInfo!!,
+                        downloading = updateState.downloading,
+                        progress = updateState.progress,
+                        onDownload = {
+                            scope.launch {
+                                updateState = updateState.copy(downloading = true, progress = 0)
+                                val file = updateManager.downloadApk(updateState.versionInfo!!.downloadUrl) { progress ->
+                                    updateState = updateState.copy(progress = progress)
+                                }
+                                if (file != null) {
+                                    updateState = updateState.copy(downloading = false, downloadedFile = file)
+                                    updateManager.installApk(file)
+                                } else {
+                                    updateState = updateState.copy(downloading = false, error = "下载失败")
+                                }
+                            }
+                        },
+                        onDismiss = { updateState = updateState.copy(available = false) },
+                        forceUpdate = isForce
+                    )
+                }
             }
         }
     }
 }
+
+// Main tabs shown in bottom nav
+private val mainTabs = setOf(
+    Screen.Chat.route, Screen.Agent.route,
+    Screen.Knowledge.route, Screen.Files.route, Screen.Settings.route
+)
 
 data class NavItem(val screen: Screen, val icon: @Composable () -> Unit)
 
@@ -123,6 +171,9 @@ data class NavItem(val screen: Screen, val icon: @Composable () -> Unit)
 @Composable
 fun MainApp(navController: NavHostController, onLogout: () -> Unit) {
     val innerNavController = rememberNavController()
+    val navBackStackEntry by innerNavController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+    val showBottomBar = currentRoute in mainTabs
 
     val items = listOf(
         NavItem(Screen.Chat) { Icon(Icons.Default.Chat, contentDescription = "对话") },
@@ -134,23 +185,22 @@ fun MainApp(navController: NavHostController, onLogout: () -> Unit) {
 
     Scaffold(
         bottomBar = {
-            NavigationBar {
-                val navBackStackEntry by innerNavController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
-
-                items.forEach { item ->
-                    NavigationBarItem(
-                        icon = item.icon,
-                        label = { Text(item.screen.label) },
-                        selected = currentDestination?.hierarchy?.any { it.route == item.screen.route } == true,
-                        onClick = {
-                            innerNavController.navigate(item.screen.route) {
-                                popUpTo(innerNavController.graph.findStartDestination().id) { saveState = true }
-                                launchSingleTop = true
-                                restoreState = true
+            if (showBottomBar) {
+                NavigationBar {
+                    items.forEach { item ->
+                        NavigationBarItem(
+                            icon = item.icon,
+                            label = { Text(item.screen.label) },
+                            selected = currentRoute == item.screen.route,
+                            onClick = {
+                                innerNavController.navigate(item.screen.route) {
+                                    popUpTo(innerNavController.graph.findStartDestination().id) { saveState = true }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
         }
@@ -167,18 +217,18 @@ fun MainApp(navController: NavHostController, onLogout: () -> Unit) {
             composable(Screen.Files.route) { FilesScreen() }
             composable(Screen.Settings.route) { SettingsScreen(onLogout = onLogout, navController = innerNavController) }
 
-            // Feature pages
-            composable(Screen.Image.route) { ImageScreen() }
-            composable(Screen.Audio.route) { AudioScreen() }
-            composable(Screen.Video.route) { VideoScreen() }
-            composable(Screen.Code.route) { CodeScreen() }
-            composable(Screen.Workflow.route) { WorkflowScreen() }
-            composable(Screen.Prompts.route) { PromptsScreen() }
-            composable(Screen.Marketplace.route) { MarketplaceScreen() }
-            composable(Screen.Search.route) { SearchScreen() }
-            composable(Screen.Usage.route) { UsageScreen() }
-            composable(Screen.Credits.route) { CreditsScreen() }
-            composable(Screen.ApiPlatform.route) { ApiPlatformScreen() }
+            // Feature pages (with back navigation)
+            composable(Screen.Image.route) { ImageScreen(onBack = { innerNavController.popBackStack() }) }
+            composable(Screen.Audio.route) { AudioScreen(onBack = { innerNavController.popBackStack() }) }
+            composable(Screen.Video.route) { VideoScreen(onBack = { innerNavController.popBackStack() }) }
+            composable(Screen.Code.route) { CodeScreen(onBack = { innerNavController.popBackStack() }) }
+            composable(Screen.Workflow.route) { WorkflowScreen(onBack = { innerNavController.popBackStack() }) }
+            composable(Screen.Prompts.route) { PromptsScreen(onBack = { innerNavController.popBackStack() }) }
+            composable(Screen.Marketplace.route) { MarketplaceScreen(onBack = { innerNavController.popBackStack() }) }
+            composable(Screen.Search.route) { SearchScreen(onBack = { innerNavController.popBackStack() }) }
+            composable(Screen.Usage.route) { UsageScreen(onBack = { innerNavController.popBackStack() }) }
+            composable(Screen.Credits.route) { CreditsScreen(onBack = { innerNavController.popBackStack() }) }
+            composable(Screen.ApiPlatform.route) { ApiPlatformScreen(onBack = { innerNavController.popBackStack() }) }
         }
     }
 }

@@ -41,9 +41,9 @@ class PromptsViewModel @Inject constructor(private val api: ApiService) : ViewMo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PromptsScreen(vm: PromptsViewModel = hiltViewModel()) {
+fun PromptsScreen(onBack: () -> Unit = {}, vm: PromptsViewModel = hiltViewModel()) {
     val s by vm.state.collectAsState()
-    Scaffold(topBar = { TopAppBar(title = { Text("提示词库") }, actions = { IconButton(onClick = { vm.load() }) { Icon(Icons.Default.Refresh, "刷新") } }) }) { pad ->
+    Scaffold(topBar = { TopAppBar(title = { Text("提示词库") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "返回") } }, actions = { IconButton(onClick = { vm.load() }) { Icon(Icons.Default.Refresh, "刷新") } }) }) { pad ->
         if (s.loading) { Box(Modifier.fillMaxSize().padding(pad), androidx.compose.ui.Alignment.Center) { CircularProgressIndicator() } }
         else if (s.prompts.isEmpty()) { Box(Modifier.fillMaxSize().padding(pad), androidx.compose.ui.Alignment.Center) { Text("暂无提示词") } }
         else {

@@ -5,6 +5,7 @@ import com.aios.app.core.auth.AuthManager
 import com.aios.app.core.network.ApiService
 import com.aios.app.core.network.SseClient
 import com.aios.app.core.network.AuthInterceptor
+import com.aios.app.core.update.UpdateManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -97,5 +98,11 @@ object NetworkModule {
     @Singleton
     fun provideAuthInterceptor(authManager: AuthManager): AuthInterceptor {
         return AuthInterceptor(authManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideUpdateManager(@ApplicationContext context: Context, json: Json): UpdateManager {
+        return UpdateManager(context, json)
     }
 }
