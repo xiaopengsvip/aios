@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { getCurrentUser } from '@/lib/auth';
 import prisma from '@/lib/db';
 import { checkRateLimit } from '@/lib/security/crypto';
+import { aiGateway } from '@/lib/ai/gateway';
 
 // Guest rate limit: 10 requests per minute per IP
 const GUEST_RPM = 10;
@@ -100,42 +101,13 @@ export async function POST(req: NextRequest) {
       fullMessages.unshift({ role: 'system', content: langHint });
     }
 
-    // 获取 API Key
-    const keys = await prisma.apiKey.findMany({
-      where: {
-        providerId: model.providerId,
-        status: 'ACTIVE',
-        isEnabled: true,
-        circuitOpen: false,
-      },
-      orderBy: { weight: 'desc' },
-    });
-
-    if (keys.length === 0) {
-      return new Response(
-        JSON.stringify({ error: '没有可用的 API Key' }),
-        { status: 503, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // 权重选择
-    const totalWeight = keys.reduce((sum, k) => sum + k.weight, 0);
-    let random = Math.random() * totalWeight;
-    let selectedKey = keys[0];
-    for (const key of keys) {
-      random -= key.weight;
-      if (random <= 0) {
-        selectedKey = key;
-        break;
-      }
-    }
-
-    // 解密 Key
+    // 使用 Gateway 获取 Key (带权重轮询 + 熔断 + 自动恢复)
+    const { adapter, keyId } = await aiGateway.getKey(model.providerId);
     const { decrypt } = await import('@/lib/security/crypto');
-    const decryptedKey = decrypt(selectedKey.keyEncrypted);
 
     // SSE 流式响应
     const encoder = new TextEncoder();
+    const startTime = Date.now();
     const stream = new ReadableStream({
       async start(controller) {
         try {
@@ -147,6 +119,14 @@ export async function POST(req: NextRequest) {
           } else {
             endpoint = `${rawBase}/v1/chat/completions`;
           }
+
+          // 获取解密后的 key
+          const key = await prisma.apiKey.findUnique({
+            where: { id: keyId },
+            select: { keyEncrypted: true },
+          });
+          const decryptedKey = decrypt(key!.keyEncrypted);
+
           const response = await fetch(endpoint,
             {
               method: 'POST',
@@ -166,6 +146,15 @@ export async function POST(req: NextRequest) {
 
           if (!response.ok) {
             const error = await response.text();
+            // 记录 key 错误
+            await prisma.apiKey.update({
+              where: { id: keyId },
+              data: {
+                lastError: `HTTP ${response.status}: ${error.slice(0, 200)}`,
+                errorCount: { increment: 1 },
+                consecutiveErrors: { increment: 1 },
+              },
+            });
             controller.enqueue(
               encoder.encode(`data: ${JSON.stringify({ error: `Provider 错误: ${response.status}` })}\n\n`)
             );
@@ -212,6 +201,32 @@ export async function POST(req: NextRequest) {
             }
           }
 
+          const latency = Date.now() - startTime;
+
+          // 记录使用日志
+          await prisma.usageLog.create({
+            data: {
+              userId: user?.id || 'guest',
+              modelId: model.id,
+              requestId: crypto.randomUUID(),
+              endpoint: 'chat/stream',
+              promptTokens: usageTokens.promptTokens,
+              completionTokens: usageTokens.completionTokens,
+              totalTokens: usageTokens.totalTokens,
+              cost: 0,
+              providerCost: 0,
+              latency,
+              apiKeyId: keyId,
+              statusCode: 200,
+            },
+          });
+
+          // 重置 key 错误计数
+          await prisma.apiKey.update({
+            where: { id: keyId },
+            data: { consecutiveErrors: 0, lastUsedAt: new Date() },
+          });
+
           // 保存助手消息 (logged-in only)
           if (user && convId) {
             await prisma.message.create({
@@ -242,6 +257,15 @@ export async function POST(req: NextRequest) {
           controller.close();
         } catch (error: any) {
           console.error('[Stream Error]', error);
+          // 记录 key 错误
+          await prisma.apiKey.update({
+            where: { id: keyId },
+            data: {
+              lastError: error.message,
+              errorCount: { increment: 1 },
+              consecutiveErrors: { increment: 1 },
+            },
+          }).catch(() => {});
           controller.enqueue(
             encoder.encode(`data: ${JSON.stringify({ error: error.message })}\n\n`)
           );
