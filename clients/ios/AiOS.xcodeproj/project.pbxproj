@@ -1,0 +1,306 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		7BA0F0292A414DA7B4C1D001 /* AiOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBFE42F2C9C46CAB74701D0 /* AiOSApp.swift */; };
+		75BBF3DCBAFF4EC88DD0CEE4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E9927387C63464CA551A9F6 /* ContentView.swift */; };
+		820EA0A2B244425391636606 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E0B50B2C36741A7A26D70E6 /* MainTabView.swift */; };
+		E9929A05E67C45EBBDE570D3 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D876B9347F4483B8AD069A /* AuthManager.swift */; };
+		E8931FD758A14222B78D1E73 /* DataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333EBDEA50A94A349C116756 /* DataModels.swift */; };
+		BE5C26E6206549D0821FEF09 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1403941809B841B89860108C /* APIClient.swift */; };
+		4C0FC90A8B4E4D73994BDCC4 /* AgentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24EF82E879524932AA5E34EC /* AgentView.swift */; };
+		FD7DDE56A68549C2BB07BBB2 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61A1B95DC0D14778AAD7695B /* LoginView.swift */; };
+		919F3ABDF8F344FF8BF9EA05 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70AC57AAB5AE4B40A6780BF3 /* ChatView.swift */; };
+		63114F9D179A42478DFC983A /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93BAFAB058034068BDFD91B5 /* SettingsView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1CBFE42F2C9C46CAB74701D0 /* AiOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AiOSApp.swift; sourceTree = "<group>"; };
+		7E9927387C63464CA551A9F6 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		0E0B50B2C36741A7A26D70E6 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		65D876B9347F4483B8AD069A /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
+		333EBDEA50A94A349C116756 /* DataModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataModels.swift; sourceTree = "<group>"; };
+		1403941809B841B89860108C /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		24EF82E879524932AA5E34EC /* AgentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentView.swift; sourceTree = "<group>"; };
+		61A1B95DC0D14778AAD7695B /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		70AC57AAB5AE4B40A6780BF3 /* ChatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatView.swift; sourceTree = "<group>"; };
+		93BAFAB058034068BDFD91B5 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		ED717F85C47648BFB2314714 /* AiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B74D02BF84C54AE18D433E06 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		97B5B2361F844797B52D4DB0 = {
+			isa = PBXGroup;
+			children = (
+				3212372A63494B50B988D8ED /* AiOS */,
+				1D8AB1E67BAE441CB3E7C33F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		1D8AB1E67BAE441CB3E7C33F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				ED717F85C47648BFB2314714 /* AiOS.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3212372A63494B50B988D8ED /* AiOS */ = {
+			isa = PBXGroup;
+			children = (
+				B258CD74062B4020BF7BD856 /* App */,
+				440C1B460ED14A368D24D280 /* Core */,
+				E4FFA555BB7544F0A6C74329 /* Features */,
+			);
+			path = AiOS;
+			sourceTree = "<group>";
+		};
+		B258CD74062B4020BF7BD856 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				1CBFE42F2C9C46CAB74701D0 /* AiOSApp.swift */,
+				7E9927387C63464CA551A9F6 /* ContentView.swift */,
+				0E0B50B2C36741A7A26D70E6 /* MainTabView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		440C1B460ED14A368D24D280 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				B9A60C9DF5EC46B699724D8D /* Auth */,
+				D99DF6F2D5BE43A9BE1AB42B /* Models */,
+				31F1FA75F338499F81216643 /* Network */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		B9A60C9DF5EC46B699724D8D /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				65D876B9347F4483B8AD069A /* AuthManager.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		D99DF6F2D5BE43A9BE1AB42B /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				333EBDEA50A94A349C116756 /* DataModels.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		31F1FA75F338499F81216643 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				1403941809B841B89860108C /* APIClient.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		E4FFA555BB7544F0A6C74329 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				A7263150559444CABE7C8B8E /* Agent */,
+				AB9F809DCD9C4F5196384D52 /* Auth */,
+				D12A81F6422643A09D1B5576 /* Chat */,
+				EE81DCBEC779485DBE50BFF6 /* Settings */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		A7263150559444CABE7C8B8E /* Agent */ = {
+			isa = PBXGroup;
+			children = (
+				24EF82E879524932AA5E34EC /* AgentView.swift */,
+			);
+			path = Agent;
+			sourceTree = "<group>";
+		};
+		AB9F809DCD9C4F5196384D52 /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				61A1B95DC0D14778AAD7695B /* LoginView.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		D12A81F6422643A09D1B5576 /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				70AC57AAB5AE4B40A6780BF3 /* ChatView.swift */,
+			);
+			path = Chat;
+			sourceTree = "<group>";
+		};
+		EE81DCBEC779485DBE50BFF6 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				93BAFAB058034068BDFD91B5 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		50B25C9856F246C8AA9DC090 /* AiOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 84BD1B08C394493891EB3D4A /* Build configuration list for PBXNativeTarget "AiOS" */;
+			buildPhases = (
+				2A9281ABF46442F4B0744FF3 /* Sources */,
+				B74D02BF84C54AE18D433E06 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AiOS;
+			productName = AiOS;
+			productReference = ED717F85C47648BFB2314714 /* AiOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		82D40B4FF2B34EEFA75DE7D0 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+			};
+			buildConfigurationList = 84BD1B08C394493891EB3D4A /* Build configuration list for PBXProject "AiOS" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = "zh-Hans";
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				"zh-Hans",
+				en,
+				Base,
+			);
+			mainGroup = 97B5B2361F844797B52D4DB0;
+			productRefGroup = 1D8AB1E67BAE441CB3E7C33F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				50B25C9856F246C8AA9DC090 /* AiOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2A9281ABF46442F4B0744FF3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7BA0F0292A414DA7B4C1D001 /* AiOSApp.swift in Sources */,
+				75BBF3DCBAFF4EC88DD0CEE4 /* ContentView.swift in Sources */,
+				820EA0A2B244425391636606 /* MainTabView.swift in Sources */,
+				E9929A05E67C45EBBDE570D3 /* AuthManager.swift in Sources */,
+				E8931FD758A14222B78D1E73 /* DataModels.swift in Sources */,
+				BE5C26E6206549D0821FEF09 /* APIClient.swift in Sources */,
+				4C0FC90A8B4E4D73994BDCC4 /* AgentView.swift in Sources */,
+				FD7DDE56A68549C2BB07BBB2 /* LoginView.swift in Sources */,
+				919F3ABDF8F344FF8BF9EA05 /* ChatView.swift in Sources */,
+				63114F9D179A42478DFC983A /* SettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		5DD52BEE75E04E2C929A0AB5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		0E55F24E28444BD9836FA6C7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		84BD1B08C394493891EB3D4A /* Build configuration list for PBXProject "AiOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5DD52BEE75E04E2C929A0AB5 /* Debug */,
+				0E55F24E28444BD9836FA6C7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+	};
+	rootObject = 82D40B4FF2B34EEFA75DE7D0 /* Project object */;
+}

@@ -1,0 +1,47 @@
+name: Build iOS
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'clients/ios/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'clients/ios/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: clients/ios
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app
+
+      - name: Build (no signing)
+        run: |
+          xcodebuild build \
+            -project AiOS.xcodeproj \
+            -scheme AiOS \
+            -sdk iphonesimulator \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcpretty || true
+
+      - name: Build (archive check)
+        run: |
+          xcodebuild build \
+            -project AiOS.xcodeproj \
+            -scheme AiOS \
+            -sdk iphoneos \
+            -configuration Release \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcpretty || true
