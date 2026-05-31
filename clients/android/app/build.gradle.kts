@@ -97,3 +97,9 @@ dependencies {
 kapt {
     correctErrorTypes = true
 }
+
+configurations.all {
+    resolutionStrategy {
+        force("org.jetbrains:annotations:23.0.0")
+    }
+}
