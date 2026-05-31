@@ -54,8 +54,8 @@ object NetworkModule {
         return OkHttpClient.Builder()
             .cookieJar(cookieJar)
             .addInterceptor(authInterceptor)
-            .addInterceptor(okhttp3.logging.interceptor.HttpLoggingInterceptor().apply {
-                level = okhttp3.logging.interceptor.HttpLoggingInterceptor.Level.BODY
+            .addInterceptor(okhttp3.logging.HttpLoggingInterceptor().apply {
+                level = okhttp3.logging.HttpLoggingInterceptor.Level.BODY
             })
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(120, TimeUnit.SECONDS)  // SSE needs long read timeout
