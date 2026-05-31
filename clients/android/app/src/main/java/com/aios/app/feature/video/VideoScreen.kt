@@ -1,27 +1,19 @@
 package com.aios.app.feature.video
 
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Videocam
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.aios.app.feature.common.EmptyState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VideoScreen() {
-    Scaffold(
-        topBar = { TopAppBar(title = { Text("视频") }) }
-    ) { padding ->
-        EmptyState(
-            icon = Icons.Default.Videocam,
-            title = "视频",
-            subtitle = "功能开发中...",
-            modifier = Modifier.padding(padding)
-        )
+    Scaffold(topBar = { TopAppBar(title = { Text("视频生成") }) }) { pad ->
+        EmptyState(icon = Icons.Default.VideoCameraFront, title = "视频生成", subtitle = "使用 AI 生成视频内容，功能即将上线", modifier = Modifier.padding(pad))
     }
 }

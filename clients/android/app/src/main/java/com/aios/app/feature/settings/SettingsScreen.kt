@@ -16,6 +16,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.aios.app.core.navigation.Screen
 import com.aios.app.data.model.UserInfo
 import com.aios.app.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -53,6 +55,7 @@ class SettingsViewModel @Inject constructor(
 @Composable
 fun SettingsScreen(
     onLogout: () -> Unit,
+    navController: NavController? = null,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -99,11 +102,12 @@ fun SettingsScreen(
             }
         }
 
-        // Balance
+        // Balance (clickable -> Credits)
         state.user?.let { user ->
             Card(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                onClick = { navController?.navigate(Screen.Credits.route) }
             ) {
                 Row(
                     modifier = Modifier.padding(16.dp),
@@ -115,19 +119,50 @@ fun SettingsScreen(
                     Spacer(Modifier.weight(1f))
                     Text("${user.balance} 积分", fontWeight = FontWeight.SemiBold,
                          color = MaterialTheme.colorScheme.primary)
+                    Spacer(Modifier.width(8.dp))
+                    Icon(Icons.Default.ChevronRight, null, tint = MaterialTheme.colorScheme.outline)
                 }
             }
         }
 
-        Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.height(16.dp))
 
-        // Menu items
-        SettingsMenuItem(Icons.Default.DarkMode, "深色模式", "跟随系统")
-        SettingsMenuItem(Icons.Default.Language, "语言", "简体中文")
-        SettingsMenuItem(Icons.Default.SmartToy, "默认模型", "mimo-v2.5-pro")
-        SettingsMenuItem(Icons.Default.Info, "关于", "v1.0.0")
-        SettingsMenuItem(Icons.Default.Description, "使用条款", "")
-        SettingsMenuItem(Icons.Default.Security, "隐私政策", "")
+        // AI Tools section
+        Text("AI 工具", style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), color = MaterialTheme.colorScheme.primary)
+        SettingsMenuItem(Icons.Default.Image, "AI 绘图", "") { navController?.navigate(Screen.Image.route) }
+        SettingsMenuItem(Icons.Default.Mic, "音频生成", "") { navController?.navigate(Screen.Audio.route) }
+        SettingsMenuItem(Icons.Default.VideoCameraFront, "视频生成", "") { navController?.navigate(Screen.Video.route) }
+        SettingsMenuItem(Icons.Default.Code, "代码执行", "") { navController?.navigate(Screen.Code.route) }
+        SettingsMenuItem(Icons.Default.Search, "全局搜索", "") { navController?.navigate(Screen.Search.route) }
+
+        Spacer(Modifier.height(12.dp))
+
+        // Content section
+        Text("内容管理", style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), color = MaterialTheme.colorScheme.primary)
+        SettingsMenuItem(Icons.Default.MenuBook, "知识库", "") { navController?.navigate(Screen.Knowledge.route) }
+        SettingsMenuItem(Icons.Default.Folder, "文件管理", "") { navController?.navigate(Screen.Files.route) }
+        SettingsMenuItem(Icons.Default.Lightbulb, "提示词库", "") { navController?.navigate(Screen.Prompts.route) }
+        SettingsMenuItem(Icons.Default.AccountTree, "工作流", "") { navController?.navigate(Screen.Workflow.route) }
+        SettingsMenuItem(Icons.Default.Store, "应用市场", "") { navController?.navigate(Screen.Marketplace.route) }
+
+        Spacer(Modifier.height(12.dp))
+
+        // Account section
+        Text("账户", style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), color = MaterialTheme.colorScheme.primary)
+        SettingsMenuItem(Icons.Default.BarChart, "用量统计", "") { navController?.navigate(Screen.Usage.route) }
+        SettingsMenuItem(Icons.Default.AccountBalanceWallet, "积分余额", "") { navController?.navigate(Screen.Credits.route) }
+        SettingsMenuItem(Icons.Default.Api, "API 平台", "") { navController?.navigate(Screen.ApiPlatform.route) }
+
+        Spacer(Modifier.height(12.dp))
+
+        // System section
+        Text("系统", style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), color = MaterialTheme.colorScheme.primary)
+        SettingsMenuItem(Icons.Default.DarkMode, "深色模式", "跟随系统") {}
+        SettingsMenuItem(Icons.Default.Language, "语言", "简体中文") {}
+        SettingsMenuItem(Icons.Default.SmartToy, "默认模型", "mimo-v2.5-pro") {}
+        SettingsMenuItem(Icons.Default.Info, "关于", "v1.0.0") {}
+        SettingsMenuItem(Icons.Default.Description, "使用条款", "") {}
+        SettingsMenuItem(Icons.Default.Security, "隐私政策", "") {}
 
         Spacer(Modifier.height(24.dp))
 
@@ -162,10 +197,11 @@ fun SettingsScreen(
 }
 
 @Composable
-fun SettingsMenuItem(icon: androidx.compose.ui.graphics.vector.ImageVector, title: String, subtitle: String) {
+fun SettingsMenuItem(icon: androidx.compose.ui.graphics.vector.ImageVector, title: String, subtitle: String, onClick: () -> Unit) {
     Surface(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 2.dp),
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(8.dp),
+        onClick = onClick
     ) {
         Row(
             modifier = Modifier.padding(16.dp),

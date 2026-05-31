@@ -165,7 +165,7 @@ fun MainApp(navController: NavHostController, onLogout: () -> Unit) {
             composable(Screen.Agent.route) { AgentScreen() }
             composable(Screen.Knowledge.route) { KnowledgeScreen() }
             composable(Screen.Files.route) { FilesScreen() }
-            composable(Screen.Settings.route) { SettingsScreen(onLogout = onLogout) }
+            composable(Screen.Settings.route) { SettingsScreen(onLogout = onLogout, navController = innerNavController) }
 
             // Feature pages
             composable(Screen.Image.route) { ImageScreen() }
