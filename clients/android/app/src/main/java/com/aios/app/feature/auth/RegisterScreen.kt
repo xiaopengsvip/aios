@@ -187,8 +187,8 @@ fun RegisterScreen(
                     localError = null
                     if (password != confirmPassword) {
                         localError = "两次密码不一致"
-                    } else if (password.length < 6) {
-                        localError = "密码至少6位"
+                    } else if (password.length < 8) {
+                        localError = "密码至少8位"
                     } else if (code.length != 6) {
                         localError = "请输入6位验证码"
                     } else {

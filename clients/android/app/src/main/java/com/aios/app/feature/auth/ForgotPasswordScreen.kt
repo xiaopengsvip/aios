@@ -193,7 +193,7 @@ fun ForgotPasswordScreen(
                     ),
                     keyboardActions = KeyboardActions(onDone = {
                         focusManager.clearFocus()
-                        if (newPassword == confirmPassword && newPassword.length >= 6) {
+                        if (newPassword == confirmPassword && newPassword.length >= 8) {
                             viewModel.confirmResetPassword(email, code, newPassword)
                         }
                     })
@@ -208,7 +208,7 @@ fun ForgotPasswordScreen(
                     },
                     modifier = Modifier.fillMaxWidth().height(48.dp),
                     shape = RoundedCornerShape(12.dp),
-                    enabled = !state.isLoading && code.length == 6 && newPassword.length >= 6 && newPassword == confirmPassword
+                    enabled = !state.isLoading && code.length == 6 && newPassword.length >= 8 && newPassword == confirmPassword
                 ) {
                     if (state.isLoading) {
                         CircularProgressIndicator(Modifier.size(22.dp), strokeWidth = 2.dp, color = MaterialTheme.colorScheme.onPrimary)

@@ -45,7 +45,7 @@ const translations: Record<Locale, Record<string, string>> = {
     "login.registerFailed": "注册失败",
     "login.networkError": "网络错误",
     "login.passwordMismatch": "两次密码不一致",
-    "login.passwordTooShort": "密码至少6位",
+    "login.passwordTooShort": "密码至少8位",
 
     // Forgot password
     "forgot.title": "找回密码",
@@ -130,7 +130,7 @@ const translations: Record<Locale, Record<string, string>> = {
     "login.registerFailed": "Registration failed",
     "login.networkError": "Network error",
     "login.passwordMismatch": "Passwords do not match",
-    "login.passwordTooShort": "Password must be at least 6 characters",
+    "login.passwordTooShort": "Password must be at least 8 characters",
 
     "forgot.title": "Reset Password",
     "forgot.hint": "Enter your registered email, we'll send a 6-digit verification code",

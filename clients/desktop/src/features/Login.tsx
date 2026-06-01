@@ -112,7 +112,7 @@ export function Login({ onLogin }: LoginProps) {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) { setError(t("login.passwordMismatch")); return; }
-    if (password.length < 6) { setError(t("login.passwordTooShort")); return; }
+    if (password.length < 8) { setError(t("login.passwordTooShort")); return; }
     if (regCode.length !== 6) { setError("请输入6位验证码"); return; }
     setLoading(true); clearMessages();
     try {
@@ -141,7 +141,7 @@ export function Login({ onLogin }: LoginProps) {
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) { setError(t("login.passwordMismatch")); return; }
-    if (newPassword.length < 6) { setError(t("login.passwordTooShort")); return; }
+    if (newPassword.length < 8) { setError(t("login.passwordTooShort")); return; }
     setLoading(true); clearMessages();
     try {
       const resp: any = await api.resetPassword(email, resetCode, newPassword);

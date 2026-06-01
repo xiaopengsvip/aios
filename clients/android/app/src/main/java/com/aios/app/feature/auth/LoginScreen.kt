@@ -358,14 +358,20 @@ fun LoginScreen(
             Button(
                 onClick = {
                     focusManager.clearFocus()
-                    if (isRegister) viewModel.register(username, email, password, code)
+                    if (isRegister) {
+                        if (password.length < 8) {
+                            // 密码太短，不提交
+                            return@Button
+                        }
+                        viewModel.register(username, email, password, code)
+                    }
                     else viewModel.login(email, password)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp),
                 shape = RoundedCornerShape(12.dp),
-                enabled = !state.isLoading && email.isNotBlank() && password.isNotBlank() && (!isRegister || code.length == 6),
+                enabled = !state.isLoading && email.isNotBlank() && password.isNotBlank() && (!isRegister || (password.length >= 8 && code.length == 6)),
             ) {
                 if (state.isLoading) {
                     CircularProgressIndicator(
