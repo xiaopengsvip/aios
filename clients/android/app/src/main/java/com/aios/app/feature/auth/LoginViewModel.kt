@@ -13,7 +13,8 @@ import javax.inject.Inject
 data class LoginUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
-    val user: UserInfo? = null
+    val user: UserInfo? = null,
+    val successMessage: String? = null
 )
 
 @HiltViewModel
@@ -44,5 +45,26 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    fun requestResetCode(email: String) {
+        viewModelScope.launch {
+            _state.value = LoginUiState(isLoading = true)
+            authRepo.requestResetCode(email).fold(
+                onSuccess = { _state.value = LoginUiState(successMessage = it) },
+                onFailure = { _state.value = LoginUiState(error = it.message ?: "发送失败") }
+            )
+        }
+    }
+
+    fun confirmResetPassword(email: String, code: String, newPassword: String) {
+        viewModelScope.launch {
+            _state.value = LoginUiState(isLoading = true)
+            authRepo.confirmResetPassword(email, code, newPassword).fold(
+                onSuccess = { _state.value = LoginUiState(successMessage = it) },
+                onFailure = { _state.value = LoginUiState(error = it.message ?: "重置失败") }
+            )
+        }
+    }
+
     fun clearError() { _state.value = _state.value.copy(error = null) }
+    fun clearSuccess() { _state.value = _state.value.copy(successMessage = null) }
 }

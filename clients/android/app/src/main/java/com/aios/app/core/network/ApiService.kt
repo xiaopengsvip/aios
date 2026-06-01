@@ -40,6 +40,9 @@ interface ApiService {
     @POST("/api/auth/change-password")
     suspend fun changePassword(@Body data: Map<String, String>): Response<Unit>
 
+    @POST("/api/auth/reset-password")
+    suspend fun resetPassword(@Body data: Map<String, String>): Response<ApiResponse<Unit>>
+
     @Multipart
     @POST("/api/auth/avatar")
     suspend fun uploadAvatar(@Part avatar: MultipartBody.Part): Response<Map<String, String>>

@@ -39,6 +39,7 @@ fun LoginScreen(
     isRegister: Boolean = false,
     onLoginSuccess: () -> Unit,
     onNavigateToRegister: () -> Unit,
+    onNavigateToForgotPassword: () -> Unit = {},
     onOAuthLogin: ((String) -> Unit)? = null,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
@@ -258,7 +259,7 @@ fun LoginScreen(
                         text = "忘记密码?",
                         fontSize = 13.sp,
                         color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.clickable { /* navigate to forgot password */ }
+                        modifier = Modifier.clickable { onNavigateToForgotPassword() }
                     )
                 }
             }

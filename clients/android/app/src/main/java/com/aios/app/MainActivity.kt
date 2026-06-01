@@ -93,6 +93,9 @@ class MainActivity : ComponentActivity() {
                                     },
                                     onNavigateToRegister = {
                                         navController.navigate(Screen.Register.route)
+                                    },
+                                    onNavigateToForgotPassword = {
+                                        navController.navigate(Screen.ForgotPassword.route)
                                     }
                                 )
                             }

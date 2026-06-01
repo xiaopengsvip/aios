@@ -77,6 +77,27 @@ class AuthRepository @Inject constructor(
         authManager.clearAll()
     }
 
+    suspend fun requestResetCode(email: String): Result<String> = try {
+        val resp = api.resetPassword(mapOf("action" to "request", "email" to email))
+        if (resp.isSuccessful) {
+            Result.success(resp.body()?.message ?: "验证码已发送")
+        } else {
+            Result.failure(Exception("发送失败"))
+        }
+    } catch (e: Exception) { Result.failure(e) }
+
+    suspend fun confirmResetPassword(email: String, code: String, newPassword: String): Result<String> = try {
+        val resp = api.resetPassword(mapOf("action" to "confirm", "email" to email, "code" to code, "newPassword" to newPassword))
+        if (resp.isSuccessful) {
+            Result.success(resp.body()?.message ?: "密码已重置")
+        } else {
+            val errBody = resp.errorBody()?.string()
+            val msg = try { kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
+                .decodeFromString<Map<String, String>>(errBody ?: "")["error"] } catch (_: Exception) { null }
+            Result.failure(Exception(msg ?: "重置失败"))
+        }
+    } catch (e: Exception) { Result.failure(e) }
+
     suspend fun updateProfile(displayName: String?, bio: String?): Result<UserInfo> = try {
         val body = mutableMapOf<String, String>()
         displayName?.let { body["displayName"] = it }
