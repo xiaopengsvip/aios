@@ -100,7 +100,46 @@ fun LoginScreen(
                 .padding(horizontal = 28.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(80.dp))
+            // Top bar: theme + language
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                val context = LocalContext.current
+                val themePrefs = remember { context.getSharedPreferences("aios_theme", android.content.Context.MODE_PRIVATE) }
+                var isDark by remember { mutableStateOf(themePrefs.getString("mode", "dark") == "dark") }
+                var isZh by remember { mutableStateOf(true) }
+
+                // Theme toggle
+                FilledTonalIconButton(
+                    onClick = {
+                        isDark = !isDark
+                        themePrefs.edit().putString("mode", if (isDark) "dark" else "light").apply()
+                    },
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Icon(
+                        if (isDark) Icons.Default.LightMode else Icons.Default.DarkMode,
+                        contentDescription = if (isDark) "浅色" else "深色",
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+                // Language toggle
+                FilledTonalIconButton(
+                    onClick = { isZh = !isZh },
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Text(
+                        if (isZh) "中" else "EN",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
 
             // Logo with gradient background
             Surface(
@@ -135,9 +174,7 @@ fun LoginScreen(
                 modifier = Modifier.padding(top = 4.dp)
             )
 
-            Spacer(modifier = Modifier.height(40.dp))
-
-            // Username (register only)
+            Spacer(modifier = Modifier.height(28.dp))
             AnimatedVisibility(visible = isRegister) {
                 Column {
                     OutlinedTextField(
