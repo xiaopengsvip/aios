@@ -1,0 +1,23 @@
+# Build directories
+build/
+build-android/
+build-*/
+
+# Qt generated
+*.qmlc
+*.jsc
+moc_*
+qrc_*
+ui_*
+
+# IDE
+.user/
+*.pro.user
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
