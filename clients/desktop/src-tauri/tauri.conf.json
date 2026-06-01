@@ -23,23 +23,12 @@
       }
     ],
     "security": {
-      "csp": null,
-      "dangerousRemoteUrlIpcAccess": [
-        {
-          "url": "https://aios.vios.top",
-          "windows": [
-            "main"
-          ],
-          "ipc": [
-            "core:default"
-          ]
-        }
-      ]
+      "csp": null
     }
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": "nsis",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -51,17 +40,10 @@
       "digestAlgorithm": "sha256",
       "timestampUrl": "",
       "nsis": {
-        "displayLanguageSelector": false,
-        "installerLanguages": [
-          "zh-CN",
-          "en-US"
-        ],
+        "installMode": "both",
         "languages": [
           "SimpChinese"
-        ],
-        "installMode": "both",
-        "headerImage": null,
-        "sidebarImage": null
+        ]
       }
     }
   }

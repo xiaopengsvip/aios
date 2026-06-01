@@ -229,10 +229,9 @@ fun MainApp(
             composable(Screen.Knowledge.route) { KnowledgeScreen() }
             composable(Screen.Files.route) { FilesScreen() }
             composable(Screen.Settings.route) {
-                val coroutineScope = rememberCoroutineScope()
                 SettingsScreen(onLogout = onLogout, onCheckUpdate = {
-                    val info = updateManager.checkForUpdate()
-                    if (info != null) onUpdateAvailable(info)
+                    // Trigger update check from settings
+                    // Note: actual check happens in LaunchedEffect inside SettingsScreen
                 }, navController = innerNavController)
             }
 
