@@ -17,7 +17,7 @@ const navItems = [
   { id: "settings", label: "设置", icon: "⚙️" },
 ];
 
-export function Layout({ children, currentPage, onNavigate, isAuthed, onLoginClick, onLogout }: LayoutProps) {
+export function Layout({ children, currentPage, onNavigate, isAuthed, onLoginClick, onLogout: _onLogout }: LayoutProps) {
   const [user, setUser] = useState<any>(null);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
 

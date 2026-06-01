@@ -20,6 +20,7 @@ import com.aios.app.core.auth.AuthManager
 import com.aios.app.core.update.UpdateManager
 import com.aios.app.core.update.UpdateDialog
 import com.aios.app.core.update.UpdateState
+import com.aios.app.core.update.VersionInfo
 import com.aios.app.core.navigation.Screen
 import com.aios.app.core.theme.AIOSTheme
 import com.aios.app.feature.auth.LoginScreen
