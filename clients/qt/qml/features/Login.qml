@@ -521,7 +521,17 @@ Rectangle {
 
     function openOAuth(provider) {
         errorMessage = ""
-        var url = "https://aios.vios.top/api/auth/oauth/" + provider + "?action=login"
+        // Start local callback server
+        apiManager.startOAuthListener()
+        var port = apiManager.oAuthPort
+        if (port <= 0) {
+            errorMessage = "无法启动本地回调服务"
+            return
+        }
+        var redirectUri = "http://localhost:" + port + "/callback"
+        var url = "https://aios.vios.top/api/auth/oauth/" + provider
+            + "?action=login&redirect_uri=" + encodeURIComponent(redirectUri)
+            + "&provider=" + provider
         Qt.openUrlExternally(url)
     }
 }

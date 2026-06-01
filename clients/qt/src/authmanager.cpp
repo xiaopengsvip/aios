@@ -53,6 +53,30 @@ void AuthManager::setApiManager(ApiManager *api)
                     emit forgotPasswordFailed(m_errorMessage);
                 }
             }
+            else if (requestId.startsWith("oauth-exchange")) {
+                if (data["status"].toString() == "ok" && data["success"].toBool()) {
+                    setToken(data["token"].toString());
+                    setUser(data["user"].toObject());
+                    saveAuth();
+                    emit loginSuccess();
+                } else {
+                    m_errorMessage = data["error"].toString();
+                    emit loginFailed(m_errorMessage);
+                }
+                emit authChanged();
+            }
+        }
+    );
+
+    // OAuth callback from local server
+    connect(m_api, &ApiManager::oauthCallbackReceived, this,
+        [this](const QString &provider, const QString &code) {
+            // Exchange code for token
+            QJsonObject body;
+            body["code"] = code;
+            body["provider"] = provider;
+            body["redirect_uri"] = QString("http://localhost:%1/callback").arg(m_api->oAuthPort());
+            m_api->post("/api/auth/oauth/exchange", body, "oauth-exchange");
         }
     );
 }

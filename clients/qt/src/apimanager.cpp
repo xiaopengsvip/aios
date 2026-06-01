@@ -3,6 +3,7 @@
 #include <QJsonDocument>
 #include <QNetworkProxy>
 #include <QSettings>
+#include <QUrlQuery>
 
 ApiManager::ApiManager(QObject *parent) : QObject(parent)
 {
@@ -292,4 +293,81 @@ void ApiManager::streamChat(const QString &message, const QString &model)
         emit chatCompleted(result);
         reply->deleteLater();
     });
+}
+
+// === OAuth Local Callback Server ===
+
+void ApiManager::startOAuthListener()
+{
+    if (m_oauthServer && m_oauthServer->isListening()) return;
+
+    m_oauthServer = new QTcpServer(this);
+
+    // Try ports 18000-18100
+    for (int port = 18000; port < 18100; ++port) {
+        if (m_oauthServer->listen(QHostAddress::LocalHost, port)) {
+            m_oauthPort = port;
+            break;
+        }
+    }
+
+    if (!m_oauthServer->isListening()) {
+        emit errorOccurred("无法启动 OAuth 回调服务");
+        return;
+    }
+
+    connect(m_oauthServer, &QTcpServer::newConnection, this, &ApiManager::handleOAuthConnection);
+    qDebug() << "OAuth callback server listening on port" << m_oauthPort;
+}
+
+void ApiManager::stopOAuthListener()
+{
+    if (m_oauthServer) {
+        m_oauthServer->close();
+        m_oauthServer->deleteLater();
+        m_oauthServer = nullptr;
+        m_oauthPort = 0;
+    }
+}
+
+int ApiManager::oAuthPort() const { return m_oauthPort; }
+
+void ApiManager::handleOAuthConnection()
+{
+    while (m_oauthServer->hasPendingConnections()) {
+        QTcpSocket *socket = m_oauthServer->nextPendingConnection();
+        connect(socket, &QTcpSocket::readyRead, this, [this, socket]() {
+            QByteArray request = socket->readAll();
+            QString reqStr = QString::fromUtf8(request);
+
+            // Parse GET /callback?code=xxx&provider=xxx HTTP/1.1
+            QString path;
+            int pathStart = reqStr.indexOf("GET ");
+            int pathEnd = reqStr.indexOf(" HTTP/", pathStart);
+            if (pathStart >= 0 && pathEnd > pathStart) {
+                path = reqStr.mid(pathStart + 4, pathEnd - pathStart - 4);
+            }
+
+            // Extract code and provider from query
+            QString code, provider;
+            if (path.contains("code=")) {
+                QUrl url("http://localhost" + path);
+                QUrlQuery query(url.query());
+                code = query.queryItemValue("code");
+                provider = query.queryItemValue("provider");
+            }
+
+            // Send response to browser
+            QString html = "<html><body><h2>授权成功！</h2><p>请返回应用。</p><script>setTimeout(()=>window.close(),2000)</script></body></html>";
+            QString response = "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: "
+                + QString::number(html.toUtf8().size()) + "\r\nConnection: close\r\n\r\n" + html;
+            socket->write(response.toUtf8());
+            socket->flush();
+            socket->disconnectFromHost();
+
+            if (!code.isEmpty()) {
+                emit oauthCallbackReceived(provider, code);
+            }
+        });
+    }
 }

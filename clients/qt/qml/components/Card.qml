@@ -3,14 +3,36 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
+// Reusable card component
 Rectangle {
-    color: Theme.bgCard
-    radius: Theme.radiusMd
+    property string title: ""
+    property string description: ""
+    property string icon: ""
 
-    Text {
-        anchors.centerIn: parent
-        text: "卡片"
-        color: Theme.textSecondary
-        font.pixelSize: Theme.fontMd
+    color: Theme.bgCard
+    radius: Theme.radiusLg
+    border.color: Theme.borderColor
+    border.width: 1
+
+    ColumnLayout {
+        anchors.fill: parent
+        anchors.margins: Theme.spacingLg
+        spacing: Theme.spacingSm
+
+        Text {
+            text: icon
+            font.pixelSize: 28
+        }
+        Text {
+            text: title
+            font.pixelSize: Theme.fontMd
+            font.bold: true
+            color: Theme.textPrimary
+        }
+        Text {
+            text: description
+            font.pixelSize: Theme.fontSm
+            color: Theme.textSecondary
+        }
     }
 }

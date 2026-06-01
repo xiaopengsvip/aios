@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     app.setOrganizationName("AIOS");
     app.setOrganizationDomain("aios.vios.top");
     app.setApplicationName("AI超级工作台");
-    app.setApplicationVersion("0.1.0");
+    app.setApplicationVersion("0.1.1");
 
     QQuickStyle::setStyle("Basic");
 

@@ -1,13 +1,13 @@
 #pragma once
-
 #include <QObject>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkProxy>
-#include <QJsonDocument>
 #include <QJsonObject>
-#include <QJsonArray>
 #include <QTimer>
+#include <QUrl>
+#include <QTcpServer>
+#include <QTcpSocket>
 
 class ApiManager : public QObject
 {
@@ -26,52 +26,57 @@ public:
     bool connected() const;
     bool networkOk() const;
     QString proxyInfo() const;
-    QString proxyMode() const;  // "system", "direct", "custom"
+    QString proxyMode() const;
     void setProxyMode(const QString &mode);
 
-    // Auth token
-    Q_INVOKABLE void setToken(const QString &token);
-    Q_INVOKABLE QString token() const;
+    void setToken(const QString &token);
+    QString token() const;
 
-    // API methods
     Q_INVOKABLE void get(const QString &path, const QString &requestId = "");
     Q_INVOKABLE void post(const QString &path, const QJsonObject &body, const QString &requestId = "");
     Q_INVOKABLE void put(const QString &path, const QJsonObject &body, const QString &requestId = "");
     Q_INVOKABLE void del(const QString &path, const QString &requestId = "");
-
-    // Chat
     Q_INVOKABLE void streamChat(const QString &message, const QString &model);
-
-    // Network check
     Q_INVOKABLE void checkNetwork();
-
-    // Custom proxy
     Q_INVOKABLE void setCustomProxy(const QString &host, int port, const QString &type);
+
+    // OAuth local callback server
+    Q_INVOKABLE void startOAuthListener();
+    Q_INVOKABLE void stopOAuthListener();
+    Q_INVOKABLE int oAuthPort() const;
 
 signals:
     void baseUrlChanged();
     void connectedChanged();
     void networkOkChanged();
     void proxyChanged();
-    void errorOccurred(const QString &error);
     void responseReceived(const QString &requestId, const QJsonObject &data);
     void chatChunkReceived(const QString &chunk);
     void chatCompleted(const QJsonObject &result);
     void networkCheckResult(bool ok, const QString &message);
+    void errorOccurred(const QString &error);
+    void oauthCallbackReceived(const QString &provider, const QString &code);
 
 private:
     QNetworkAccessManager m_nam;
-    QString m_baseUrl = "https://aios.vios.top";
+    QString m_baseUrl;
     QString m_token;
     bool m_connected = false;
     bool m_networkOk = false;
-    QString m_proxyMode = "system";
+
+    // Proxy
+    QString m_proxyMode;
     QString m_customProxyHost;
     int m_customProxyPort = 0;
-    QString m_customProxyType = "http";
+    QString m_customProxyType;
 
-    QNetworkRequest buildRequest(const QString &path);
+    // OAuth local server
+    QTcpServer *m_oauthServer = nullptr;
+    int m_oauthPort = 0;
+
+    QNetworkProxy currentProxy() const;
     void detectSystemProxy();
     void applyProxy();
-    QNetworkProxy currentProxy() const;
+    QNetworkRequest buildRequest(const QString &path);
+    void handleOAuthConnection();
 };
