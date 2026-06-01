@@ -52,5 +52,27 @@
     "lastSeen": "2026-06-01T01:06:15.473Z",
     "ip": "162.158.90.172",
     "updateCount": 0
+  },
+  {
+    "deviceId": "fba0618c-f6be-4f0d-af40-1a2711aabbc3",
+    "platform": "android",
+    "appVersion": "0.0.6",
+    "osVersion": "Android 16 (API 36)",
+    "deviceModel": "vivo V2301A",
+    "firstSeen": "2026-06-01T01:30:37.994Z",
+    "lastSeen": "2026-06-01T01:31:50.370Z",
+    "ip": "172.64.217.175",
+    "updateCount": 0
+  },
+  {
+    "deviceId": "2d8fd76a-2fde-41d3-a60a-b57e2153551a",
+    "platform": "android",
+    "appVersion": "0.0.6",
+    "osVersion": "Android 16 (API 36)",
+    "deviceModel": "vivo V2301A",
+    "firstSeen": "2026-06-01T01:37:26.812Z",
+    "lastSeen": "2026-06-01T01:38:04.006Z",
+    "ip": "172.70.206.124",
+    "updateCount": 0
   }
 ]

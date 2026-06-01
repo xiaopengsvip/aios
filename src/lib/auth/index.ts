@@ -52,10 +52,25 @@ export async function verifyPassword(
   return bcrypt.compare(password, hash);
 }
 
-// 获取当前用户 (Server Component)
+// 获取当前用户 (Server Component + API routes)
+// 支持 cookie 和 Authorization header (Desktop/Mobile 客户端)
 export async function getCurrentUser() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(COOKIE_NAME)?.value;
+  // 优先检查 Authorization header
+  const { headers } = await import('next/headers');
+  const headerStore = await headers();
+  const authHeader = headerStore.get('authorization');
+  let token: string | undefined;
+
+  if (authHeader?.startsWith('Bearer ')) {
+    token = authHeader.slice(7);
+  }
+
+  // 回退到 cookie
+  if (!token) {
+    const cookieStore = await cookies();
+    token = cookieStore.get(COOKIE_NAME)?.value;
+  }
+
   if (!token) return null;
 
   const payload = verifyToken(token);
