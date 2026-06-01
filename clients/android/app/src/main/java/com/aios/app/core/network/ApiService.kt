@@ -164,6 +164,9 @@ interface ApiService {
     @POST("/api/images/generate")
     suspend fun generateImage(@Body data: Map<String, String>): Response<Map<String, Any>>
 
+    @POST("/api/video/generate")
+    suspend fun generateVideo(@Body data: Map<String, String>): Response<Map<String, Any>>
+
     @POST("/api/code/execute")
     suspend fun executeCode(@Body data: Map<String, String>): Response<Map<String, Any>>
 

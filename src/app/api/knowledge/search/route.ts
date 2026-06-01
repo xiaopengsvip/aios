@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/db';
 import { getCurrentUser } from '@/lib/auth';
+import { searchKnowledge } from '@/lib/knowledge/engine';
 
-// POST /api/knowledge/search — keyword-based search (vector search requires pgvector setup)
+// POST /api/knowledge/search — TF-IDF vector search with keyword fallback
 export async function POST(req: NextRequest) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -11,27 +11,20 @@ export async function POST(req: NextRequest) {
     const { query, knowledgeBaseId, limit = 10 } = await req.json();
     if (!query) return NextResponse.json({ error: 'Missing query' }, { status: 400 });
 
-    const where: any = {
-      knowledgeBase: { userId: user.id },
-      content: { contains: query, mode: 'insensitive' },
-    };
-    if (knowledgeBaseId) where.knowledgeBaseId = knowledgeBaseId;
+    if (!knowledgeBaseId) {
+      return NextResponse.json({ error: 'Missing knowledgeBaseId' }, { status: 400 });
+    }
 
-    const chunks = await prisma.knowledgeChunk.findMany({
-      where,
-      take: limit,
-      include: { document: { select: { title: true, mimeType: true } } },
-    });
+    const results = await searchKnowledge(knowledgeBaseId, query, limit);
 
     return NextResponse.json({
-      results: chunks.map((c) => ({
-        id: c.id,
-        content: c.content,
-        document: c.document.title,
-        source: c.document.mimeType,
-        chunkIndex: c.chunkIndex,
-        score: 0.5 + Math.random() * 0.5, // Placeholder score
+      results: results.map(r => ({
+        id: r.documentId,
+        content: r.content,
+        document: r.documentTitle || 'Unknown',
+        score: Math.round(r.score * 1000) / 1000,
       })),
+      searchMethod: results.length > 0 && results[0].score > 0.1 ? 'vector' : 'keyword',
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

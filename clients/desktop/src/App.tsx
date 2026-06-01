@@ -3,6 +3,17 @@ import { Layout } from "./components/Layout";
 import { Login } from "./features/Login";
 import { Chat } from "./features/Chat";
 import { Agent } from "./features/Agent";
+import { Image } from "./features/Image";
+import { Video } from "./features/Video";
+import { Audio } from "./features/Audio";
+import { Files } from "./features/Files";
+import { Knowledge } from "./features/Knowledge";
+import { Workflow } from "./features/Workflow";
+import { Search } from "./features/Search";
+import { Marketplace } from "./features/Marketplace";
+import { Prompts } from "./features/Prompts";
+import { Usage } from "./features/Usage";
+import { Credits } from "./features/Credits";
 import { Settings } from "./features/Settings";
 import { UpdateDialog } from "./components/UpdateDialog";
 import { AuthService } from "./services/auth";
@@ -17,7 +28,7 @@ export default function App() {
   );
 }
 
-type Page = "login" | "chat" | "agent" | "workflow" | "settings";
+type Page = "login" | "chat" | "agent" | "image" | "video" | "audio" | "files" | "knowledge" | "workflow" | "search" | "marketplace" | "prompts" | "usage" | "credits" | "settings";
 
 function AppInner() {
   const { t } = useI18n();
@@ -132,13 +143,25 @@ function AppInner() {
   };
 
   const renderPage = () => {
+    const props = { requireAuth, isAuthed };
     switch (page) {
-      case "chat": return <Chat requireAuth={requireAuth} isAuthed={isAuthed} />;
+      case "chat": return <Chat {...props} />;
       case "agent": return <Agent />;
+      case "image": return <Image {...props} />;
+      case "video": return <Video {...props} />;
+      case "audio": return <Audio {...props} />;
+      case "files": return <Files {...props} />;
+      case "knowledge": return <Knowledge {...props} />;
+      case "workflow": return <Workflow {...props} />;
+      case "search": return <Search {...props} />;
+      case "marketplace": return <Marketplace {...props} />;
+      case "prompts": return <Prompts {...props} />;
+      case "usage": return <Usage {...props} />;
+      case "credits": return <Credits {...props} />;
       case "settings": return isAuthed
         ? <Settings onLogout={handleLogout} />
         : <GuestSettings onLogin={() => setShowLogin(true)} />;
-      default: return <Chat requireAuth={requireAuth} isAuthed={isAuthed} />;
+      default: return <Chat {...props} />;
     }
   };
 

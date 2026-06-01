@@ -19,7 +19,17 @@ export function Layout({ children, currentPage, onNavigate, isAuthed, onLoginCli
   const navItems = [
     { id: "chat", label: t("nav.chat"), icon: "💬" },
     { id: "agent", label: t("nav.agent"), icon: "🤖" },
+    { id: "image", label: "绘图", icon: "🎨" },
+    { id: "video", label: "视频", icon: "🎬" },
+    { id: "audio", label: "音频", icon: "🎵" },
+    { id: "files", label: "文件", icon: "📁" },
+    { id: "knowledge", label: "知识库", icon: "📚" },
     { id: "workflow", label: t("nav.workflow"), icon: "⚡" },
+    { id: "search", label: "搜索", icon: "🔍" },
+    { id: "marketplace", label: "市场", icon: "🏪" },
+    { id: "prompts", label: "提示词", icon: "💡" },
+    { id: "usage", label: "统计", icon: "📊" },
+    { id: "credits", label: "积分", icon: "💰" },
     { id: "settings", label: t("nav.settings"), icon: "⚙️" },
   ];
 
