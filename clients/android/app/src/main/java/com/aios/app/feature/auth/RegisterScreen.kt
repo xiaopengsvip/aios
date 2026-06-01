@@ -36,11 +36,21 @@ fun RegisterScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    var code by remember { mutableStateOf("") }
+    var codeCountdown by remember { mutableIntStateOf(0) }
     var showPassword by remember { mutableStateOf(false) }
     var localError by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(state.user) {
         if (state.user != null) onRegisterSuccess()
+    }
+
+    // Countdown timer for verification code
+    LaunchedEffect(codeCountdown) {
+        if (codeCountdown > 0) {
+            kotlinx.coroutines.delay(1000)
+            codeCountdown--
+        }
     }
 
     Scaffold(
@@ -92,6 +102,35 @@ fun RegisterScreen(
             )
             Spacer(modifier = Modifier.height(12.dp))
 
+            // Verification code
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedTextField(
+                    value = code,
+                    onValueChange = { code = it.filter { c -> c.isDigit() }.take(6) },
+                    label = { Text("验证码") },
+                    leadingIcon = { Icon(Icons.Default.Security, null) },
+                    singleLine = true,
+                    modifier = Modifier.weight(1f),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next)
+                )
+                Button(
+                    onClick = {
+                        viewModel.sendCode(email)
+                        codeCountdown = 60
+                    },
+                    enabled = codeCountdown == 0 && email.isNotBlank() && !state.isLoading,
+                    modifier = Modifier.height(56.dp),
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Text(if (codeCountdown > 0) "${codeCountdown}s" else "发送", fontSize = 13.sp)
+                }
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+
             OutlinedTextField(
                 value = password, onValueChange = { password = it },
                 label = { Text("密码") },
@@ -138,12 +177,14 @@ fun RegisterScreen(
                         localError = "两次密码不一致"
                     } else if (password.length < 6) {
                         localError = "密码至少6位"
+                    } else if (code.length != 6) {
+                        localError = "请输入6位验证码"
                     } else {
-                        viewModel.register(username, email, password)
+                        viewModel.register(username, email, password, code)
                     }
                 },
                 modifier = Modifier.fillMaxWidth().height(48.dp),
-                enabled = !state.isLoading && username.isNotBlank() && email.isNotBlank() && password.isNotBlank()
+                enabled = !state.isLoading && username.isNotBlank() && email.isNotBlank() && password.isNotBlank() && code.length == 6
             ) {
                 if (state.isLoading) {
                     CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 2.dp, color = MaterialTheme.colorScheme.onPrimary)

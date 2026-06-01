@@ -22,6 +22,9 @@ interface ApiService {
     @POST("/api/auth/register")
     suspend fun register(@Body request: RegisterRequest): Response<AuthResponse>
 
+    @POST("/api/auth/send-code")
+    suspend fun sendCode(@Body data: Map<String, String>): Response<ApiResponse<Unit>>
+
     @GET("/api/auth/me")
     suspend fun getMe(): Response<UserInfo>
 

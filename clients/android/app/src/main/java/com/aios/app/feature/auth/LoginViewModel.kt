@@ -35,12 +35,22 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun register(username: String, email: String, password: String) {
+    fun register(username: String, email: String, password: String, code: String) {
         viewModelScope.launch {
             _state.value = LoginUiState(isLoading = true)
-            authRepo.register(username, email, password).fold(
+            authRepo.register(username, email, password, code).fold(
                 onSuccess = { _state.value = LoginUiState(user = it) },
                 onFailure = { _state.value = LoginUiState(error = it.message ?: "注册失败") }
+            )
+        }
+    }
+
+    fun sendCode(email: String) {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isLoading = true, error = null)
+            authRepo.sendCode(email).fold(
+                onSuccess = { _state.value = _state.value.copy(isLoading = false, successMessage = it) },
+                onFailure = { _state.value = _state.value.copy(isLoading = false, error = it.message ?: "发送失败") }
             )
         }
     }

@@ -76,10 +76,13 @@ class ApiService {
     if (data.token) this.setToken(data.token);
     return data;
   }
-  async register(username: string, email: string, password: string) {
-    const data = await this.request<any>("/api/auth/register", { method: "POST", body: { username, email, password } });
+  async register(username: string, email: string, password: string, code: string) {
+    const data = await this.request<any>("/api/auth/register", { method: "POST", body: { username, email, password, code } });
     if (data.token) this.setToken(data.token);
     return data;
+  }
+  async sendCode(email: string, type: string = "REGISTER") {
+    return this.request<any>("/api/auth/send-code", { method: "POST", body: { email, type } });
   }
   getMe() { return this.request<any>("/api/auth/me"); }
 

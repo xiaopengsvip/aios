@@ -49,6 +49,8 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
+    var code by remember { mutableStateOf("") }
+    var codeCountdown by remember { mutableIntStateOf(0) }
     var showPassword by remember { mutableStateOf(false) }
     var rememberMe by remember { mutableStateOf(false) }
 
@@ -79,6 +81,14 @@ fun LoginScreen(
                 loginPrefs.edit().clear().apply()
             }
             onLoginSuccess()
+        }
+    }
+
+    // Countdown timer for verification code
+    LaunchedEffect(codeCountdown) {
+        if (codeCountdown > 0) {
+            kotlinx.coroutines.delay(1000)
+            codeCountdown--
         }
     }
 
@@ -209,6 +219,46 @@ fun LoginScreen(
                 keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
             )
 
+            // Verification code (register only)
+            AnimatedVisibility(visible = isRegister) {
+                Column {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        OutlinedTextField(
+                            value = code,
+                            onValueChange = { code = it.filter { c -> c.isDigit() }.take(6) },
+                            label = { Text("验证码") },
+                            leadingIcon = { Icon(Icons.Default.Security, null) },
+                            singleLine = true,
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.weight(1f),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Number,
+                                imeAction = ImeAction.Next
+                            )
+                        )
+                        Button(
+                            onClick = {
+                                viewModel.sendCode(email)
+                                codeCountdown = 60
+                            },
+                            enabled = codeCountdown == 0 && email.isNotBlank() && !state.isLoading,
+                            modifier = Modifier.height(56.dp),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                if (codeCountdown > 0) "${codeCountdown}s" else "发送",
+                                fontSize = 13.sp
+                            )
+                        }
+                    }
+                }
+            }
+
             Spacer(modifier = Modifier.height(12.dp))
 
             // Password
@@ -235,7 +285,7 @@ fun LoginScreen(
                 ),
                 keyboardActions = KeyboardActions(onDone = {
                     focusManager.clearFocus()
-                    if (isRegister) viewModel.register(username, email, password)
+                    if (isRegister) viewModel.register(username, email, password, code)
                     else viewModel.login(email, password)
                 })
             )
@@ -289,14 +339,14 @@ fun LoginScreen(
             Button(
                 onClick = {
                     focusManager.clearFocus()
-                    if (isRegister) viewModel.register(username, email, password)
+                    if (isRegister) viewModel.register(username, email, password, code)
                     else viewModel.login(email, password)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp),
                 shape = RoundedCornerShape(12.dp),
-                enabled = !state.isLoading && email.isNotBlank() && password.isNotBlank()
+                enabled = !state.isLoading && email.isNotBlank() && password.isNotBlank() && (!isRegister || code.length == 6),
             ) {
                 if (state.isLoading) {
                     CircularProgressIndicator(

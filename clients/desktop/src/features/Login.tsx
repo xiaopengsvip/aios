@@ -17,6 +17,7 @@ export function Login({ onLogin }: LoginProps) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [username, setUsername] = useState("");
   const [resetCode, setResetCode] = useState("");
+  const [regCode, setRegCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -26,7 +27,9 @@ export function Login({ onLogin }: LoginProps) {
     return (localStorage.getItem("aios_theme") as "dark" | "light") || "dark";
   });
   const [countdown, setCountdown] = useState(0);
+  const [regCountdown, setRegCountdown] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const regTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Apply theme
   useEffect(() => {
@@ -59,8 +62,26 @@ export function Login({ onLogin }: LoginProps) {
     };
   }, [countdown]);
 
+  // Register code countdown timer
+  useEffect(() => {
+    if (regCountdown > 0) {
+      regTimerRef.current = setInterval(() => {
+        setRegCountdown((prev) => {
+          if (prev <= 1) {
+            if (regTimerRef.current) clearInterval(regTimerRef.current);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (regTimerRef.current) clearInterval(regTimerRef.current);
+    };
+  }, [regCountdown]);
+
   const clearMessages = () => { setError(""); setSuccess(""); };
-  const switchView = (v: View) => { clearMessages(); setView(v); };
+  const switchView = (v: View) => { clearMessages(); setRegCode(""); setView(v); };
 
   // ── Login ──
   const handleLogin = async (e: React.FormEvent) => {
@@ -77,13 +98,25 @@ export function Login({ onLogin }: LoginProps) {
   };
 
   // ── Register ──
+  const handleSendRegCode = async () => {
+    if (!email) { setError(t("login.email") + " required"); return; }
+    setLoading(true); clearMessages();
+    try {
+      const resp: any = await api.sendCode(email, "REGISTER");
+      setSuccess(resp.message || "验证码已发送");
+      setRegCountdown(60);
+    } catch (err: any) { setError(err.message || "发送失败"); }
+    finally { setLoading(false); }
+  };
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) { setError(t("login.passwordMismatch")); return; }
     if (password.length < 6) { setError(t("login.passwordTooShort")); return; }
+    if (regCode.length !== 6) { setError("请输入6位验证码"); return; }
     setLoading(true); clearMessages();
     try {
-      const resp: any = await api.register(username, email, password);
+      const resp: any = await api.register(username, email, password, regCode);
       if (resp.success && resp.user) { AuthService.saveUser(resp.user); onLogin(); }
       else { setError(resp.message || t("login.registerFailed")); }
     } catch (err: any) { setError(err.message || t("login.networkError")); }
@@ -196,6 +229,19 @@ export function Login({ onLogin }: LoginProps) {
               <div className="input-wrapper">
                 <span className="input-icon">📧</span>
                 <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" required />
+              </div>
+            </div>
+            <div className="form-group">
+              <label>验证码</label>
+              <div style={{ display: "flex", gap: 8 }}>
+                <div className="input-wrapper" style={{ flex: 1 }}>
+                  <span className="input-icon">🛡️</span>
+                  <input type="text" value={regCode} onChange={e => setRegCode(e.target.value.replace(/\D/g, "").slice(0, 6))} placeholder="6位验证码" required maxLength={6} style={{ letterSpacing: 3, textAlign: "center" }} />
+                </div>
+                <button type="button" className="btn-primary" disabled={regCountdown > 0 || loading || !email}
+                  onClick={handleSendRegCode} style={{ whiteSpace: "nowrap", minWidth: 80, height: 44 }}>
+                  {regCountdown > 0 ? `${regCountdown}s` : "发送"}
+                </button>
               </div>
             </div>
             <div className="form-group">

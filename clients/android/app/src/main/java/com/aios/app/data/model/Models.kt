@@ -12,6 +12,7 @@ data class RegisterRequest(
     val username: String,
     val email: String,
     val password: String,
+    val code: String,
     val displayName: String? = null
 )
 

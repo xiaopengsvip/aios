@@ -41,8 +41,8 @@ class AuthRepository @Inject constructor(
         Result.failure(e)
     }
 
-    suspend fun register(username: String, email: String, password: String): Result<UserInfo> = try {
-        val resp = api.register(RegisterRequest(username = username, email = email, password = password))
+    suspend fun register(username: String, email: String, password: String, code: String): Result<UserInfo> = try {
+        val resp = api.register(RegisterRequest(username = username, email = email, password = password, code = code))
         if (resp.isSuccessful && resp.body()?.success == true) {
             val body = resp.body()!!
             val user = body.user!!
@@ -95,6 +95,18 @@ class AuthRepository @Inject constructor(
             val msg = try { kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
                 .decodeFromString<Map<String, String>>(errBody ?: "")["error"] } catch (_: Exception) { null }
             Result.failure(Exception(msg ?: "重置失败"))
+        }
+    } catch (e: Exception) { Result.failure(e) }
+
+    suspend fun sendCode(email: String): Result<String> = try {
+        val resp = api.sendCode(mapOf("email" to email, "type" to "REGISTER"))
+        if (resp.isSuccessful) {
+            Result.success(resp.body()?.message ?: "验证码已发送")
+        } else {
+            val errBody = resp.errorBody()?.string()
+            val msg = try { kotlinx.serialization.json.Json { ignoreUnknownKeys = true }
+                .decodeFromString<Map<String, String>>(errBody ?: "")["error"] } catch (_: Exception) { null }
+            Result.failure(Exception(msg ?: "发送失败"))
         }
     } catch (e: Exception) { Result.failure(e) }
 
