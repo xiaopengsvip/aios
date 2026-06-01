@@ -1,4 +1,5 @@
 const BASE_URL = "https://aios.vios.top";
+const FALLBACK_URL = "https://aios.allapple.top";
 export const APP_VERSION = "0.0.7";
 
 interface RequestConfig {
@@ -9,17 +10,42 @@ interface RequestConfig {
 
 class ApiService {
   private baseUrl: string;
+  private fallbackUrl: string;
+  private activeUrl: string;
   private token: string | null = null;
+  private urlResolved = false;
 
   constructor(baseUrl: string = BASE_URL) {
     this.baseUrl = baseUrl;
-    // Restore token from localStorage
+    this.fallbackUrl = FALLBACK_URL;
+    this.activeUrl = baseUrl;
     if (typeof window !== "undefined") {
       this.token = localStorage.getItem("aios_token");
     }
   }
 
-  setBaseUrl(url: string) { this.baseUrl = url; }
+  setBaseUrl(url: string) { this.baseUrl = url; this.activeUrl = url; this.urlResolved = false; }
+
+  /**
+   * Probe both URLs, pick the first one that responds. Cached after first success.
+   */
+  private async resolveUrl(): Promise<string> {
+    if (this.urlResolved) return this.activeUrl;
+    for (const url of [this.baseUrl, this.fallbackUrl]) {
+      try {
+        const ctrl = new AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 5000);
+        await fetch(`${url}/api/auth/login`, { method: "OPTIONS", signal: ctrl.signal });
+        clearTimeout(timer);
+        this.activeUrl = url;
+        this.urlResolved = true;
+        return this.activeUrl;
+      } catch { /* try next */ }
+    }
+    this.activeUrl = this.baseUrl;
+    this.urlResolved = true;
+    return this.activeUrl;
+  }
 
   setToken(token: string | null) {
     this.token = token;
@@ -35,28 +61,26 @@ class ApiService {
     const { method = "GET", body, headers = {} } = config;
     const authHeaders: Record<string, string> = {};
     if (this.token) authHeaders["Authorization"] = `Bearer ${this.token}`;
-    const url = `${this.baseUrl}${path}`;
+    const init: RequestInit = {
+      method,
+      headers: { "Content-Type": "application/json", ...authHeaders, ...headers },
+      body: body ? JSON.stringify(body) : undefined,
+    };
+
+    const base = await this.resolveUrl();
 
     let resp: Response;
     try {
-      resp = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json", ...authHeaders, ...headers },
-        body: body ? JSON.stringify(body) : undefined,
-      });
-    } catch (e: any) {
-      // Network-level errors: DNS, SSL, connection refused, CORS, timeout
-      const msg = e?.message || String(e);
-      if (msg.includes("Failed to fetch") || msg.includes("NetworkError")) {
+      resp = await fetchWithTimeout(`${base}${path}`, init, 15000);
+    } catch {
+      // Primary failed — try fallback
+      const fallback = base === this.baseUrl ? this.fallbackUrl : this.baseUrl;
+      try {
+        resp = await fetchWithTimeout(`${fallback}${path}`, init, 15000);
+        if (base === this.baseUrl) this.activeUrl = this.fallbackUrl; // remember
+      } catch {
         throw new Error(`网络连接失败: 无法访问 ${this.baseUrl}，请检查网络或 VPN 设置`);
       }
-      if (msg.includes("CORS")) {
-        throw new Error(`跨域请求被阻止: 服务器未允许此来源的请求`);
-      }
-      if (msg.includes("timeout") || msg.includes("Timeout")) {
-        throw new Error(`请求超时: 服务器响应过慢，请稍后重试`);
-      }
-      throw new Error(`网络错误: ${msg}`);
     }
 
     if (!resp.ok) {
@@ -123,12 +147,19 @@ class ApiService {
   ) {
     const authHeaders: Record<string, string> = {};
     if (this.token) authHeaders["Authorization"] = `Bearer ${this.token}`;
+    const base = await this.resolveUrl();
 
-    const resp = await fetch(`${this.baseUrl}/api/chat/stream`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "text/event-stream", ...authHeaders },
-      body: JSON.stringify({ modelId, messages, conversationId }),
-    });
+    let resp: Response;
+    try {
+      resp = await fetchWithTimeout(`${base}/api/chat/stream`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "text/event-stream", ...authHeaders },
+        body: JSON.stringify({ modelId, messages, conversationId }),
+      }, 30000);
+    } catch {
+      onError("网络连接失败，请检查网络设置");
+      return;
+    }
 
     if (!resp.ok) {
       const errBody = await resp.json().catch(() => null);
@@ -206,7 +237,6 @@ class ApiService {
         localStorage.setItem("aios_device_id", deviceId);
       }
       const ua = navigator.userAgent;
-      // Detect OS from user agent
       let osVersion = "Unknown";
       if (ua.includes("Windows NT 10")) osVersion = "Windows 10/11";
       else if (ua.includes("Windows NT 6.3")) osVersion = "Windows 8.1";
@@ -216,7 +246,8 @@ class ApiService {
         osVersion = `macOS ${m?.[1]?.replace(/_/g, ".") || ""}`;
       } else if (ua.includes("Linux")) osVersion = "Linux";
 
-      await fetch(`${this.baseUrl}/api/app/install`, {
+      const base = await this.resolveUrl();
+      await fetchWithTimeout(`${base}/api/app/install`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -226,7 +257,7 @@ class ApiService {
           osVersion,
           deviceModel: "Desktop PC",
         }),
-      });
+      }, 10000);
     } catch { /* silent */ }
   }
 
@@ -240,6 +271,13 @@ class ApiService {
     }
     return false;
   }
+}
+
+/** fetch with timeout via AbortController */
+function fetchWithTimeout(url: string, init: RequestInit, ms: number): Promise<Response> {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  return fetch(url, { ...init, signal: ctrl.signal }).finally(() => clearTimeout(timer));
 }
 
 export interface UpdateInfo {
