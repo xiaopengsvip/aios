@@ -169,6 +169,18 @@ fun RegisterScreen(
                 Spacer(modifier = Modifier.height(12.dp))
             }
 
+            // Success message (e.g. verification code sent)
+            state.successMessage?.let { msg ->
+                Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer), modifier = Modifier.fillMaxWidth()) {
+                    Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.CheckCircle, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(8.dp))
+                        Text(msg, color = MaterialTheme.colorScheme.onPrimaryContainer, fontSize = 13.sp)
+                    }
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+
             Button(
                 onClick = {
                     focusManager.clearFocus()
