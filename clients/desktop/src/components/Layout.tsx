@@ -48,6 +48,9 @@ export function Layout({ children, currentPage, onNavigate, isAuthed, onLoginCli
         <div className="sidebar-header">
           <span className="logo">A</span>
           <span className="logo-text">AIOS</span>
+          <button className="theme-toggle" onClick={toggleTheme} style={{ marginLeft: "auto" }}>
+            {theme === "dark" ? "☀️" : "🌙"}
+          </button>
         </div>
 
         <nav className="sidebar-nav">
@@ -64,9 +67,6 @@ export function Layout({ children, currentPage, onNavigate, isAuthed, onLoginCli
         </nav>
 
         <div className="sidebar-footer">
-          <button className="theme-toggle" onClick={toggleTheme}>
-            {theme === "dark" ? "☀️" : "🌙"}
-          </button>
           {user ? (
             <div className="user-info">
               <div className="user-avatar">{(user.displayName || user.username || "?")[0]}</div>
