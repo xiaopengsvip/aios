@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.aios.app.core.navigation.Screen
+import com.aios.app.core.update.VersionInfo
 import com.aios.app.data.model.UserInfo
 import com.aios.app.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -55,7 +56,7 @@ class SettingsViewModel @Inject constructor(
 @Composable
 fun SettingsScreen(
     onLogout: () -> Unit,
-    onCheckUpdate: (() -> Unit)? = null,
+    onCheckUpdate: (suspend () -> VersionInfo?)? = null,
     navController: NavController? = null,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {

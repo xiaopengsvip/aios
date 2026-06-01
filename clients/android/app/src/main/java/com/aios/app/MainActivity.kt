@@ -114,15 +114,22 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                     true -> {
-                        MainApp(navController = navController, onLogout = {
-                            scope.launch {
-                                authManager.clearAll()
-                                isLoggedIn = false
-                                navController.navigate(Screen.Login.route) {
-                                    popUpTo(0) { inclusive = true }
+                        MainApp(
+                            navController = navController,
+                            updateManager = updateManager,
+                            onUpdateAvailable = { info ->
+                                updateState = UpdateState(available = true, versionInfo = info)
+                            },
+                            onLogout = {
+                                scope.launch {
+                                    authManager.clearAll()
+                                    isLoggedIn = false
+                                    navController.navigate(Screen.Login.route) {
+                                        popUpTo(0) { inclusive = true }
+                                    }
                                 }
                             }
-                        })
+                        )
                     }
                 }
 
@@ -170,7 +177,12 @@ data class NavItem(val screen: Screen, val icon: @Composable () -> Unit)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainApp(navController: NavHostController, onLogout: () -> Unit) {
+fun MainApp(
+    navController: NavHostController,
+    updateManager: UpdateManager,
+    onUpdateAvailable: (VersionInfo) -> Unit,
+    onLogout: () -> Unit
+) {
     val innerNavController = rememberNavController()
     val navBackStackEntry by innerNavController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -217,10 +229,7 @@ fun MainApp(navController: NavHostController, onLogout: () -> Unit) {
             composable(Screen.Knowledge.route) { KnowledgeScreen() }
             composable(Screen.Files.route) { FilesScreen() }
             composable(Screen.Settings.route) { SettingsScreen(onLogout = onLogout, onCheckUpdate = {
-                scope.launch {
-                    val info = updateManager.checkForUpdate()
-                    if (info != null) updateState = UpdateState(available = true, versionInfo = info)
-                }
+                onUpdateAvailable(updateManager.checkForUpdateBlocking())
             }, navController = innerNavController) }
 
             // Feature pages (with back navigation)
