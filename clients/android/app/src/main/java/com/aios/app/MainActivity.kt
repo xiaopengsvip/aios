@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -203,12 +204,24 @@ fun MainApp(
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
-                NavigationBar {
+                NavigationBar(
+                    containerColor = Color.White,
+                    contentColor = Color(0xFF9AA0A6),
+                    tonalElevation = 0.dp
+                ) {
                     items.forEach { item ->
+                        val selected = currentRoute == item.screen.route
                         NavigationBarItem(
                             icon = item.icon,
                             label = { Text(item.screen.label) },
-                            selected = currentRoute == item.screen.route,
+                            selected = selected,
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = Color(0xFF3B82F6),
+                                selectedTextColor = Color(0xFF3B82F6),
+                                unselectedIconColor = Color(0xFF9AA0A6),
+                                unselectedTextColor = Color(0xFF9AA0A6),
+                                indicatorColor = Color(0xFF3B82F6).copy(alpha = 0.1f)
+                            ),
                             onClick = {
                                 innerNavController.navigate(item.screen.route) {
                                     popUpTo(innerNavController.graph.findStartDestination().id) { saveState = true }

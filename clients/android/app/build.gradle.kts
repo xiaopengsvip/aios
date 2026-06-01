@@ -15,8 +15,8 @@ android {
         applicationId = "com.aios.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 5
-        versionName = "0.0.5"
+        versionCode = 6
+        versionName = "0.0.6"
 
         buildConfigField("String", "API_BASE_URL", "\"https://aios.vios.top\"")
         buildConfigField("String", "API_BASE_URL_DEBUG", "\"http://10.0.2.2:3100\"")

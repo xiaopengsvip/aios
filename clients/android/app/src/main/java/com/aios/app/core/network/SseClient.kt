@@ -61,10 +61,15 @@ class SseClient(private val client: OkHttpClient, private val json: Json) {
 
             override fun onFailure(eventSource: EventSource, t: Throwable?, response: Response?) {
                 val msg = when {
-                    response?.code == 401 -> "请先登录"
-                    response?.code == 429 -> "请求过于频繁，请稍后再试"
-                    t != null -> t.message ?: "连接失败"
-                    else -> "SSE 连接失败: ${response?.code}"
+                    response?.code == 401 -> "登录已过期，请重新登录"
+                    response?.code == 403 -> "没有权限执行此操作"
+                    response?.code == 429 -> "请求过于频繁，请稍后重试"
+                    response?.code != null && response.code >= 500 -> "服务器错误 (${response.code})"
+                    t?.message?.contains("timeout", true) == true -> "请求超时，请检查网络"
+                    t?.message?.contains("resolve", true) == true -> "DNS解析失败，请检查网络"
+                    t?.message?.contains("connect", true) == true -> "连接服务器失败，请检查网络"
+                    t != null -> "网络错误: ${t.message}"
+                    else -> "连接失败 [${response?.code}]"
                 }
                 onError(msg)
             }

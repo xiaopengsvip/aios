@@ -1,15 +1,15 @@
 {
   "latest": {
-    "versionCode": 5,
-    "versionName": "0.0.5",
+    "versionCode": 6,
+    "versionName": "0.0.6",
     "minSupportedCode": 1,
     "downloadUrl": "https://aios.vios.top/apks/aios-0.0.2-2.apk",
-    "releaseNotes": "0.0.5 统一版\n- Windows + Android 统一版本号\n- Windows NSIS 中文安装器\n- 游客模式（先浏览后登录）\n- 主题切换（深色/浅色/系统）\n- 在线更新检测 + 安装包大小显示\n- 设备安装统计后台\n- 内置 WebView 浏览器\n- 记住登录信息\n- 居中 TopAppBar + 返回按钮统一",
-    "releasedAt": "2026-06-01T00:20:00Z",
+    "releaseNotes": "0.0.6 网络稳定性修复\n- 修复 Tauri Desktop CORS 导致 Failed to fetch\n- 增强错误提示：不再显示模糊的 Failed to fetch，改为具体原因\n- 支持 tauri://localhost 跨域来源\n- Android SSE 错误信息细化（DNS/超时/连接/权限）\n- Desktop API 请求错误分类（网络/CORS/超时/401/403/429/500）",
+    "releasedAt": "2026-06-01T01:10:00Z",
     "apkSize": 27229258,
     "filename": "aios-0.0.2-2.apk",
     "desktopDownloadUrl": "https://github.com/xiaopengsvip/aios/releases/latest",
-    "desktopVersion": "0.0.5"
+    "desktopVersion": "0.0.6"
   },
   "history": [
     {
@@ -23,6 +23,18 @@
       "filename": "aios-0.0.1-beta-1.apk",
       "desktopDownloadUrl": "https://github.com/xiaopengsvip/aios/releases/latest",
       "desktopVersion": "0.0.1"
+    },
+    {
+      "versionCode": 5,
+      "versionName": "0.0.5",
+      "minSupportedCode": 1,
+      "downloadUrl": "https://aios.vios.top/apks/aios-0.0.2-2.apk",
+      "releaseNotes": "0.0.5 统一版\n- Windows + Android 统一版本号\n- Windows NSIS 中文安装器\n- 游客模式（先浏览后登录）\n- 主题切换（深色/浅色/系统）\n- 在线更新检测 + 安装包大小显示\n- 设备安装统计后台\n- 内置 WebView 浏览器\n- 记住登录信息\n- 居中 TopAppBar + 返回按钮统一",
+      "releasedAt": "2026-06-01T00:20:00Z",
+      "apkSize": 27229258,
+      "filename": "aios-0.0.2-2.apk",
+      "desktopDownloadUrl": "https://github.com/xiaopengsvip/aios/releases/latest",
+      "desktopVersion": "0.0.5"
     }
   ]
 }

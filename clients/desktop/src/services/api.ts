@@ -1,5 +1,5 @@
 const BASE_URL = "https://aios.vios.top";
-export const APP_VERSION = "0.0.5";
+export const APP_VERSION = "0.0.6";
 
 interface RequestConfig {
   method?: string;
@@ -35,15 +35,37 @@ class ApiService {
     const { method = "GET", body, headers = {} } = config;
     const authHeaders: Record<string, string> = {};
     if (this.token) authHeaders["Authorization"] = `Bearer ${this.token}`;
+    const url = `${this.baseUrl}${path}`;
 
-    const resp = await fetch(`${this.baseUrl}${path}`, {
-      method,
-      headers: { "Content-Type": "application/json", ...authHeaders, ...headers },
-      body: body ? JSON.stringify(body) : undefined,
-    });
+    let resp: Response;
+    try {
+      resp = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json", ...authHeaders, ...headers },
+        body: body ? JSON.stringify(body) : undefined,
+      });
+    } catch (e: any) {
+      // Network-level errors: DNS, SSL, connection refused, CORS, timeout
+      const msg = e?.message || String(e);
+      if (msg.includes("Failed to fetch") || msg.includes("NetworkError")) {
+        throw new Error(`网络连接失败: 无法访问 ${this.baseUrl}，请检查网络或 VPN 设置`);
+      }
+      if (msg.includes("CORS")) {
+        throw new Error(`跨域请求被阻止: 服务器未允许此来源的请求`);
+      }
+      if (msg.includes("timeout") || msg.includes("Timeout")) {
+        throw new Error(`请求超时: 服务器响应过慢，请稍后重试`);
+      }
+      throw new Error(`网络错误: ${msg}`);
+    }
+
     if (!resp.ok) {
       const err = await resp.json().catch(() => ({ error: resp.statusText }));
-      throw new Error(err.error || err.message || `HTTP ${resp.status}`);
+      if (resp.status === 401) throw new Error(err.error || "登录已过期，请重新登录");
+      if (resp.status === 403) throw new Error(err.error || "没有权限执行此操作");
+      if (resp.status === 429) throw new Error(err.error || "请求过于频繁，请稍后重试");
+      if (resp.status >= 500) throw new Error(err.error || `服务器错误 (${resp.status})`);
+      throw new Error(err.error || err.message || `请求失败: HTTP ${resp.status}`);
     }
     return resp.json();
   }
@@ -106,7 +128,10 @@ class ApiService {
     });
 
     if (!resp.ok) {
-      onError(`HTTP ${resp.status}: ${resp.statusText}`);
+      const errBody = await resp.json().catch(() => null);
+      const errMsg = errBody?.error || resp.statusText;
+      if (resp.status === 401) onError("登录已过期，请重新登录");
+      else onError(`请求失败 [${resp.status}]: ${errMsg}`);
       return;
     }
 
