@@ -30,5 +30,16 @@
     "lastSeen": "2026-06-01T00:44:57.199Z",
     "ip": "172.70.206.125",
     "updateCount": 0
+  },
+  {
+    "deviceId": "c51c656d-1428-42e4-a675-42eb1f4c759e",
+    "platform": "android",
+    "appVersion": "0.0.5",
+    "osVersion": "Android 16 (API 36)",
+    "deviceModel": "vivo V2301A",
+    "firstSeen": "2026-06-01T00:49:20.186Z",
+    "lastSeen": "2026-06-01T00:50:07.396Z",
+    "ip": "104.23.251.34",
+    "updateCount": 0
   }
 ]
