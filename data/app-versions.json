@@ -4,7 +4,7 @@
     "versionName": "0.0.2",
     "minSupportedCode": 1,
     "downloadUrl": "https://aios.vios.top/apks/aios-0.0.2-2.apk",
-    "releaseNotes": "0.0.2 新功能版\n- 在线更新检测 (Android + Windows)\n- 设备安装统计\n- 内置 WebView 浏览器\n- 记住登录信息\n- 居中 TopAppBar\n- 返回按钮统一\n- 全屏适配 (edge-to-edge)",
+    "releaseNotes": "0.0.2 新功能版\n- 在线更新检测 (Android + Windows)\n- 设备安装统计后台\n- 内置 WebView 浏览器\n- 记住登录信息\n- 居中 TopAppBar + 返回按钮统一\n- 全屏适配 (edge-to-edge)\n- 版本号动态显示\n- 安装包大小显示",
     "releasedAt": "2026-06-01T00:00:00Z",
     "apkSize": 27229258,
     "filename": "aios-0.0.2-2.apk",

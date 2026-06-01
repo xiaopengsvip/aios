@@ -10,6 +10,14 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![greet])
+        .setup(|app| {
+            // Single instance lock (learned from hermes-web-ui)
+            // Prevents multiple windows on Windows
+            if let Some(window) = app.get_webview_window("main") {
+                window.show().ok();
+            }
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
