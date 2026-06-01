@@ -177,7 +177,12 @@ fun SettingsScreen(
             SettingsMenuItem(Icons.Default.Language, "语言", "简体中文") {}
             SettingsMenuItem(Icons.Default.SmartToy, "默认模型", "mimo-v2.5-pro") {}
             SettingsMenuItem(Icons.Default.Info, "关于", "v$appVersion") {}
-            SettingsMenuItem(Icons.Default.Update, "检查更新", "v$appVersion") { onCheckUpdate?.invoke() }
+            SettingsMenuItem(Icons.Default.Update, "检查更新", "v$appVersion") {
+                val scope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.Main)
+                scope.launch {
+                    onCheckUpdate?.invoke()
+                }
+            }
             SettingsMenuItem(Icons.Default.Description, "使用条款", "") {}
             SettingsMenuItem(Icons.Default.Security, "隐私政策", "") {}
 

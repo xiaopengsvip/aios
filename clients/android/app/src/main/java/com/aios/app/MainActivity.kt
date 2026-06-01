@@ -228,9 +228,13 @@ fun MainApp(
             composable(Screen.Agent.route) { AgentScreen() }
             composable(Screen.Knowledge.route) { KnowledgeScreen() }
             composable(Screen.Files.route) { FilesScreen() }
-            composable(Screen.Settings.route) { SettingsScreen(onLogout = onLogout, onCheckUpdate = {
-                onUpdateAvailable(updateManager.checkForUpdateBlocking())
-            }, navController = innerNavController) }
+            composable(Screen.Settings.route) {
+                val coroutineScope = rememberCoroutineScope()
+                SettingsScreen(onLogout = onLogout, onCheckUpdate = {
+                    val info = updateManager.checkForUpdate()
+                    if (info != null) onUpdateAvailable(info)
+                }, navController = innerNavController)
+            }
 
             // Feature pages (with back navigation)
             composable(Screen.Image.route) { ImageScreen(onBack = { innerNavController.popBackStack() }) }
