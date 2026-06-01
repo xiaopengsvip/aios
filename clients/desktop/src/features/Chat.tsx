@@ -64,7 +64,7 @@ export function Chat({ requireAuth, isAuthed }: ChatProps) {
         try {
           const formData = new FormData();
           formData.append('file', file);
-          const resp = await fetch(`${api.baseUrl}/api/files`, { method: 'POST', body: formData, credentials: 'include' });
+          const resp = await fetch(`${api.getPublicBaseUrl()}/api/files`, { method: 'POST', body: formData, credentials: 'include' });
           if (resp.ok) {
             const data = await resp.json();
             if (data.url) attachmentUrls.push(data.url);

@@ -3,7 +3,7 @@ import { api } from '../services/api';
 
 interface FeatureProps { requireAuth?: (cb?: () => void) => boolean; isAuthed?: boolean; }
 
-export function Image({ requireAuth, isAuthed }: FeatureProps) {
+export function Image({ requireAuth, _isAuthed }: FeatureProps) {
   const [prompt, setPrompt] = useState('');
   const [style, setStyle] = useState('realistic');
   const [size, setSize] = useState('1024x1024');

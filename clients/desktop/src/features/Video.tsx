@@ -3,7 +3,7 @@ import { api } from '../services/api';
 
 interface FeatureProps { requireAuth?: (cb?: () => void) => boolean; isAuthed?: boolean; }
 
-export function Video({ requireAuth, isAuthed }: FeatureProps) {
+export function Video({ requireAuth, _isAuthed }: FeatureProps) {
   const [prompt, setPrompt] = useState('');
   const [duration, setDuration] = useState('5s');
   const [resolution, setResolution] = useState('720p');

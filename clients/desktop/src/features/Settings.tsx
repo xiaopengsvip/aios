@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { api } from "../services/api";
-import { I18nProvider, useI18n } from "../i18n";
+
 
 interface SettingsProps {
   onLogout: () => void;
@@ -57,7 +57,7 @@ export function Settings({ onLogout }: SettingsProps) {
     const file = e.target.files?.[0]; if (!file) return;
     const formData = new FormData(); formData.append('avatar', file);
     try {
-      const resp = await fetch(`${api.baseUrl}/api/auth/avatar`, { method: 'POST', body: formData, credentials: 'include' });
+      const resp = await fetch(`${api.getPublicBaseUrl()}/api/auth/avatar`, { method: 'POST', body: formData, credentials: 'include' });
       if (resp.ok) {
         const data = await resp.json();
         setUser((u: any) => ({ ...u, avatar: data.avatar }));

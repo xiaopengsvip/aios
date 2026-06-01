@@ -25,7 +25,7 @@ export function Files({ requireAuth, isAuthed }: FeatureProps) {
     setUploading(true); setError('');
     try {
       const formData = new FormData(); formData.append('file', file);
-      const resp = await fetch(`${api.baseUrl}/api/files`, { method: 'POST', body: formData, credentials: 'include' });
+      const resp = await fetch(`${api.getPublicBaseUrl()}/api/files`, { method: 'POST', body: formData, credentials: 'include' });
       if (resp.ok) loadFiles(); else setError('上传失败');
     } catch (e: any) { setError(e.message); }
     setUploading(false);
@@ -109,7 +109,7 @@ export function Files({ requireAuth, isAuthed }: FeatureProps) {
             <div><span style={{ color: '#888' }}>上传:</span> {new Date(selectedFile.createdAt).toLocaleString('zh-CN')}</div>
           </div>
           {selectedFile.mimeType?.startsWith('image/') && (
-            <img src={`${api.baseUrl}/api/files/${selectedFile.id}`} alt="" style={{ width: '100%', borderRadius: 8, marginTop: 12 }} />
+            <img src={`${api.getPublicBaseUrl()}/api/files/${selectedFile.id}`} alt="" style={{ width: '100%', borderRadius: 8, marginTop: 12 }} />
           )}
         </div>
       )}

@@ -15,7 +15,7 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [codeSent, setCodeSent] = useState(false);
+  
   const [countdown, setCountdown] = useState(0);
 
   const sendCode = async () => {
@@ -23,7 +23,7 @@ export function Register({ onRegister, onSwitchToLogin }: RegisterProps) {
     setLoading(true); setError('');
     try {
       await api.post('/api/auth/send-code', { email, type: 'register' });
-      setCodeSent(true); setStep('verify');
+      setStep('verify');
       setCountdown(60);
       const timer = setInterval(() => { setCountdown(c => { if (c <= 1) { clearInterval(timer); return 0; } return c - 1; }); }, 1000);
     } catch (e: any) { setError(e.message || '发送失败'); }

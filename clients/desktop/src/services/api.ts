@@ -84,6 +84,15 @@ class ApiService {
 
   getToken() { return this.token; }
 
+  getPublicBaseUrl() { return this.activeUrl; }
+
+  // Convenience methods for HTTP verbs
+  async get<T = any>(path: string): Promise<T> { return this.request<T>(path, { method: 'GET' }); }
+  async post<T = any>(path: string, body?: any): Promise<T> { return this.request<T>(path, { method: 'POST', body }); }
+  async put<T = any>(path: string, body?: any): Promise<T> { return this.request<T>(path, { method: 'PUT', body }); }
+  async patch<T = any>(path: string, body?: any): Promise<T> { return this.request<T>(path, { method: 'PATCH', body }); }
+  async delete<T = any>(path: string): Promise<T> { return this.request<T>(path, { method: 'DELETE' }); }
+
   private async request<T>(path: string, config: RequestConfig = {}): Promise<T> {
     const { method = "GET", body, headers = {} } = config;
     const authHeaders: Record<string, string> = {};

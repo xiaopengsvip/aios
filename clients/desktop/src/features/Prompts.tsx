@@ -3,7 +3,7 @@ import { api } from '../services/api';
 
 interface FeatureProps { requireAuth?: (cb?: () => void) => boolean; isAuthed?: boolean; }
 
-export function Prompts({ requireAuth, isAuthed }: FeatureProps) {
+export function Prompts({ _requireAuth, isAuthed }: FeatureProps) {
   const [prompts, setPrompts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
