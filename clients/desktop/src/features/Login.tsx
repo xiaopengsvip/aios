@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { api } from "../services/api";
 import { AuthService } from "../services/auth";
-import { useI18n, type Locale } from "../i18n";
+import { useI18n } from "../i18n";
 
 type View = "login" | "register" | "forgot" | "reset";
 
