@@ -7,10 +7,20 @@ import { Settings } from "./features/Settings";
 import { UpdateDialog } from "./components/UpdateDialog";
 import { AuthService } from "./services/auth";
 import { api, UpdateInfo, APP_VERSION } from "./services/api";
+import { I18nProvider, useI18n } from "./i18n";
+
+export default function App() {
+  return (
+    <I18nProvider>
+      <AppInner />
+    </I18nProvider>
+  );
+}
 
 type Page = "login" | "chat" | "agent" | "workflow" | "settings";
 
-export default function App() {
+function AppInner() {
+  const { t } = useI18n();
   const [page, setPage] = useState<Page>("chat");
   const [isAuthed, setIsAuthed] = useState(false);
   const [ready, setReady] = useState(false);
@@ -88,7 +98,7 @@ export default function App() {
             }} />
           ))}
         </div>
-        <div style={{ fontSize: 13, color: "#64748b" }}>启动中...</div>
+        <div style={{ fontSize: 13, color: "#64748b" }}>{t("app.starting")}</div>
         <style>{`@keyframes pulse { 0%,100%{opacity:.3;transform:scale(0.8)} 50%{opacity:1;transform:scale(1)} }`}</style>
       </div>
     );
@@ -151,17 +161,18 @@ export default function App() {
 
 // Guest settings page (no auth required)
 function GuestSettings({ onLogin }: { onLogin: () => void }) {
+  const { t } = useI18n();
   return (
     <div className="page-container settings-page">
-      <h2>设置</h2>
+      <h2>{t("settings.title")}</h2>
       <div className="settings-group">
-        <div className="settings-item"><span>🎨 主题模式</span><span className="settings-value">深色</span></div>
-        <div className="settings-item"><span>🌐 语言</span><span className="settings-value">简体中文</span></div>
-        <div className="settings-item"><span>🤖 默认模型</span><span className="settings-value">mimo-v2.5-pro</span></div>
-        <div className="settings-item"><span>ℹ️ 关于</span><span className="settings-value">v{APP_VERSION}</span></div>
+        <div className="settings-item"><span>🎨 {t("settings.theme")}</span><span className="settings-value">{t("settings.dark")}</span></div>
+        <div className="settings-item"><span>🌐 {t("settings.language")}</span><span className="settings-value">简体中文</span></div>
+        <div className="settings-item"><span>🤖 {t("settings.defaultModel")}</span><span className="settings-value">mimo-v2.5-pro</span></div>
+        <div className="settings-item"><span>ℹ️ {t("settings.about")}</span><span className="settings-value">v{APP_VERSION}</span></div>
       </div>
       <button className="btn-primary" onClick={onLogin} style={{ marginTop: 16 }}>
-        登录 / 注册
+        {t("settings.loginRegister")}
       </button>
     </div>
   );

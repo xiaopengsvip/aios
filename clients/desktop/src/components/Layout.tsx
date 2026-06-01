@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "../services/api";
+import { useI18n } from "../i18n";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -10,16 +11,17 @@ interface LayoutProps {
   onLogout?: () => void;
 }
 
-const navItems = [
-  { id: "chat", label: "对话", icon: "💬" },
-  { id: "agent", label: "Agent", icon: "🤖" },
-  { id: "workflow", label: "工作流", icon: "⚡" },
-  { id: "settings", label: "设置", icon: "⚙️" },
-];
-
 export function Layout({ children, currentPage, onNavigate, isAuthed, onLoginClick, onLogout: _onLogout }: LayoutProps) {
+  const { t } = useI18n();
   const [user, setUser] = useState<any>(null);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
+
+  const navItems = [
+    { id: "chat", label: t("nav.chat"), icon: "💬" },
+    { id: "agent", label: t("nav.agent"), icon: "🤖" },
+    { id: "workflow", label: t("nav.workflow"), icon: "⚡" },
+    { id: "settings", label: t("nav.settings"), icon: "⚙️" },
+  ];
 
   useEffect(() => {
     if (isAuthed) {

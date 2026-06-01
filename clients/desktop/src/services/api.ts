@@ -60,6 +60,18 @@ class ApiService {
     return data;
   }
   getMe() { return this.request<any>("/api/auth/me"); }
+
+  // ── Forgot / Reset Password ──
+  async requestResetCode(email: string) {
+    return this.request<any>("/api/auth/reset-password", {
+      method: "POST", body: { action: "request", email }
+    });
+  }
+  async resetPassword(email: string, code: string, newPassword: string) {
+    return this.request<any>("/api/auth/reset-password", {
+      method: "POST", body: { action: "confirm", email, code, newPassword }
+    });
+  }
   logout() {
     this.setToken(null);
     return this.request("/api/auth/logout", { method: "POST" });
