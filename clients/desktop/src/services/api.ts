@@ -1,6 +1,6 @@
 const BASE_URL = "https://aios.vios.top";
 const FALLBACK_URL = "https://aios.allapple.top";
-export const APP_VERSION = "0.0.7";
+export const APP_VERSION = "0.0.8";
 
 // Dynamic import of Tauri HTTP plugin (respects system proxy via reqwest)
 // Falls back to browser fetch when not in Tauri context

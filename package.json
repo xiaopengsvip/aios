@@ -1,6 +1,6 @@
 {
   "name": "ai-workspace-os",
-  "version": "0.0.2-00A",
+  "version": "0.0.8",
   "private": true,
   "description": "AI Workspace OS - 企业级 AI 超级工作台",
   "scripts": {
