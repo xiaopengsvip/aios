@@ -14,6 +14,8 @@ import { Marketplace } from "./features/Marketplace";
 import { Prompts } from "./features/Prompts";
 import { Usage } from "./features/Usage";
 import { Credits } from "./features/Credits";
+import { Code } from "./features/Code";
+import { ApiPlatform } from "./features/ApiPlatform";
 import { Settings } from "./features/Settings";
 import { UpdateDialog } from "./components/UpdateDialog";
 import { AuthService } from "./services/auth";
@@ -28,7 +30,7 @@ export default function App() {
   );
 }
 
-type Page = "login" | "chat" | "agent" | "image" | "video" | "audio" | "files" | "knowledge" | "workflow" | "search" | "marketplace" | "prompts" | "usage" | "credits" | "settings";
+type Page = "login" | "chat" | "agent" | "image" | "video" | "audio" | "code" | "files" | "knowledge" | "workflow" | "search" | "marketplace" | "prompts" | "api-platform" | "usage" | "credits" | "settings";
 
 function AppInner() {
   const { t } = useI18n();
@@ -150,12 +152,14 @@ function AppInner() {
       case "image": return <Image {...props} />;
       case "video": return <Video {...props} />;
       case "audio": return <Audio {...props} />;
+      case "code": return <Code {...props} />;
       case "files": return <Files {...props} />;
       case "knowledge": return <Knowledge {...props} />;
       case "workflow": return <Workflow {...props} />;
       case "search": return <Search {...props} />;
       case "marketplace": return <Marketplace {...props} />;
       case "prompts": return <Prompts {...props} />;
+      case "api-platform": return <ApiPlatform {...props} />;
       case "usage": return <Usage {...props} />;
       case "credits": return <Credits {...props} />;
       case "settings": return isAuthed
