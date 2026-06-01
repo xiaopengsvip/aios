@@ -2,6 +2,29 @@ const BASE_URL = "https://aios.vios.top";
 const FALLBACK_URL = "https://aios.allapple.top";
 export const APP_VERSION = "0.0.7";
 
+// Dynamic import of Tauri HTTP plugin (respects system proxy via reqwest)
+// Falls back to browser fetch when not in Tauri context
+let _tauriFetch: any = null;
+let _fetchResolved = false;
+
+async function resolveFetch(): Promise<any> {
+  if (_fetchResolved) return _tauriFetch || fetch;
+  _fetchResolved = true;
+  try {
+    const mod = await import(/* @vite-ignore */ "@tauri-apps/plugin-http");
+    if (mod?.fetch) { _tauriFetch = mod.fetch; console.log("[NET] tauri-plugin-http (reqwest, proxy=system)"); }
+  } catch {}
+  if (!_tauriFetch) console.log("[NET] browser fetch (no proxy)");
+  return _tauriFetch || fetch;
+}
+
+/** fetch with timeout via AbortController */
+function fetchWithTimeout(fn: typeof fetch, url: string, init: RequestInit, ms: number): Promise<Response> {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  return fn(url, { ...init, signal: ctrl.signal }).finally(() => clearTimeout(timer));
+}
+
 interface RequestConfig {
   method?: string;
   body?: any;
@@ -25,20 +48,24 @@ class ApiService {
   }
 
   setBaseUrl(url: string) { this.baseUrl = url; this.activeUrl = url; this.urlResolved = false; }
+  private smartFetch: any = null;
+  private async ensureFetch(): Promise<any> {
+    if (!this.smartFetch) this.smartFetch = await resolveFetch();
+    return this.smartFetch;
+  }
 
   /**
    * Probe both URLs, pick the first one that responds. Cached after first success.
    */
   private async resolveUrl(): Promise<string> {
     if (this.urlResolved) return this.activeUrl;
+    const fn = await this.ensureFetch();
     for (const url of [this.baseUrl, this.fallbackUrl]) {
       try {
-        const ctrl = new AbortController();
-        const timer = setTimeout(() => ctrl.abort(), 5000);
-        await fetch(`${url}/api/auth/login`, { method: "OPTIONS", signal: ctrl.signal });
-        clearTimeout(timer);
+        await fetchWithTimeout(fn, `${url}/api/auth/login`, { method: "OPTIONS" }, 5000);
         this.activeUrl = url;
         this.urlResolved = true;
+        console.log(`[NET] resolved_url=${url}`);
         return this.activeUrl;
       } catch { /* try next */ }
     }
@@ -68,16 +95,18 @@ class ApiService {
     };
 
     const base = await this.resolveUrl();
+    const fn = await this.ensureFetch();
 
     let resp: Response;
     try {
-      resp = await fetchWithTimeout(`${base}${path}`, init, 15000);
-    } catch {
+      resp = await fetchWithTimeout(fn, `${base}${path}`, init, 15000);
+    } catch (primaryErr) {
       // Primary failed — try fallback
       const fallback = base === this.baseUrl ? this.fallbackUrl : this.baseUrl;
       try {
-        resp = await fetchWithTimeout(`${fallback}${path}`, init, 15000);
-        if (base === this.baseUrl) this.activeUrl = this.fallbackUrl; // remember
+        console.log(`[NET] primary failed, trying fallback=${fallback}`);
+        resp = await fetchWithTimeout(fn, `${fallback}${path}`, init, 15000);
+        if (base === this.baseUrl) this.activeUrl = this.fallbackUrl;
       } catch {
         throw new Error(`网络连接失败: 无法访问 ${this.baseUrl}，请检查网络或 VPN 设置`);
       }
@@ -151,11 +180,28 @@ class ApiService {
 
     let resp: Response;
     try {
-      resp = await fetchWithTimeout(`${base}/api/chat/stream`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "text/event-stream", ...authHeaders },
-        body: JSON.stringify({ modelId, messages, conversationId }),
-      }, 30000);
+      // For SSE streaming, try Tauri fetch first, then native fetch
+      // (Tauri HTTP plugin may not support ReadableStream for SSE)
+      const fn = await this.ensureFetch();
+      try {
+        resp = await fetchWithTimeout(fn, `${base}/api/chat/stream`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "text/event-stream", ...authHeaders },
+          body: JSON.stringify({ modelId, messages, conversationId }),
+        }, 30000);
+      } catch {
+        // If Tauri fetch fails for streaming, try native browser fetch
+        if (fn !== fetch) {
+          console.log("[NET] Tauri fetch failed for SSE, falling back to browser fetch");
+          resp = await fetchWithTimeout(fetch, `${base}/api/chat/stream`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "text/event-stream", ...authHeaders },
+            body: JSON.stringify({ modelId, messages, conversationId }),
+          }, 30000);
+        } else {
+          throw new Error("fetch failed");
+        }
+      }
     } catch {
       onError("网络连接失败，请检查网络设置");
       return;
@@ -247,7 +293,8 @@ class ApiService {
       } else if (ua.includes("Linux")) osVersion = "Linux";
 
       const base = await this.resolveUrl();
-      await fetchWithTimeout(`${base}/api/app/install`, {
+      const fn = await this.ensureFetch();
+      await fetchWithTimeout(fn, `${base}/api/app/install`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -271,13 +318,6 @@ class ApiService {
     }
     return false;
   }
-}
-
-/** fetch with timeout via AbortController */
-function fetchWithTimeout(url: string, init: RequestInit, ms: number): Promise<Response> {
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), ms);
-  return fetch(url, { ...init, signal: ctrl.signal }).finally(() => clearTimeout(timer));
 }
 
 export interface UpdateInfo {

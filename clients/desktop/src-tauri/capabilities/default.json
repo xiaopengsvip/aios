@@ -5,6 +5,15 @@
   "windows": ["main"],
   "permissions": [
     "core:default",
-    "shell:allow-open"
+    "shell:allow-open",
+    "http:default",
+    {
+      "identifier": "http:allow-fetch",
+      "description": "Allow HTTP requests to AIOS API servers",
+      "allow": [
+        { "url": "https://aios.vios.top/**" },
+        { "url": "https://aios.allapple.top/**" }
+      ]
+    }
   ]
 }
