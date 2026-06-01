@@ -11,20 +11,19 @@ import { api, UpdateInfo, APP_VERSION } from "./services/api";
 type Page = "login" | "chat" | "agent" | "workflow" | "settings";
 
 export default function App() {
-  const [page, setPage] = useState<Page>("login");
+  const [page, setPage] = useState<Page>("chat");
   const [isAuthed, setIsAuthed] = useState(false);
   const [ready, setReady] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
   const [updateInfo, setUpdateInfo] = useState<UpdateInfo | null>(null);
 
   useEffect(() => {
-    // Restore token from localStorage, then verify with backend
     const token = localStorage.getItem("aios_token");
     if (token) {
       api.setToken(token);
       api.getMe().then((data: any) => {
         if (data?.user || data?.id) {
           setIsAuthed(true);
-          setPage("chat");
         } else {
           api.setToken(null);
         }
@@ -35,26 +34,19 @@ export default function App() {
       setReady(true);
     }
 
-    // Check for updates on startup (learned from hermes-web-ui)
-    api.checkUpdate(APP_VERSION).then((info) => {
-      if (info) setUpdateInfo(info);
-    });
-
-    // Re-check every 6 hours (learned from hermes-web-ui updater pattern)
-    const updateInterval = setInterval(() => {
-      api.checkUpdate(APP_VERSION).then((info) => {
-        if (info) setUpdateInfo(info);
-      });
+    // Update check (startup + every 6h)
+    api.checkUpdate(APP_VERSION).then(info => { if (info) setUpdateInfo(info); });
+    const interval = setInterval(() => {
+      api.checkUpdate(APP_VERSION).then(info => { if (info) setUpdateInfo(info); });
     }, 6 * 60 * 60 * 1000);
 
-    // Report device install
     api.reportInstall();
-
-    return () => clearInterval(updateInterval);
+    return () => clearInterval(interval);
   }, []);
 
   const handleLogin = () => {
     setIsAuthed(true);
+    setShowLogin(false);
     setPage("chat");
   };
 
@@ -62,16 +54,25 @@ export default function App() {
     AuthService.clear();
     api.setToken(null);
     setIsAuthed(false);
-    setPage("login");
+    setPage("chat");
   };
 
-  // Splash screen (learned from hermes-web-ui)
+  // Require auth for protected actions
+  const requireAuth = (callback?: () => void) => {
+    if (!isAuthed) {
+      setShowLogin(true);
+      return false;
+    }
+    callback?.();
+    return true;
+  };
+
+  // Splash screen
   if (!ready) {
     return (
       <div style={{
         display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-        height: "100vh", background: "#0a0a0f", color: "#888", fontFamily: "system-ui",
-        gap: 24,
+        height: "100vh", background: "#0a0a0f", gap: 24,
       }}>
         <div style={{
           fontSize: 48, fontWeight: 700,
@@ -88,40 +89,80 @@ export default function App() {
           ))}
         </div>
         <div style={{ fontSize: 13, color: "#64748b" }}>启动中...</div>
-        <style>{`
-          @keyframes pulse {
-            0%, 100% { opacity: 0.3; transform: scale(0.8); }
-            50% { opacity: 1; transform: scale(1); }
-          }
-        `}</style>
+        <style>{`@keyframes pulse { 0%,100%{opacity:.3;transform:scale(0.8)} 50%{opacity:1;transform:scale(1)} }`}</style>
       </div>
     );
   }
 
-  if (!isAuthed) {
+  // Login modal overlay (not full page replacement)
+  const LoginOverlay = () => {
+    if (!showLogin) return null;
     return (
-      <>
-        <Login onLogin={handleLogin} />
-        {updateInfo && <UpdateDialog info={updateInfo} onClose={() => setUpdateInfo(null)} />}
-      </>
+      <div style={{
+        position: "fixed", inset: 0, zIndex: 9999,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        background: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)",
+      }}>
+        <div style={{
+          position: "relative", width: 420, maxWidth: "90vw",
+          background: "#0f0f1a", borderRadius: 16, padding: "8px 0",
+          border: "1px solid #2a2a4a", boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+        }}>
+          <button
+            onClick={() => setShowLogin(false)}
+            style={{
+              position: "absolute", top: 12, right: 16, background: "none",
+              border: "none", color: "#64748b", fontSize: 20, cursor: "pointer",
+            }}
+          >✕</button>
+          <Login onLogin={handleLogin} />
+        </div>
+      </div>
     );
-  }
+  };
 
   const renderPage = () => {
     switch (page) {
-      case "chat": return <Chat />;
+      case "chat": return <Chat requireAuth={requireAuth} isAuthed={isAuthed} />;
       case "agent": return <Agent />;
-      case "settings": return <Settings onLogout={handleLogout} />;
-      default: return <Chat />;
+      case "settings": return isAuthed
+        ? <Settings onLogout={handleLogout} />
+        : <GuestSettings onLogin={() => setShowLogin(true)} />;
+      default: return <Chat requireAuth={requireAuth} isAuthed={isAuthed} />;
     }
   };
 
   return (
     <>
-      <Layout currentPage={page} onNavigate={setPage}>
+      <Layout
+        currentPage={page}
+        onNavigate={(p) => { setPage(p); }}
+        isAuthed={isAuthed}
+        onLoginClick={() => setShowLogin(true)}
+        onLogout={handleLogout}
+      >
         {renderPage()}
       </Layout>
+      <LoginOverlay />
       {updateInfo && <UpdateDialog info={updateInfo} onClose={() => setUpdateInfo(null)} />}
     </>
+  );
+}
+
+// Guest settings page (no auth required)
+function GuestSettings({ onLogin }: { onLogin: () => void }) {
+  return (
+    <div className="page-container settings-page">
+      <h2>设置</h2>
+      <div className="settings-group">
+        <div className="settings-item"><span>🎨 主题模式</span><span className="settings-value">深色</span></div>
+        <div className="settings-item"><span>🌐 语言</span><span className="settings-value">简体中文</span></div>
+        <div className="settings-item"><span>🤖 默认模型</span><span className="settings-value">mimo-v2.5-pro</span></div>
+        <div className="settings-item"><span>ℹ️ 关于</span><span className="settings-value">v{APP_VERSION}</span></div>
+      </div>
+      <button className="btn-primary" onClick={onLogin} style={{ marginTop: 16 }}>
+        登录 / 注册
+      </button>
+    </div>
   );
 }

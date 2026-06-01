@@ -4,7 +4,12 @@ import { ChatMessage } from "../components/ChatMessage";
 import { ModelSelector } from "../components/ModelSelector";
 import { api } from "../services/api";
 
-export function Chat() {
+interface ChatProps {
+  requireAuth?: (callback?: () => void) => boolean;
+  isAuthed?: boolean;
+}
+
+export function Chat({ requireAuth, isAuthed }: ChatProps) {
   const { messages, isStreaming, streamingContent, streamingReasoning, error, sendMessage, clearMessages, setError } = useChat();
   const [input, setInput] = useState("");
   const [selectedModel, setSelectedModel] = useState<any>(null);
@@ -13,8 +18,10 @@ export function Chat() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    api.getConversations().then(d => setConversations(d.conversations || [])).catch(() => {});
-  }, []);
+    if (isAuthed) {
+      api.getConversations().then(d => setConversations(d.conversations || [])).catch(() => {});
+    }
+  }, [isAuthed]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -22,6 +29,7 @@ export function Chat() {
 
   const handleSend = async () => {
     if (!input.trim() || !selectedModel) return;
+    if (requireAuth && !requireAuth()) return;
     const text = input;
     setInput("");
     await sendMessage(selectedModel.id, text);
@@ -37,7 +45,7 @@ export function Chat() {
   return (
     <div className="chat-layout">
       {/* Conversation sidebar */}
-      {showSidebar && (
+      {showSidebar && isAuthed && (
         <div className="chat-sidebar">
           <div className="chat-sidebar-header">
             <span>会话</span>
@@ -59,11 +67,14 @@ export function Chat() {
 
       {/* Chat main area */}
       <div className="chat-main">
-        {/* Top bar */}
         <div className="chat-topbar">
-          <button className="btn-icon" onClick={() => setShowSidebar(!showSidebar)}>☰</button>
+          {isAuthed && (
+            <button className="btn-icon" onClick={() => setShowSidebar(!showSidebar)}>☰</button>
+          )}
           <ModelSelector selected={selectedModel} onSelect={setSelectedModel} />
-          <button className="btn-icon" onClick={clearMessages}>+</button>
+          {isAuthed && (
+            <button className="btn-icon" onClick={clearMessages}>+</button>
+          )}
         </div>
 
         {/* Messages */}
@@ -71,20 +82,15 @@ export function Chat() {
           {messages.length === 0 && !isStreaming && (
             <div className="chat-empty">
               <div className="chat-empty-icon">💬</div>
-              <h3>开始对话</h3>
-              <p>选择一个模型，输入你的问题</p>
+              <h3>{isAuthed ? "开始对话" : "AIOS AI 对话"}</h3>
+              <p>{isAuthed ? "选择一个模型，输入你的问题" : "登录后即可开始对话"}</p>
             </div>
           )}
           {messages.map(msg => (
             <ChatMessage key={msg.id} role={msg.role} content={msg.content} reasoning={msg.reasoning} />
           ))}
           {isStreaming && (
-            <ChatMessage
-              role="assistant"
-              content={streamingContent}
-              reasoning={streamingReasoning}
-              isStreaming
-            />
+            <ChatMessage role="assistant" content={streamingContent} reasoning={streamingReasoning} isStreaming />
           )}
           {error && (
             <div className="error-banner">
@@ -101,7 +107,7 @@ export function Chat() {
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={selectedModel ? "输入消息... (Enter 发送, Shift+Enter 换行)" : "请先选择模型"}
+            placeholder={selectedModel ? "输入消息... (Enter 发送)" : "请先选择模型"}
             disabled={isStreaming || !selectedModel}
             rows={1}
           />
