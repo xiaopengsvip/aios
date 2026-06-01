@@ -3,7 +3,7 @@ import { api } from '../services/api';
 
 interface FeatureProps { requireAuth?: (cb?: () => void) => boolean; isAuthed?: boolean; }
 
-export function Marketplace({ _requireAuth, isAuthed }: FeatureProps) {
+export function Marketplace({ isAuthed }: FeatureProps) {
   const [items, setItems] = useState<any[]>([]);
   const [type, setType] = useState('all');
   const [search, setSearch] = useState('');

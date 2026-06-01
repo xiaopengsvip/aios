@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useChat } from "../hooks/useChat";
 import { ChatMessage } from "../components/ChatMessage";
 import { ModelSelector } from "../components/ModelSelector";

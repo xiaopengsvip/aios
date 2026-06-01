@@ -3,7 +3,7 @@ import { api } from '../services/api';
 
 interface FeatureProps { requireAuth?: (cb?: () => void) => boolean; isAuthed?: boolean; }
 
-export function Search({ requireAuth, _isAuthed }: FeatureProps) {
+export function Search({ requireAuth }: FeatureProps) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<any[]>([]);
   const [searching, setSearching] = useState(false);

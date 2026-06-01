@@ -17,7 +17,7 @@ const METHOD_COLORS: Record<string, string> = {
   GET: '#16a34a', POST: '#2563eb', PUT: '#ca8a04', DELETE: '#dc2626',
 };
 
-export function ApiPlatform({ requireAuth, isAuthed }: FeatureProps) {
+export function ApiPlatform({ isAuthed }: FeatureProps) {
   const [keys, setKeys] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);

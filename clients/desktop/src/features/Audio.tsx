@@ -3,7 +3,7 @@ import { api } from '../services/api';
 
 interface FeatureProps { requireAuth?: (cb?: () => void) => boolean; isAuthed?: boolean; }
 
-export function Audio({ requireAuth, isAuthed }: FeatureProps) {
+export function Audio({ requireAuth }: FeatureProps) {
   const [prompt, setPrompt] = useState('');
   const [voice, setVoice] = useState('alloy');
   const [isGenerating, setIsGenerating] = useState(false);

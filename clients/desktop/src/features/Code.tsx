@@ -13,7 +13,7 @@ const LANGUAGES = [
   { id: 'shell', label: 'Shell', default: 'echo Hello AIOS' },
 ];
 
-export function Code({ requireAuth, _isAuthed }: FeatureProps) {
+export function Code({ requireAuth }: FeatureProps) {
   const [language, setLanguage] = useState('javascript');
   const [code, setCode] = useState(LANGUAGES[0].default);
   const [output, setOutput] = useState('');
