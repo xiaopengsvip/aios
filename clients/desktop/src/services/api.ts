@@ -1,5 +1,5 @@
 const BASE_URL = "https://aios.vios.top";
-export const APP_VERSION = "0.0.6";
+export const APP_VERSION = "0.0.7";
 
 interface RequestConfig {
   method?: string;
