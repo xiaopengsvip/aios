@@ -267,6 +267,30 @@
         "allowedTypes": "允许的文件类型",
         "allowedTypesHint": "用逗号分隔文件扩展名"
       }
+    },
+    "installs": {
+      "title": "设备安装统计",
+      "subtitle": "查看不同平台和设备的安装数据",
+      "totalInstalls": "总安装量",
+      "activeWeek": "7日活跃",
+      "todayNew": "今日新增",
+      "totalUninstalled": "总卸载量",
+      "todayUninstalled": "今日卸载",
+      "totalUpdates": "总更新量",
+      "todayUpdates": "今日更新",
+      "refresh": "刷新",
+      "deviceModels": "设备型号",
+      "osVersions": "系统版本",
+      "dailyTrend": "每日新增趋势 (近14天)",
+      "appVersions": "应用版本分布",
+      "devices": "台设备",
+      "noData": "暂无数据",
+      "tabs": {
+        "android": "Android",
+        "windows": "Windows",
+        "macos": "macOS",
+        "linux": "Linux"
+      }
     }
   }
 }

@@ -267,6 +267,30 @@
         "allowedTypes": "Allowed File Types",
         "allowedTypesHint": "Separate file extensions with commas"
       }
+    },
+    "installs": {
+      "title": "Device Install Statistics",
+      "subtitle": "View installation data across platforms and devices",
+      "totalInstalls": "Total Installs",
+      "activeWeek": "7-Day Active",
+      "todayNew": "Today New",
+      "totalUninstalled": "Total Uninstalls",
+      "todayUninstalled": "Today Uninstalls",
+      "totalUpdates": "Total Updates",
+      "todayUpdates": "Today Updates",
+      "refresh": "Refresh",
+      "deviceModels": "Device Models",
+      "osVersions": "OS Versions",
+      "dailyTrend": "Daily New Trend (14 days)",
+      "appVersions": "App Version Distribution",
+      "devices": "devices",
+      "noData": "No data",
+      "tabs": {
+        "android": "Android",
+        "windows": "Windows",
+        "macos": "macOS",
+        "linux": "Linux"
+      }
     }
   }
 }
