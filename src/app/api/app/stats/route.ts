@@ -13,6 +13,8 @@ interface DeviceRecord {
   firstSeen: string;
   lastSeen: string;
   ip: string;
+  uninstalledAt?: string;
+  updateCount: number;
 }
 
 export async function GET() {
@@ -58,6 +60,19 @@ export async function GET() {
     const today = new Date().toISOString().slice(0, 10);
     const todayNew = dailyNew[today] || 0;
 
+    // 卸载设备
+    const uninstalled = records.filter(r => r.uninstalledAt);
+    const totalUninstalled = uninstalled.length;
+    const todayUninstalled = uninstalled.filter(r => r.uninstalledAt!.slice(0, 10) === today).length;
+
+    // 更新量
+    const totalUpdates = records.reduce((sum, r) => sum + (r.updateCount || 0), 0);
+    const todayUpdates = records.filter(r => {
+      if (!r.updateCount) return false;
+      const lastSeenDay = r.lastSeen.slice(0, 10);
+      return lastSeenDay === today;
+    }).length;
+
     // 排序 helper
     const sortByValue = (obj: Record<string, number>) =>
       Object.entries(obj).sort((a, b) => b[1] - a[1]).map(([k, v]) => ({ name: k, count: v }));
@@ -66,6 +81,10 @@ export async function GET() {
       total,
       activeWeek,
       todayNew,
+      totalUninstalled,
+      todayUninstalled,
+      totalUpdates,
+      todayUpdates,
       byPlatform: sortByValue(byPlatform),
       byAppVersion: sortByValue(byAppVersion),
       // 每个平台下的设备详情
@@ -111,6 +130,8 @@ export async function GET() {
 function emptyStats() {
   return {
     total: 0, activeWeek: 0, todayNew: 0,
+    totalUninstalled: 0, todayUninstalled: 0,
+    totalUpdates: 0, todayUpdates: 0,
     byPlatform: [], byAppVersion: [],
     platforms: {
       android: { total: 0, devices: [], osVersions: [] },

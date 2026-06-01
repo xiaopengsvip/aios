@@ -30,6 +30,8 @@ interface DeviceRecord {
   firstSeen: string;
   lastSeen: string;
   ip: string;
+  uninstalledAt?: string;
+  updateCount: number;
 }
 
 // POST /api/app/install - Record device install
@@ -48,13 +50,18 @@ export async function POST(req: NextRequest) {
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
 
     if (existing) {
-      // Update last seen
+      // Track version update
+      const isUpdate = appVersion && appVersion !== existing.appVersion;
       existing.lastSeen = now;
-      existing.appVersion = appVersion || existing.appVersion;
+      if (isUpdate) {
+        existing.appVersion = appVersion;
+        existing.updateCount = (existing.updateCount || 0) + 1;
+      }
       existing.osVersion = osVersion || existing.osVersion;
       existing.ip = ip;
+      existing.uninstalledAt = undefined; // Clear if re-installed
       await writeData(records);
-      return NextResponse.json({ success: true, isNew: false });
+      return NextResponse.json({ success: true, isNew: false, isUpdate });
     }
 
     // New device
@@ -67,10 +74,36 @@ export async function POST(req: NextRequest) {
       firstSeen: now,
       lastSeen: now,
       ip,
+      updateCount: 0,
     });
     await writeData(records);
 
     return NextResponse.json({ success: true, isNew: true });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
+
+// DELETE /api/app/install - Record device uninstall
+export async function DELETE(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { deviceId } = body;
+
+    if (!deviceId) {
+      return NextResponse.json({ error: 'Missing deviceId' }, { status: 400 });
+    }
+
+    const records = await readData();
+    const existing = records.find(r => r.deviceId === deviceId);
+
+    if (existing) {
+      existing.uninstalledAt = new Date().toISOString();
+      await writeData(records);
+      return NextResponse.json({ success: true });
+    }
+
+    return NextResponse.json({ error: 'Device not found' }, { status: 404 });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
