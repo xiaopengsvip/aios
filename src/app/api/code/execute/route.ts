@@ -55,7 +55,7 @@ process.stdout.write(logs.join('\\n'));
           const { stdout, stderr } = await execAsync(`node --experimental-vm-modules "${filePath}"`, {
             timeout: TIMEOUT_MS,
             maxBuffer: MAX_OUTPUT,
-            env: { ...process.env, NODE_ENV: 'sandbox' },
+            env: { ...process.env, NODE_ENV: 'sandbox' } as unknown as NodeJS.ProcessEnv,
           });
           output = stdout || '(no output)';
           if (stderr) error = stderr;

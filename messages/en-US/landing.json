@@ -3,149 +3,244 @@
     "appName": "AIOS",
     "login": "Sign In",
     "register": "Get Started",
-    "features": "Features",
-    "pricing": "Pricing",
+    "features": "Architecture",
+    "pricing": "Whitepaper",
     "docs": "Docs"
   },
   "hero": {
-    "badge": "Agent Native AI Operating System",
-    "title": "One Platform, All AI, Every Agent",
-    "subtitle": "Chat, Agent, Workflow, MCP, Knowledge Base, AI Video, AI Image, AI Audio — your all-in-one AI super workspace",
-    "cta": "Get Started",
-    "ctaSecondary": "View Demo",
-    "ctaGhost": "Read Docs",
-    "statsModels": "50+ Models",
-    "statsMCP": "100+ MCP Tools",
-    "statsUptime": "99.9% Uptime",
-    "statsUsers": "10K+ Users"
+    "badge": "AIOS Whitepaper v1.0 · System-Level Infrastructure",
+    "title": "AI Agent Operating System · Distributed Intelligent Execution Infrastructure",
+    "subtitle": "Elevating AI from a \"conversation tool\" to a schedulable, executable, collaborative system-level runtime entity. Powered by Hermes Agent as the execution kernel for unified intelligent operations across devices, systems, and networks.",
+    "cta": "Read Whitepaper",
+    "ctaSecondary": "Live Demo",
+    "ctaGhost": "Technical Docs",
+    "statsModels": "4-Layer Architecture",
+    "statsMCP": "Cross-Platform Execution",
+    "statsUptime": "Multi-Agent Collaboration",
+    "statsUsers": "Human-in-the-Loop"
   },
-  "heroDemo": {
-    "chatTitle": "AI Chat — MiMo V2.5",
-    "userMsg": "Write a Python quicksort algorithm with detailed comments",
-    "aiThinking": "Thinking...",
-    "agentTitle": "Agent Execution",
-    "step1": "Analyze code requirements",
-    "step2": "Generate algorithm code",
-    "step3": "Add detailed comments",
-    "step4": "Code optimization check",
-    "status": "Completed"
-  },
-  "features": {
-    "title": "Full-Stack AI Matrix",
-    "subtitle": "8 core modules covering every AI scenario",
-    "chat": {
-      "name": "AI Chat",
-      "desc": "Multi-model intelligent chat with MiMo V2.5 / GPT-5.5 / Claude Opus 4.8 / Gemini 3.5 / Grok 4. Context memory and multi-turn reasoning.",
-      "tag": "Core"
-    },
-    "agent": {
-      "name": "AI Agent",
-      "desc": "Autonomous planning, tool use, and multi-step reasoning. Let AI think and execute complex tasks like a human.",
-      "tag": "Intelligent"
-    },
-    "workflow": {
-      "name": "Workflow",
-      "desc": "Visual workflow orchestration, drag-and-drop design, automate complex business processes without code.",
-      "tag": "Automation"
-    },
-    "mcp": {
-      "name": "MCP Tools",
-      "desc": "Model Context Protocol native support, 100+ plug-and-play tools, seamless external service integration.",
-      "tag": "Integration"
-    },
-    "knowledge": {
-      "name": "Knowledge Base",
-      "desc": "Intelligent document parsing and vector retrieval. Supports PDF/web/code with RAG-enhanced answers.",
-      "tag": "RAG"
-    },
-    "video": {
-      "name": "AI Video",
-      "desc": "Video understanding & generation via MiMo V2.5 and JimengAI (requires AK/SK)",
-      "tag": "Create"
-    },
-    "image": {
-      "name": "AI Image",
-      "desc": "DALL-E 3 / Stable Diffusion / Flux / JimengAI full model coverage. High-quality image generation and editing.",
-      "tag": "Design"
-    },
-    "audio": {
-      "name": "AI Audio",
-      "desc": "MiMo V2.5-TTS synthesis with built-in voices, voice cloning, and natural language style control",
-      "tag": "Voice"
-    }
-  },
-  "stats": {
-    "title": "Trusted by Teams Worldwide",
-    "subtitle": "The numbers speak for themselves",
-    "models": "AI Models",
-    "modelsNum": "50",
-    "agents": "Agents Created",
-    "agentsNum": "12",
-    "workflows": "Workflows Run",
-    "workflowsNum": "1",
-    "tokens": "Tokens Processed",
-    "tokensNum": "86",
-    "tokensSuffix": "B+"
-  },
-  "testimonials": {
-    "title": "What Users Say",
-    "subtitle": "Feedback from real users",
+  "abstract": {
+    "title": "Abstract",
+    "subtitle": "AIOS is not an AI chat product — it's an intelligent execution infrastructure that lets AI run like an operating system.",
     "items": [
       {
-        "quote": "AIOS completely transformed how our team works. Agents automate 80% of repetitive tasks, and Workflow makes complex processes simple.",
-        "name": "Alex Zhang",
-        "role": "CTO · Tech Startup",
-        "avatar": "AZ"
+        "icon": "🎯",
+        "title": "Core Definition",
+        "desc": "AIOS (AI Agent Operating System) is an intelligent OS-level platform designed for the next generation of AI computing paradigms."
       },
       {
-        "quote": "As a designer, the AI Image and Video features boosted my productivity 10x. One platform for all AI creative needs — incredibly convenient.",
-        "name": "Sarah Lee",
-        "role": "Creative Director · Design Studio",
-        "avatar": "SL"
+        "icon": "⚡",
+        "title": "Core Objective",
+        "desc": "Elevate AI from a \"conversation tool\" to a schedulable, executable, collaborative system-level runtime entity."
       },
       {
-        "quote": "The MCP tool integration is incredibly powerful. We connected all our internal systems through AIOS and built a complete intelligent workflow.",
-        "name": "David Wang",
-        "role": "Tech Lead · Enterprise",
-        "avatar": "DW"
+        "icon": "🔗",
+        "title": "Core Mechanism",
+        "desc": "Hermes Agent serves as the execution kernel, enabling unified intelligent operations across devices, systems, and networks."
+      },
+      {
+        "icon": "🌐",
+        "title": "Core Paradigm",
+        "desc": "Multi-Agent cluster collaboration model, building an AI-native operating system ecosystem."
       }
     ]
   },
-  "faq": {
-    "title": "Frequently Asked Questions",
-    "subtitle": "Quick answers to common questions",
+  "problems": {
+    "title": "Background & Problem Statement",
+    "subtitle": "Four structural deficiencies in current AI systems",
     "items": [
       {
-        "q": "Which AI models does AIOS support?",
-        "a": "50+ models integrated including Xiaomi MiMo V2.5 Pro, GPT-5.5, Claude Opus 4.8, Gemini 3.5, DeepSeek V4, Qwen 3.7, Grok 4, GLM 5, Llama 4, and more. One-click switching with auto-routing."
+        "icon": "💬",
+        "title": "AI Stuck at the Conversation Layer",
+        "desc": "Can only generate content, cannot execute tasks. Lacks system-level operational capability."
       },
       {
-        "q": "What are MCP tools?",
-        "a": "MCP (Model Context Protocol) is an open standard that lets AI models securely connect to external tools and data sources. AIOS includes 100+ plug-and-play MCP tools."
+        "icon": "📱",
+        "title": "Severe Device & System Fragmentation",
+        "desc": "Windows / Linux / Mobile / IoT operate independently with no unified scheduling layer."
       },
       {
-        "q": "How is data security ensured?",
-        "a": "Enterprise-grade security: encrypted API key storage, RBAC permissions, audit logs, WAF protection. Meets enterprise compliance requirements. Supports on-premise deployment."
+        "icon": "🤖",
+        "title": "Agents Cannot Collaborate",
+        "desc": "Most AI Agents are monolithic structures with no distributed collaboration capability."
       },
       {
-        "q": "Do you support on-premise deployment?",
-        "a": "Yes. We offer complete on-premise deployment including Docker/K8s, local data storage, and custom model integration for enterprise customers."
+        "icon": "🔧",
+        "title": "Lack of Unified Execution Standards",
+        "desc": "APIs, tools, and protocols are severely fragmented with no unified Execution Layer."
+      }
+    ]
+  },
+  "architecture": {
+    "title": "System Architecture",
+    "subtitle": "Four-layer core structure, from kernel to control plane",
+    "kernel": {
+      "name": "AIOS Kernel",
+      "label": "System Kernel Layer",
+      "items": "Agent Lifecycle · Task Scheduler · Resource Management · State Sync · Security & Access Control"
+    },
+    "runtime": {
+      "name": "Hermes Agent Runtime",
+      "label": "Execution Layer",
+      "items": "Cross-Platform Runtime · Bidirectional Protocol · Local Device Control · API/Protocol Adapter"
+    },
+    "cluster": {
+      "name": "Agent Cluster Layer",
+      "label": "Cluster Layer",
+      "items": "Agent Swarm · Distributed Task Split · Dynamic Load Balancing · Auto Failover"
+    },
+    "control": {
+      "name": "AIOS Control Plane",
+      "label": "Control Plane",
+      "items": "Web Console · Workflow Builder · Device Management · Logs & Audit"
+    }
+  },
+  "capabilities": {
+    "title": "Core Capability Matrix",
+    "subtitle": "Six Technical Pillars",
+    "items": [
+      {
+        "icon": "🧠",
+        "title": "Hermes Agent Communication Protocol",
+        "desc": "WebSocket / MQTT / HTTP / LAN Direct Connect — low latency, high reliability, auto-reconnect, multi-node broadcast",
+        "tag": "Comms"
       },
       {
-        "q": "What's the difference between Workflow and Agent?",
-        "a": "Workflow is for automating fixed processes. Agent is for tasks requiring autonomous decisions. They can be combined to build intelligent business systems."
+        "icon": "🔄",
+        "title": "Multi-Agent Collaboration",
+        "desc": "Agent Swarm intelligence: Task → Subtasks → Multi-Agent → Aggregation. Round-robin, weighted, capability-based, and dynamic scheduling",
+        "tag": "Collab"
       },
       {
-        "q": "How do I get started?",
-        "a": "Create a free account to start. The free plan includes basic model credits and core features. Enterprise users can contact sales for custom plans."
+        "icon": "⚙️",
+        "title": "Execution Engine",
+        "desc": "AI-driven real-world execution: cross-system automation, device control, workflow orchestration, API composition, local scripts",
+        "tag": "Execute"
+      },
+      {
+        "icon": "🔒",
+        "title": "Security & Permission System",
+        "desc": "Agent permission tiers · Execution approval flow · Audit logs · Instruction signing · Whitelist device control",
+        "tag": "Security"
+      },
+      {
+        "icon": "📡",
+        "title": "Distributed Task Scheduling",
+        "desc": "Tasks split into subtask clusters, auto-assigned to optimal Agent nodes, results aggregated and returned uniformly",
+        "tag": "Schedule"
+      },
+      {
+        "icon": "👁",
+        "title": "Human-in-the-Loop",
+        "desc": "Human-in-the-loop mechanism — critical operations require manual confirmation, balancing automation efficiency with safety",
+        "tag": "Governance"
+      }
+    ]
+  },
+  "scenarios": {
+    "title": "Application Scenarios",
+    "subtitle": "From hotel automation to AI cluster computing",
+    "items": [
+      {
+        "icon": "🏨",
+        "title": "Hotel Automation",
+        "desc": "Unified control of AC, lighting, door locks, curtains — one command for full-room scene switching",
+        "tag": "IoT"
+      },
+      {
+        "icon": "🧠",
+        "title": "AI-Powered Office",
+        "desc": "Automated cross-system tasks: email processing, data organization, report generation, schedule management",
+        "tag": "Productivity"
+      },
+      {
+        "icon": "🖥",
+        "title": "IT Operations",
+        "desc": "Server cluster management, anomaly alert response, automatic fault recovery, log analysis",
+        "tag": "DevOps"
+      },
+      {
+        "icon": "📡",
+        "title": "Smart Home IoT",
+        "desc": "Multi-protocol device control: WiFi / BLE / Zigbee / RS485, cross-brand interconnection",
+        "tag": "Smart"
+      },
+      {
+        "icon": "🤖",
+        "title": "AI Cluster Computing",
+        "desc": "Multi-Agent collaborative task execution, distributed inference, large-scale parallel processing",
+        "tag": "Compute"
+      },
+      {
+        "icon": "🏢",
+        "title": "Enterprise Workflows",
+        "desc": "Approval automation, cross-department data flows, intelligent decision support, compliance audit tracking",
+        "tag": "Enterprise"
+      }
+    ]
+  },
+  "vision": {
+    "title": "System Vision",
+    "subtitle": "Building an AI-native operating system ecosystem",
+    "items": [
+      {
+        "icon": "💻",
+        "label": "Every Device",
+        "desc": "= Agent Node"
+      },
+      {
+        "icon": "🤖",
+        "label": "Every Agent",
+        "desc": "= Schedulable Compute Unit"
+      },
+      {
+        "icon": "⚡",
+        "label": "Every Task",
+        "desc": "= Distributed Execution Flow"
+      },
+      {
+        "icon": "🌐",
+        "label": "Every System",
+        "desc": "= Orchestrateable Resource"
+      }
+    ],
+    "statement": "AIOS is an intelligent execution infrastructure that lets AI run like an operating system."
+  },
+  "faq": {
+    "title": "FAQ",
+    "subtitle": "Core questions about the AIOS whitepaper",
+    "items": [
+      {
+        "q": "How is AIOS different from ChatGPT / Claude?",
+        "a": "ChatGPT / Claude are \"conversation tools\" that can only generate content. AIOS is an \"OS-level platform\" that enables AI to truly execute tasks — control devices, call APIs, orchestrate workflows, and collaborate across multiple Agents. The core difference: from \"generation\" to \"execution\"."
+      },
+      {
+        "q": "What is Hermes Agent?",
+        "a": "Hermes Agent is the execution kernel of AIOS, analogous to a \"process\" in an operating system. It runs cross-platform (Windows / Linux / macOS / Mobile / Server), supports bidirectional communication, local device control, and API protocol adaptation — the bridge between AI and the real world."
+      },
+      {
+        "q": "How does multi-Agent collaboration work?",
+        "a": "A task can be decomposed into subtask clusters, distributed to multiple Agent nodes for parallel execution. Supports round-robin, weighted, capability-based, and dynamic load scheduling strategies — like a distributed computing cluster, but AI-driven."
+      },
+      {
+        "q": "How is security ensured?",
+        "a": "AIOS enforces a mandatory security model: Agent permission tiers, execution approval flow (Human-in-the-loop), operation audit logs, instruction signature verification, and whitelist device control. Critical operations require human confirmation."
+      },
+      {
+        "q": "What scenarios does AIOS support?",
+        "a": "From hotel automation (AC/lighting/door lock control) to IT ops (server cluster management), from smart home IoT (multi-protocol device interconnection) to enterprise workflows (approval/data/compliance). The core: any scenario requiring AI-driven real-world execution."
+      },
+      {
+        "q": "How can I join the AIOS ecosystem?",
+        "a": "AIOS is building an open ecosystem: developers can contribute Agent capabilities and MCP tools, enterprises can integrate private deployments, hardware vendors can embed Agent Nodes. Contact us to learn about partnership opportunities."
       }
     ]
   },
   "cta": {
-    "title": "Start Your AI Journey",
-    "subtitle": "Sign up free and experience full-stack AI capabilities. No credit card required.",
-    "button": "Get Started Free →",
-    "note": "Free plan available · No credit card required"
+    "title": "Join the AIOS Ecosystem",
+    "subtitle": "AIOS is redefining how AI operates. From conversation to execution. From tools to operating system.",
+    "button": "Read the Full Whitepaper →",
+    "note": "Open Source · Built by the Community"
   },
   "footer": {
     "product": {
@@ -177,6 +272,6 @@
       "terms": "Terms of Service",
       "security": "Security"
     },
-    "copyright": "© 2026 AIOS · Powered by All Apple"
+    "copyright": "© 2026 AIOS · AI Agent Operating System"
   }
 }

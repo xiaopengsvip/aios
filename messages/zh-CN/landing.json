@@ -3,149 +3,244 @@
     "appName": "AI 工作台",
     "login": "登录",
     "register": "免费注册",
-    "features": "功能",
-    "pricing": "价格",
+    "features": "架构",
+    "pricing": "白皮书",
     "docs": "文档"
   },
   "hero": {
-    "badge": "Agent Native AI 操作系统",
-    "title": "一个平台，连接所有AI，驱动所有Agent",
-    "subtitle": "融合聊天、Agent、Workflow、MCP、知识库、AI视频、AI图片、AI音频 — 一站式AI超级工作台",
-    "cta": "立即开始",
-    "ctaSecondary": "查看演示",
-    "ctaGhost": "查看文档",
-    "statsModels": "50+ 模型",
-    "statsMCP": "100+ MCP 工具",
-    "statsUptime": "99.9% 可用性",
-    "statsUsers": "10K+ 用户"
+    "badge": "AIOS 白皮书 v1.0 · 系统级基础设施",
+    "title": "AI Agent 操作系统，分布式智能执行基础设施",
+    "subtitle": "将 AI 从「对话工具」升级为「可调度、可执行、可协同的系统级运行实体」。通过 Hermes Agent 作为执行内核，实现跨设备、跨系统、跨网络的统一智能作业能力。",
+    "cta": "阅读白皮书",
+    "ctaSecondary": "在线演示",
+    "ctaGhost": "技术文档",
+    "statsModels": "4 层架构",
+    "statsMCP": "跨平台执行",
+    "statsUptime": "多 Agent 协同",
+    "statsUsers": "人机协同审批"
   },
-  "heroDemo": {
-    "chatTitle": "AI Chat — MiMo V2.5",
-    "userMsg": "帮我写一个Python快速排序算法，并加上详细注释",
-    "aiThinking": "正在思考...",
-    "agentTitle": "Agent 执行",
-    "step1": "分析代码需求",
-    "step2": "生成算法代码",
-    "step3": "添加详细注释",
-    "step4": "代码优化检查",
-    "status": "执行完成"
-  },
-  "features": {
-    "title": "全能 AI 能力矩阵",
-    "subtitle": "八大核心模块，覆盖AI全场景",
-    "chat": {
-      "name": "AI Chat",
-      "desc": "多模型智能对话，MiMo V2.5 / GPT-5.5 / Claude Opus 4.8 / Gemini 3.5 / Grok 4 自由切换，支持上下文记忆与多轮推理",
-      "tag": "核心能力"
-    },
-    "agent": {
-      "name": "AI Agent",
-      "desc": "自主规划、工具调用、多步推理。让AI像人一样思考和执行复杂任务",
-      "tag": "智能体"
-    },
-    "workflow": {
-      "name": "Workflow",
-      "desc": "可视化编排工作流，拖拽式设计，自动化复杂业务流程，无需代码即可构建AI流水线",
-      "tag": "自动化"
-    },
-    "mcp": {
-      "name": "MCP 工具",
-      "desc": "Model Context Protocol 原生支持，100+ 工具即插即用，无缝连接外部服务",
-      "tag": "集成"
-    },
-    "knowledge": {
-      "name": "知识库",
-      "desc": "智能文档解析与向量检索，支持PDF/网页/代码，RAG增强精准回答",
-      "tag": "RAG"
-    },
-    "video": {
-      "name": "AI 视频",
-      "desc": "MiMo V2.5 视频理解 + 即梦AI 视频生成（需配置 AK/SK），文生视频、图生视频全覆盖",
-      "tag": "创作"
-    },
-    "image": {
-      "name": "AI 图片",
-      "desc": "DALL-E 3 / Stable Diffusion / Flux / 即梦AI 全模型覆盖，高质量图片生成与编辑",
-      "tag": "设计"
-    },
-    "audio": {
-      "name": "AI 音频",
-      "desc": "MiMo V2.5-TTS 语音合成，内置高质量音色、音色克隆、音色设计，支持自然语言风格控制",
-      "tag": "语音"
-    }
-  },
-  "stats": {
-    "title": "被全球团队信赖",
-    "subtitle": "数字会说话",
-    "models": "AI 模型",
-    "modelsNum": "50",
-    "agents": "已创建 Agent",
-    "agentsNum": "12",
-    "workflows": "已运行工作流",
-    "workflowsNum": "1",
-    "tokens": "已处理 Token",
-    "tokensNum": "86",
-    "tokensSuffix": "B+"
-  },
-  "testimonials": {
-    "title": "用户怎么说",
-    "subtitle": "来自真实用户的反馈",
+  "abstract": {
+    "title": "概述",
+    "subtitle": "AIOS 不是一个 AI 聊天产品，而是一个让 AI 像操作系统一样运行的智能执行基础设施。",
     "items": [
       {
-        "quote": "AIOS 彻底改变了我们团队的工作方式。Agent 自动化了80%的重复性工作，Workflow 让复杂流程变得简单。",
-        "name": "张明",
-        "role": "CTO · 科技创业公司",
-        "avatar": "ZM"
+        "icon": "🎯",
+        "title": "核心定义",
+        "desc": "AIOS（AI Agent Operating System）是面向下一代 AI 计算范式设计的智能操作系统级平台。"
       },
       {
-        "quote": "作为一个设计师，AI 图片和视频功能让我效率提升了10倍。一个平台搞定所有AI创作需求，太方便了。",
-        "name": "李雪",
-        "role": "创意总监 · 设计工作室",
-        "avatar": "LX"
+        "icon": "⚡",
+        "title": "核心目标",
+        "desc": "将 AI 从「对话工具」升级为「可调度、可执行、可协同的系统级运行实体」。"
       },
       {
-        "quote": "MCP 工具集成太强大了。我们通过AIOS连接了内部所有系统，构建了完整的智能化工作流。",
-        "name": "王浩",
-        "role": "技术负责人 · 互联网大厂",
-        "avatar": "WH"
+        "icon": "🔗",
+        "title": "核心机制",
+        "desc": "通过 Hermes Agent 作为执行内核，实现跨设备、跨系统、跨网络的统一智能作业能力。"
+      },
+      {
+        "icon": "🌐",
+        "title": "核心形态",
+        "desc": "支持多 Agent 集群协同工作模式，构建 AI 原生操作系统生态。"
       }
     ]
   },
-  "faq": {
-    "title": "常见问题",
-    "subtitle": "快速解答你的疑问",
+  "problems": {
+    "title": "背景与问题定义",
+    "subtitle": "当前 AI 系统的四大结构性缺陷",
     "items": [
       {
-        "q": "AIOS 支持哪些 AI 模型？",
-        "a": "已接入 50+ 主流模型，包括小米 MiMo V2.5 Pro、GPT-5.5、Claude Opus 4.8、Gemini 3.5、DeepSeek V4、Qwen 3.7、Grok 4、GLM 5、Llama 4 等。支持一键切换，自动路由最优 Provider。"
+        "icon": "💬",
+        "title": "AI 仍停留在对话层",
+        "desc": "只能生成内容，无法执行任务。缺乏系统级操作能力。"
       },
       {
-        "q": "什么是 MCP 工具？",
-        "a": "MCP (Model Context Protocol) 是一种开放标准，让AI模型能够安全地连接外部工具和数据源。AIOS 内置 100+ MCP 工具，支持即插即用。"
+        "icon": "📱",
+        "title": "设备与系统割裂严重",
+        "desc": "Windows / Linux / Mobile / IoT 各自独立，无统一调度层。"
       },
       {
-        "q": "数据安全如何保障？",
-        "a": "企业级安全架构：API Key 加密存储、RBAC 权限控制、审计日志、WAF 防护，满足企业合规要求。支持私有化部署。"
+        "icon": "🤖",
+        "title": "Agent 无法协同",
+        "desc": "大多数 AI Agent 是单体结构，无分布式协作能力。"
       },
       {
-        "q": "是否支持私有化部署？",
-        "a": "支持。提供完整的私有化部署方案，包括 Docker / K8s 部署、数据本地化存储、自定义模型接入等企业级功能。"
+        "icon": "🔧",
+        "title": "缺乏统一执行标准",
+        "desc": "API / 工具 / 协议碎片化严重，无统一 Execution Layer。"
+      }
+    ]
+  },
+  "architecture": {
+    "title": "系统架构",
+    "subtitle": "四层核心结构，从内核到控制平面",
+    "kernel": {
+      "name": "AIOS Kernel",
+      "label": "系统内核层",
+      "items": "Agent 生命周期管理 · 任务调度系统 · 资源管理 · 状态同步 · 安全与权限控制"
+    },
+    "runtime": {
+      "name": "Hermes Agent Runtime",
+      "label": "执行层",
+      "items": "跨平台运行 · 双向通信协议 · 本地设备控制 · API/协议适配层"
+    },
+    "cluster": {
+      "name": "Agent Cluster Layer",
+      "label": "集群层",
+      "items": "Agent Swarm · 分布式任务拆解 · 动态负载均衡 · 故障自动迁移"
+    },
+    "control": {
+      "name": "AIOS Control Plane",
+      "label": "控制平面",
+      "items": "Web 控制台 · 任务编排系统 · 设备管理中心 · 日志与审计"
+    }
+  },
+  "capabilities": {
+    "title": "核心能力矩阵",
+    "subtitle": "六大技术支柱",
+    "items": [
+      {
+        "icon": "🧠",
+        "title": "Hermes Agent 通信协议",
+        "desc": "WebSocket / MQTT / HTTP / LAN Direct Connect，低延迟、高可靠、可断线重连、多节点广播",
+        "tag": "通信"
       },
       {
-        "q": "Workflow 和 Agent 有什么区别？",
-        "a": "Workflow 适合固定流程的自动化编排，Agent 适合需要自主决策的复杂任务。两者可以组合使用，构建智能化业务系统。"
+        "icon": "🔄",
+        "title": "多 Agent 协同机制",
+        "desc": "Agent Swarm 群体智能，Task → Subtasks → Multi-Agent → Aggregation，支持轮询/权重/能力匹配/动态负载调度",
+        "tag": "协同"
       },
       {
-        "q": "如何开始使用？",
-        "a": "注册免费账号即可开始。免费套餐包含基础模型额度和核心功能。企业用户可联系销售获取定制方案。"
+        "icon": "⚙️",
+        "title": "执行引擎",
+        "desc": "AI 驱动真实世界执行：跨系统自动化、设备控制、工作流编排、API 编排、本地脚本执行",
+        "tag": "执行"
+      },
+      {
+        "icon": "🔒",
+        "title": "安全与权限体系",
+        "desc": "Agent 权限分级 · 执行审批机制 · 操作日志审计 · 指令签名验证 · 白名单设备控制",
+        "tag": "安全"
+      },
+      {
+        "icon": "📡",
+        "title": "分布式任务调度",
+        "desc": "一个任务拆解为子任务集群，自动分配到最优 Agent 节点执行，结果聚合后统一返回",
+        "tag": "调度"
+      },
+      {
+        "icon": "👁",
+        "title": "人机协同审批",
+        "desc": "Human-in-the-loop 机制，关键操作需人工确认，兼顾自动化效率与安全可控",
+        "tag": "协同"
+      }
+    ]
+  },
+  "scenarios": {
+    "title": "典型应用场景",
+    "subtitle": "从酒店客控到 AI 集群计算",
+    "items": [
+      {
+        "icon": "🏨",
+        "title": "酒店客控系统",
+        "desc": "空调 / 灯光 / 门锁 / 窗帘统一控制，一句话完成全屋场景切换",
+        "tag": "IoT"
+      },
+      {
+        "icon": "🧠",
+        "title": "AI 自动办公",
+        "desc": "自动执行跨系统任务：邮件处理、数据整理、报表生成、日程管理",
+        "tag": "效率"
+      },
+      {
+        "icon": "🖥",
+        "title": "IT 运维自动化",
+        "desc": "服务器集群管理、异常告警响应、自动故障恢复、日志分析",
+        "tag": "运维"
+      },
+      {
+        "icon": "📡",
+        "title": "IoT 智能家居",
+        "desc": "多协议设备统一控制：WiFi / BLE / Zigbee / RS485，跨品牌互联",
+        "tag": "智能"
+      },
+      {
+        "icon": "🤖",
+        "title": "AI 集群计算",
+        "desc": "多 Agent 协同任务执行，分布式推理，大规模并行处理",
+        "tag": "计算"
+      },
+      {
+        "icon": "🏢",
+        "title": "企业智能工作流",
+        "desc": "审批流自动化、跨部门数据流转、智能决策辅助、合规审计追踪",
+        "tag": "企业"
+      }
+    ]
+  },
+  "vision": {
+    "title": "系统愿景",
+    "subtitle": "构建一个 AI 原生操作系统生态",
+    "items": [
+      {
+        "icon": "💻",
+        "label": "每一台设备",
+        "desc": "= Agent Node"
+      },
+      {
+        "icon": "🤖",
+        "label": "每一个 Agent",
+        "desc": "= 可调度计算单元"
+      },
+      {
+        "icon": "⚡",
+        "label": "每一个任务",
+        "desc": "= 分布式执行流"
+      },
+      {
+        "icon": "🌐",
+        "label": "每一个系统",
+        "desc": "= 可编排资源"
+      }
+    ],
+    "statement": "AIOS 是一个让 AI 能像操作系统一样运行的「智能执行基础设施」。"
+  },
+  "faq": {
+    "title": "常见问题",
+    "subtitle": "关于 AIOS 白皮书的核心问题",
+    "items": [
+      {
+        "q": "AIOS 和 ChatGPT / Claude 等 AI 产品有什么区别？",
+        "a": "ChatGPT / Claude 是「对话工具」，只能生成内容。AIOS 是「操作系统级平台」，能让 AI 真正执行任务——控制设备、调用 API、编排工作流、协同多个 Agent。核心区别在于：从「生成」到「执行」。"
+      },
+      {
+        "q": "什么是 Hermes Agent？",
+        "a": "Hermes Agent 是 AIOS 的执行内核，类似操作系统中的「进程」。它能跨平台运行（Windows / Linux / macOS / Mobile / Server），支持双向通信、本地设备控制、API 协议适配，是 AI 与真实世界的桥梁。"
+      },
+      {
+        "q": "多 Agent 协同是如何工作的？",
+        "a": "一个任务可拆解为子任务集群，分配到多个 Agent 节点并行执行。支持轮询、权重、能力匹配、动态负载等调度策略。类似分布式计算集群，但由 AI 驱动智能分配。"
+      },
+      {
+        "q": "安全机制如何保障？",
+        "a": "AIOS 强制执行安全模型：Agent 权限分级、执行审批机制（Human-in-the-loop）、操作日志审计、指令签名验证、白名单设备控制。关键操作必须人工确认。"
+      },
+      {
+        "q": "AIOS 支持哪些场景？",
+        "a": "从酒店客控（空调/灯光/门锁统一控制）到 IT 运维自动化（服务器集群管理），从 IoT 智能家居（多协议设备互联）到企业智能工作流（审批/数据/合规）。核心是：任何需要 AI 驱动真实执行的场景。"
+      },
+      {
+        "q": "如何参与 AIOS 生态？",
+        "a": "AIOS 正在构建开放生态：开发者可贡献 Agent 能力和 MCP 工具，企业可接入私有化部署，硬件厂商可集成 Agent Node。联系我们了解合作方式。"
       }
     ]
   },
   "cta": {
-    "title": "开始你的 AI 之旅",
-    "subtitle": "免费注册，立即体验全栈 AI 能力。无需信用卡，即刻开始。",
-    "button": "免费开始 →",
-    "note": "免费套餐可用 · 无需信用卡"
+    "title": "加入 AIOS 生态",
+    "subtitle": "AIOS 正在重新定义 AI 的运行方式。从对话到执行，从工具到操作系统。",
+    "button": "阅读完整白皮书 →",
+    "note": "开源项目 · GitHub 社区共建"
   },
   "footer": {
     "product": {
@@ -177,6 +272,6 @@
       "terms": "服务条款",
       "security": "安全"
     },
-    "copyright": "© 2026 AIOS · Powered by All Apple"
+    "copyright": "© 2026 AIOS · AI Agent Operating System"
   }
 }

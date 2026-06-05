@@ -52,7 +52,6 @@ function HeroDemo() {
       } else {
         clearInterval(typeTimer);
         setTimeout(() => setShowResponse(true), 500);
-        // Agent steps
         [0, 1, 2, 3].forEach((step, idx) => {
           setTimeout(() => setAgentSteps(prev => [...prev, step]), 800 + idx * 600);
         });
@@ -68,11 +67,9 @@ function HeroDemo() {
       transition={{ delay: 0.3, duration: 0.6 }}
       className="relative"
     >
-      {/* Glow background */}
       <div className="absolute -inset-4 bg-gradient-to-r from-indigo-500/20 via-purple-500/10 to-pink-500/20 rounded-3xl blur-2xl opacity-60" />
 
       <div className="relative rounded-2xl border border-border bg-card/90 backdrop-blur-xl overflow-hidden shadow-2xl">
-        {/* Window chrome */}
         <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-card/50">
           <div className="flex gap-1.5">
             <div className="w-3 h-3 rounded-full bg-red-500/80" />
@@ -88,9 +85,7 @@ function HeroDemo() {
           </div>
         </div>
 
-        {/* Chat content */}
         <div className="p-4 sm:p-6 space-y-4 min-h-[320px] sm:min-h-[400px]">
-          {/* Model selector bar */}
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <span className="px-2 py-1 rounded-md bg-indigo-500/10 text-indigo-400 font-medium">MiMo V2.5 Pro</span>
             <span>·</span>
@@ -102,7 +97,6 @@ function HeroDemo() {
             </span>
           </div>
 
-          {/* User message */}
           <div className="flex justify-end">
             <div className="max-w-[80%] px-4 py-2.5 rounded-2xl rounded-br-md bg-primary text-primary-foreground text-sm">
               {typedText}
@@ -110,7 +104,6 @@ function HeroDemo() {
             </div>
           </div>
 
-          {/* AI Response */}
           <AnimatePresence>
             {showResponse && (
               <motion.div
@@ -126,7 +119,6 @@ function HeroDemo() {
                     <code className="text-green-400">{responseText}</code>
                   </pre>
 
-                  {/* Agent steps */}
                   <div className="space-y-1.5">
                     {agentSteps.map((step) => {
                       const labels = ['分析代码需求', '生成算法代码', '添加详细注释', '代码优化检查'];
@@ -144,7 +136,6 @@ function HeroDemo() {
                     })}
                   </div>
 
-                  {/* Token stats */}
                   <div className="flex items-center gap-4 text-[11px] text-muted-foreground pt-1">
                     <span>📊 248 tokens</span>
                     <span>⚡ 1.2s</span>
@@ -161,23 +152,62 @@ function HeroDemo() {
 }
 
 // ═══════════════════════════════════════════════════════════
-// Feature Card
+// Architecture Layer Card
 // ═══════════════════════════════════════════════════════════
-function FeatureCard({ icon, name, desc, tag, span2 }: {
-  icon: string; name: string; desc: string; tag: string; span2?: boolean;
+function ArchLayer({ name, label, items, index, color }: {
+  name: string; label: string; items: string; index: number; color: string;
+}) {
+  const colors = [
+    { bg: 'from-indigo-500/15 to-indigo-500/5', border: 'border-indigo-500/30', text: 'text-indigo-400', badge: 'bg-indigo-500/10', dot: 'bg-indigo-500' },
+    { bg: 'from-purple-500/15 to-purple-500/5', border: 'border-purple-500/30', text: 'text-purple-400', badge: 'bg-purple-500/10', dot: 'bg-purple-500' },
+    { bg: 'from-blue-500/15 to-blue-500/5', border: 'border-blue-500/30', text: 'text-blue-400', badge: 'bg-blue-500/10', dot: 'bg-blue-500' },
+    { bg: 'from-pink-500/15 to-pink-500/5', border: 'border-pink-500/30', text: 'text-pink-400', badge: 'bg-pink-500/10', dot: 'bg-pink-500' },
+  ];
+  const c = colors[index] || colors[0];
+
+  return (
+    <motion.div
+      variants={fadeUp}
+      custom={index}
+      className={`relative rounded-2xl border ${c.border} bg-gradient-to-br ${c.bg} p-5 sm:p-6 hover:shadow-lg transition-all duration-300`}
+    >
+      <div className="flex items-center justify-between mb-3">
+        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${c.badge} ${c.text}`}>
+          Layer {index + 1}
+        </span>
+        <span className={`text-xs text-muted-foreground`}>{label}</span>
+      </div>
+      <h3 className="text-base sm:text-lg font-bold mb-2">{name}</h3>
+      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{items}</p>
+      {/* Connector line (except last) */}
+      {index < 3 && (
+        <div className="hidden lg:block absolute -bottom-3 left-1/2 -translate-x-1/2 w-0.5 h-3 bg-border" />
+      )}
+    </motion.div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════
+// Generic Info Card
+// ═══════════════════════════════════════════════════════════
+function InfoCard({ icon, title, desc, tag, index }: {
+  icon: string; title: string; desc: string; tag?: string; index: number;
 }) {
   return (
     <motion.div
       variants={fadeUp}
-      className={`group relative rounded-2xl border border-border bg-card/50 p-5 sm:p-6 hover:border-indigo-500/30 hover:bg-card/80 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-indigo-500/5 ${span2 ? 'md:col-span-2' : ''}`}
+      custom={index}
+      className="group relative rounded-2xl border border-border bg-card/50 p-5 sm:p-6 hover:border-indigo-500/30 hover:bg-card/80 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-indigo-500/5"
     >
       <div className="flex items-start justify-between mb-3 sm:mb-4">
         <span className="text-2xl sm:text-3xl">{icon}</span>
-        <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-          {tag}
-        </span>
+        {tag && (
+          <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+            {tag}
+          </span>
+        )}
       </div>
-      <h3 className="text-base sm:text-lg font-semibold mb-2">{name}</h3>
+      <h3 className="text-base sm:text-lg font-semibold mb-2">{title}</h3>
       <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{desc}</p>
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
     </motion.div>
@@ -185,30 +215,68 @@ function FeatureCard({ icon, name, desc, tag, span2 }: {
 }
 
 // ═══════════════════════════════════════════════════════════
-// Counter Animation
+// Problem Card (simpler style)
 // ═══════════════════════════════════════════════════════════
-function Counter({ end, suffix = '', duration = 2 }: { end: number; suffix?: string; duration?: number }) {
-  const [count, setCount] = useState(0);
-  const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true });
+function ProblemCard({ icon, title, desc, index }: {
+  icon: string; title: string; desc: string; index: number;
+}) {
+  return (
+    <motion.div
+      variants={fadeUp}
+      custom={index}
+      className="flex gap-4 p-4 sm:p-5 rounded-xl border border-border bg-card/30 hover:bg-card/60 transition-all"
+    >
+      <span className="text-2xl shrink-0 mt-0.5">{icon}</span>
+      <div>
+        <h3 className="text-sm sm:text-base font-semibold mb-1">{title}</h3>
+        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{desc}</p>
+      </div>
+    </motion.div>
+  );
+}
 
-  useEffect(() => {
-    if (!inView) return;
-    let start = 0;
-    const step = end / (duration * 60);
-    const timer = setInterval(() => {
-      start += step;
-      if (start >= end) {
-        setCount(end);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(start));
-      }
-    }, 1000 / 60);
-    return () => clearInterval(timer);
-  }, [inView, end, duration]);
+// ═══════════════════════════════════════════════════════════
+// Scenario Card
+// ═══════════════════════════════════════════════════════════
+function ScenarioCard({ icon, title, desc, tag, index }: {
+  icon: string; title: string; desc: string; tag: string; index: number;
+}) {
+  return (
+    <motion.div
+      variants={fadeUp}
+      custom={index}
+      className="group relative rounded-2xl border border-border bg-card/50 p-5 sm:p-6 hover:border-indigo-500/30 hover:bg-card/80 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-indigo-500/5"
+    >
+      <div className="flex items-start justify-between mb-3 sm:mb-4">
+        <span className="text-2xl sm:text-3xl">{icon}</span>
+        <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+          {tag}
+        </span>
+      </div>
+      <h3 className="text-base sm:text-lg font-semibold mb-2">{title}</h3>
+      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{desc}</p>
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+    </motion.div>
+  );
+}
 
-  return <span ref={ref}>{count}{suffix}</span>;
+// ═══════════════════════════════════════════════════════════
+// Vision Item
+// ═══════════════════════════════════════════════════════════
+function VisionItem({ icon, label, desc, index }: {
+  icon: string; label: string; desc: string; index: number;
+}) {
+  return (
+    <motion.div
+      variants={fadeUp}
+      custom={index}
+      className="flex flex-col items-center text-center p-5 sm:p-6 rounded-2xl border border-border bg-card/30 hover:bg-card/60 transition-all"
+    >
+      <span className="text-3xl sm:text-4xl mb-3">{icon}</span>
+      <span className="text-sm sm:text-base font-semibold mb-1">{label}</span>
+      <span className="text-xs sm:text-sm text-muted-foreground font-mono">{desc}</span>
+    </motion.div>
+  );
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -276,7 +344,6 @@ export default function LandingPage() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Show nothing while checking auth (prevents flash of landing page)
   if (checkingAuth) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -285,8 +352,12 @@ export default function LandingPage() {
     );
   }
 
-  const featureKeys = ['chat', 'agent', 'workflow', 'mcp', 'knowledge', 'video', 'image', 'audio'] as const;
-  const featureIcons = ['💬', '🤖', '⚡', '🔌', '📚', '🎬', '🎨', '🎤'];
+  const archLayers = ['kernel', 'runtime', 'cluster', 'control'] as const;
+  const archColors = ['indigo', 'purple', 'blue', 'pink'];
+  const problemIcons = ['💬', '📱', '🤖', '🔧'];
+  const capIcons = ['🧠', '🔄', '⚙️', '🔒', '📡', '👁'];
+  const scenarioIcons = ['🏨', '🧠', '🖥', '📡', '🤖', '🏢'];
+  const visionIcons = ['💻', '🤖', '⚡', '🌐'];
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
@@ -300,8 +371,8 @@ export default function LandingPage() {
           </Link>
 
           <div className="hidden md:flex items-center gap-6 lg:gap-8 text-sm text-muted-foreground">
-            <a href="#features" className="hover:text-foreground transition-colors">{t('nav.features')}</a>
-            <a href="#stats" className="hover:text-foreground transition-colors">{t('nav.pricing')}</a>
+            <a href="#architecture" className="hover:text-foreground transition-colors">{t('nav.features')}</a>
+            <a href="#capabilities" className="hover:text-foreground transition-colors">{t('nav.pricing')}</a>
             <a href="#faq" className="hover:text-foreground transition-colors">FAQ</a>
           </div>
 
@@ -320,7 +391,6 @@ export default function LandingPage() {
 
       {/* ── Hero Section ─────────────────────────────────── */}
       <section className="relative pt-24 sm:pt-32 md:pt-40 pb-12 sm:pb-20">
-        {/* Background gradient */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(99,102,241,0.15),transparent)]" />
 
         <div className="container-responsive relative">
@@ -355,13 +425,13 @@ export default function LandingPage() {
 
               {/* CTAs */}
               <motion.div variants={fadeUp} custom={3} className="flex flex-wrap justify-center lg:justify-start gap-3 sm:gap-4 mb-8 sm:mb-10">
-                <Link href="/register" className="btn-magnetic px-5 sm:px-7 py-2.5 sm:py-3.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm sm:text-base hover:bg-primary/90 transition-all shadow-lg shadow-indigo-500/25">
+                <Link href="/docs" className="btn-magnetic px-5 sm:px-7 py-2.5 sm:py-3.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm sm:text-base hover:bg-primary/90 transition-all shadow-lg shadow-indigo-500/25">
                   {t('hero.cta')} →
                 </Link>
                 <Link href="/demo" className="px-5 sm:px-7 py-2.5 sm:py-3.5 rounded-xl border border-border text-sm sm:text-base font-medium hover:bg-accent transition-all">
                   {t('hero.ctaSecondary')}
                 </Link>
-                <Link href="/docs" className="px-5 sm:px-7 py-2.5 sm:py-3.5 rounded-xl text-sm sm:text-base text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/api-platform" className="px-5 sm:px-7 py-2.5 sm:py-3.5 rounded-xl text-sm sm:text-base text-muted-foreground hover:text-foreground transition-colors">
                   {t('hero.ctaGhost')}
                 </Link>
               </motion.div>
@@ -385,9 +455,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Features Bento Grid ──────────────────────────── */}
-      <section id="features" className="py-16 sm:py-24 md:py-32">
-        <div className="container-responsive">
+      {/* ── Abstract Section ─────────────────────────────── */}
+      <section id="abstract" className="py-16 sm:py-24 md:py-32 relative">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_50%,rgba(99,102,241,0.06),transparent)]" />
+        <div className="container-responsive relative">
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -395,9 +466,9 @@ export default function LandingPage() {
             variants={stagger}
             className="text-center mb-12 sm:mb-16"
           >
-            <motion.h2 variants={fadeUp} className="text-display mb-3 sm:mb-4">{t('features.title')}</motion.h2>
-            <motion.p variants={fadeUp} custom={1} className="text-fluid-lg text-muted-foreground max-w-2xl mx-auto">
-              {t('features.subtitle')}
+            <motion.h2 variants={fadeUp} className="text-display mb-3 sm:mb-4">{t('abstract.title')}</motion.h2>
+            <motion.p variants={fadeUp} custom={1} className="text-fluid-lg text-muted-foreground max-w-3xl mx-auto">
+              {t('abstract.subtitle')}
             </motion.p>
           </motion.div>
 
@@ -406,120 +477,283 @@ export default function LandingPage() {
             whileInView="visible"
             viewport={{ once: true, margin: '-50px' }}
             variants={stagger}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
           >
-            {featureKeys.map((key, i) => (
-              <FeatureCard
-                key={key}
-                icon={featureIcons[i]}
-                name={t(`features.${key}.name`)}
-                desc={t(`features.${key}.desc`)}
-                tag={t(`features.${key}.tag`)}
-                span2={key === 'chat' || key === 'agent'}
+            {[0, 1, 2, 3].map((i) => (
+              <motion.div
+                key={i}
+                variants={fadeUp}
+                custom={i}
+                className="p-5 sm:p-6 rounded-2xl border border-border bg-card/30 hover:bg-card/60 transition-all text-center"
+              >
+                <span className="text-3xl sm:text-4xl mb-3 block">{t(`abstract.items.${i}.icon`)}</span>
+                <h3 className="text-sm sm:text-base font-semibold mb-2">{t(`abstract.items.${i}.title`)}</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{t(`abstract.items.${i}.desc`)}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── Problems Section ─────────────────────────────── */}
+      <section id="problems" className="py-16 sm:py-24 md:py-32">
+        <div className="container-responsive">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={stagger}
+            className="text-center mb-12 sm:mb-16"
+          >
+            <motion.h2 variants={fadeUp} className="text-display mb-3 sm:mb-4">{t('problems.title')}</motion.h2>
+            <motion.p variants={fadeUp} custom={1} className="text-fluid-lg text-muted-foreground max-w-2xl mx-auto">
+              {t('problems.subtitle')}
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-50px' }}
+            variants={stagger}
+            className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 max-w-4xl mx-auto"
+          >
+            {[0, 1, 2, 3].map((i) => (
+              <ProblemCard
+                key={i}
+                icon={problemIcons[i]}
+                title={t(`problems.items.${i}.title`)}
+                desc={t(`problems.items.${i}.desc`)}
+                index={i}
               />
             ))}
           </motion.div>
         </div>
       </section>
 
-      {/* ── Stats Section ────────────────────────────────── */}
-      <section id="stats" className="py-16 sm:py-24 md:py-32 relative">
+      {/* ── Architecture Section ─────────────────────────── */}
+      <section id="architecture" className="py-16 sm:py-24 md:py-32 relative">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_50%,rgba(99,102,241,0.08),transparent)]" />
         <div className="container-responsive relative">
           <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: '-100px' }}
             variants={stagger}
             className="text-center mb-12 sm:mb-16"
           >
-            <motion.h2 variants={fadeUp} className="text-display mb-3 sm:mb-4">{t('stats.title')}</motion.h2>
-            <motion.p variants={fadeUp} custom={1} className="text-fluid-lg text-muted-foreground">{t('stats.subtitle')}</motion.p>
+            <motion.h2 variants={fadeUp} className="text-display mb-3 sm:mb-4">{t('architecture.title')}</motion.h2>
+            <motion.p variants={fadeUp} custom={1} className="text-fluid-lg text-muted-foreground max-w-2xl mx-auto">
+              {t('architecture.subtitle')}
+            </motion.p>
+          </motion.div>
+
+          {/* 4-layer stack visualization */}
+          <div className="max-w-4xl mx-auto space-y-4 sm:space-y-5">
+            {/* Top: Control Plane */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={stagger}
+            >
+              <ArchLayer
+                name={t('architecture.control.name')}
+                label={t('architecture.control.label')}
+                items={t('architecture.control.items')}
+                index={3}
+                color="pink"
+              />
+            </motion.div>
+
+            {/* Cluster Layer */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={stagger}
+            >
+              <ArchLayer
+                name={t('architecture.cluster.name')}
+                label={t('architecture.cluster.label')}
+                items={t('architecture.cluster.items')}
+                index={2}
+                color="blue"
+              />
+            </motion.div>
+
+            {/* Runtime Layer */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={stagger}
+            >
+              <ArchLayer
+                name={t('architecture.runtime.name')}
+                label={t('architecture.runtime.label')}
+                items={t('architecture.runtime.items')}
+                index={1}
+                color="purple"
+              />
+            </motion.div>
+
+            {/* Bottom: Kernel */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={stagger}
+            >
+              <ArchLayer
+                name={t('architecture.kernel.name')}
+                label={t('architecture.kernel.label')}
+                items={t('architecture.kernel.items')}
+                index={0}
+                color="indigo"
+              />
+            </motion.div>
+          </div>
+
+          {/* Layer labels */}
+          <div className="hidden lg:flex justify-center mt-6 gap-8 text-xs text-muted-foreground">
+            {['Kernel', 'Runtime', 'Cluster', 'Control Plane'].map((label, i) => (
+              <span key={i} className="flex items-center gap-1.5">
+                <span className={`w-2 h-2 rounded-full bg-${archColors[i]}-500`} />
+                {label}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Capabilities Section ─────────────────────────── */}
+      <section id="capabilities" className="py-16 sm:py-24 md:py-32">
+        <div className="container-responsive">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={stagger}
+            className="text-center mb-12 sm:mb-16"
+          >
+            <motion.h2 variants={fadeUp} className="text-display mb-3 sm:mb-4">{t('capabilities.title')}</motion.h2>
+            <motion.p variants={fadeUp} custom={1} className="text-fluid-lg text-muted-foreground max-w-2xl mx-auto">
+              {t('capabilities.subtitle')}
+            </motion.p>
           </motion.div>
 
           <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: '-50px' }}
             variants={stagger}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6"
           >
-            {[
-              { num: 50, suffix: '+', label: t('stats.models') },
-              { num: 12, suffix: 'K+', label: t('stats.agents') },
-              { num: 1, suffix: 'M+', label: t('stats.workflows') },
-              { num: 86, suffix: 'B+', label: t('stats.tokens') },
-            ].map((stat, i) => (
-              <motion.div
+            {[0, 1, 2, 3, 4, 5].map((i) => (
+              <InfoCard
                 key={i}
-                variants={fadeUp}
-                custom={i}
-                className="text-center p-5 sm:p-8 rounded-2xl border border-border bg-card/30 hover:bg-card/60 transition-all"
-              >
-                <div className="text-fluid-3xl sm:text-fluid-4xl font-extrabold text-gradient mb-2">
-                  <Counter end={stat.num} suffix={stat.suffix} />
-                </div>
-                <div className="text-xs sm:text-sm text-muted-foreground">{stat.label}</div>
-              </motion.div>
+                icon={capIcons[i]}
+                title={t(`capabilities.items.${i}.title`)}
+                desc={t(`capabilities.items.${i}.desc`)}
+                tag={t(`capabilities.items.${i}.tag`)}
+                index={i}
+              />
             ))}
           </motion.div>
         </div>
       </section>
 
-      {/* ── Testimonials ─────────────────────────────────── */}
-      <section className="py-16 sm:py-24 md:py-32">
-        <div className="container-responsive">
+      {/* ── Scenarios Section ─────────────────────────────── */}
+      <section id="scenarios" className="py-16 sm:py-24 md:py-32 relative">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_50%,rgba(99,102,241,0.06),transparent)]" />
+        <div className="container-responsive relative">
           <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: '-100px' }}
             variants={stagger}
             className="text-center mb-12 sm:mb-16"
           >
-            <motion.h2 variants={fadeUp} className="text-display mb-3 sm:mb-4">{t('testimonials.title')}</motion.h2>
-            <motion.p variants={fadeUp} custom={1} className="text-fluid-lg text-muted-foreground">{t('testimonials.subtitle')}</motion.p>
+            <motion.h2 variants={fadeUp} className="text-display mb-3 sm:mb-4">{t('scenarios.title')}</motion.h2>
+            <motion.p variants={fadeUp} custom={1} className="text-fluid-lg text-muted-foreground max-w-2xl mx-auto">
+              {t('scenarios.subtitle')}
+            </motion.p>
           </motion.div>
 
           <motion.div
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: '-50px' }}
             variants={stagger}
-            className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6"
           >
-            {[0, 1, 2].map((i) => (
-              <motion.div
+            {[0, 1, 2, 3, 4, 5].map((i) => (
+              <ScenarioCard
                 key={i}
-                variants={fadeUp}
-                custom={i}
-                className="p-5 sm:p-6 rounded-2xl border border-border bg-card/50 hover:bg-card/80 transition-all"
-              >
-                <div className="flex gap-1 mb-4">
-                  {[...Array(5)].map((_, j) => (
-                    <span key={j} className="text-yellow-500 text-sm">★</span>
-                  ))}
-                </div>
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-5 sm:mb-6 italic">
-                  &ldquo;{t(`testimonials.items.${i}.quote`)}&rdquo;
-                </p>
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white">
-                    {t(`testimonials.items.${i}.avatar`)}
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium">{t(`testimonials.items.${i}.name`)}</div>
-                    <div className="text-xs text-muted-foreground">{t(`testimonials.items.${i}.role`)}</div>
-                  </div>
-                </div>
-              </motion.div>
+                icon={scenarioIcons[i]}
+                title={t(`scenarios.items.${i}.title`)}
+                desc={t(`scenarios.items.${i}.desc`)}
+                tag={t(`scenarios.items.${i}.tag`)}
+                index={i}
+              />
             ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ── Vision Section ───────────────────────────────── */}
+      <section id="vision" className="py-16 sm:py-24 md:py-32">
+        <div className="container-responsive">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-100px' }}
+            variants={stagger}
+            className="text-center mb-12 sm:mb-16"
+          >
+            <motion.h2 variants={fadeUp} className="text-display mb-3 sm:mb-4">{t('vision.title')}</motion.h2>
+            <motion.p variants={fadeUp} custom={1} className="text-fluid-lg text-muted-foreground max-w-2xl mx-auto">
+              {t('vision.subtitle')}
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-50px' }}
+            variants={stagger}
+            className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-4xl mx-auto mb-10 sm:mb-14"
+          >
+            {[0, 1, 2, 3].map((i) => (
+              <VisionItem
+                key={i}
+                icon={visionIcons[i]}
+                label={t(`vision.items.${i}.label`)}
+                desc={t(`vision.items.${i}.desc`)}
+                index={i}
+              />
+            ))}
+          </motion.div>
+
+          {/* Vision statement */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center"
+          >
+            <p className="text-fluid-xl sm:text-fluid-2xl font-bold text-gradient max-w-3xl mx-auto px-4">
+              {t('vision.statement')}
+            </p>
           </motion.div>
         </div>
       </section>
 
       {/* ── FAQ ───────────────────────────────────────────── */}
-      <section id="faq" className="py-16 sm:py-24 md:py-32">
-        <div className="container-responsive max-w-3xl">
+      <section id="faq" className="py-16 sm:py-24 md:py-32 relative">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_50%,rgba(99,102,241,0.06),transparent)]" />
+        <div className="container-responsive max-w-3xl relative">
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -552,7 +786,7 @@ export default function LandingPage() {
             <div className="relative">
               <h2 className="text-display mb-3 sm:mb-4">{t('cta.title')}</h2>
               <p className="text-fluid-lg text-muted-foreground max-w-xl mx-auto mb-6 sm:mb-8">{t('cta.subtitle')}</p>
-              <Link href="/register" className="btn-magnetic inline-flex px-7 sm:px-10 py-3 sm:py-4 rounded-xl bg-primary text-primary-foreground font-semibold text-base sm:text-lg hover:bg-primary/90 transition-all shadow-lg shadow-indigo-500/25">
+              <Link href="/docs" className="btn-magnetic inline-flex px-7 sm:px-10 py-3 sm:py-4 rounded-xl bg-primary text-primary-foreground font-semibold text-base sm:text-lg hover:bg-primary/90 transition-all shadow-lg shadow-indigo-500/25">
                 {t('cta.button')}
               </Link>
               <p className="mt-4 text-xs text-muted-foreground">{t('cta.note')}</p>
